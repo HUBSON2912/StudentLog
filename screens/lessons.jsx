@@ -1,0 +1,100 @@
+import { FlatList, View } from "react-native";
+import { PlusComponent } from "../components/pluscomponent";
+import { Lesson } from "../components/lesson";
+import { theme } from "../colors";
+
+export default function LessonsScreen() {
+
+    const lessons = [
+        {
+            student_name: "Jan",
+            student_surname: "Nowak",
+            subject: "Matematyka",
+            level: "Szkoła podstawowa",
+            topic: "Pierwsza zasada termodynamiki",
+            date: "14.02.2025",
+            time: "13:45",
+            status: 0
+        },
+        {
+            student_name: "Jan",
+            student_surname: "Nowak",
+            subject: "Matematyka",
+            level: "Szkoła podstawowa",
+            topic: "Interferencja fal elektromagnetycznych",
+            date: "14.02.2025",
+            time: "13:45",
+            status: 2
+        },
+        {
+            student_name: "Jan",
+            student_surname: "Nowak",
+            subject: "Matematyka",
+            level: "Szkoła podstawowa",
+            topic: "Dodawanie ułamków zwykłych",
+            date: "14.02.2025",
+            time: "13:45",
+            status: 1
+        },
+        {
+            student_name: "Jan",
+            student_surname: "Nowak",
+            subject: "Matematyka",
+            level: "Szkoła podstawowa",
+            topic: "Dodawanie ułamków zwykłych",
+            date: "14.02.2025",
+            time: "13:45",
+            status: 2
+        },
+        {
+            student_name: "Jan",
+            student_surname: "Nowak",
+            subject: "Matematyka",
+            level: "Szkoła podstawowa",
+            topic: "Pierwsza zasada termodynamiki",
+            date: "14.02.2025",
+            time: "13:45",
+            status: 0
+        },
+        {
+            student_name: "Jan",
+            student_surname: "Nowak",
+            subject: "Matematyka",
+            level: "Szkoła podstawowa",
+            topic: "Interferencja fal elektromagnetycznych",
+            date: "14.02.2025",
+            time: "13:45",
+            status: 2
+        },
+        {
+            student_name: "Jan",
+            student_surname: "Nowak",
+            subject: "Matematyka",
+            level: "Szkoła podstawowa",
+            topic: "Dodawanie ułamków zwykłych",
+            date: "14.02.2025",
+            time: "13:45",
+            status: 1
+        },
+        {
+            student_name: "Jan",
+            student_surname: "Nowak",
+            subject: "Matematyka",
+            level: "Szkoła podstawowa",
+            topic: "Dodawanie ułamków zwykłych",
+            date: "14.02.2025",
+            time: "13:45",
+            status: 2
+        },  
+    ]
+
+    return (
+        <View style={{backgroundColor: theme.light.background}}>
+            <FlatList
+                data={lessons}
+                renderItem={({ item }) => { return (<Lesson item={item} />) }}
+            />
+            <PlusComponent />
+        </View>
+    );
+}
