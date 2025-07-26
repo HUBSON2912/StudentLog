@@ -1,15 +1,15 @@
 import { StyleSheet, View } from "react-native";
 import { Text } from "react-native-paper";
 import { theme } from "../colors";
-import { decode } from "html-entities";
 import { StatusLabel } from "./statuslabel";
+import { bullet } from "../functions/getUnicodeItems";
 
 export function Lesson({ item }) {
 
     return (
         <View style={styles.section}>
             <Text style={styles.text}>{item.student_name} {item.student_surname}</Text>
-            <Text style={styles.description}>{item.subject} {decode("&bull;")} {item.level}</Text>
+            <Text style={styles.description}>{item.subject} {bullet()} {item.level}</Text>
             <Text style={[styles.description, { marginTop: -6 }]}>{item.topic}</Text>
             <Text style={styles.description}>{item.date} {item.time}</Text>
             {StatusLabel(item.status)}

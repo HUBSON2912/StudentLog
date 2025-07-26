@@ -4,7 +4,8 @@ import { PaperProvider } from 'react-native-paper';
 import LessonsScreen from './screens/lessons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
-import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
+import { decode } from 'html-entities';
+import { account, clipboard } from './functions/getUnicodeItems';
 
 const Tabs = createBottomTabNavigator();
 
@@ -24,17 +25,17 @@ export default function App() {
                         </Text>
                     </View>
 
-                    <View style={{ width: 50, height: 50 }}>
-                        <Image src={require("./calendar.png")} height={40} width={40}/>
-                    </View>
-
-                    <Tabs.Navigator>
+                    <Tabs.Navigator screenOptions={{animation: 'shift', headerShown: false}}>
                         <Tabs.Screen name="Lekcje" component={LessonsScreen} options={{
-                            animation: 'fade', headerShown: false, tabBarIcon: ({ focused, color, size }) => {
-                                return;
+                            tabBarIcon: ({ focused, color, size }) => {
+                                return <Text style={{ fontSize: 22 }}>{clipboard()}</Text>;
                             }
                         }} />
-                        <Tabs.Screen name="Other" component={() => { return <View></View> }} options={{ animation: 'fade', headerShown: false }} />
+                        <Tabs.Screen name="Other" component={() => { return <View></View> }} options={{
+                            tabBarIcon: ({ focused, color, size }) => {
+                                return <Text style={{ fontSize: 22 }}>{account()}</Text>;
+                            }
+                        }} />
                     </Tabs.Navigator>
 
                 </SafeAreaView>

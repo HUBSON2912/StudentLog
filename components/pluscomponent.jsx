@@ -2,12 +2,13 @@ import { decode } from "html-entities";
 import { StyleSheet, View } from "react-native";
 import { Text } from "react-native-paper";
 import { theme } from "../colors";
+import { plus } from "../functions/getUnicodeItems";
 
 export function PlusComponent() {
     
     return (
         <View style={styles.plusView}>
-            <Text style={styles.plus}>{decode("&plus;")}</Text>
+            <Text style={styles.plus}>{plus()}</Text>
         </View>
     );
 }
