@@ -1,6 +1,6 @@
 import { StyleSheet, View } from "react-native";
 import { Text } from "react-native-paper";
-import { theme } from "../colors";
+import { theme } from "../theme";
 
 export function StatusLabel(status) {
     switch (status) {

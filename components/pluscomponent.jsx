@@ -1,7 +1,7 @@
 import { decode } from "html-entities";
 import { StyleSheet, View } from "react-native";
 import { Text } from "react-native-paper";
-import { theme } from "../colors";
+import { theme } from "../theme";
 import { plus } from "../functions/getUnicodeItems";
 
 export function PlusComponent() {
@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
         backgroundColor: theme.light.primary,
         width: 50,
         height: 50,
-        bottom: 50,
+        bottom: 20,
         right: 20,
         borderRadius: '50%',
         justifyContent: 'center',

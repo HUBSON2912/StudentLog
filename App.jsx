@@ -1,11 +1,11 @@
 import { SafeAreaView, Text, StyleSheet, View, Image } from 'react-native';
-import { theme } from './colors';
+import { theme } from './theme';
 import { PaperProvider } from 'react-native-paper';
 import LessonsScreen from './screens/lessons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
-import { decode } from 'html-entities';
-import { account, clipboard } from './functions/getUnicodeItems';
+import { account, clipboard, cog } from './functions/getUnicodeItems';
+import StudentsScreen from './screens/students';
 
 const Tabs = createBottomTabNavigator();
 
@@ -25,15 +25,20 @@ export default function App() {
                         </Text>
                     </View>
 
-                    <Tabs.Navigator screenOptions={{animation: 'shift', headerShown: false}}>
+                    <Tabs.Navigator initialRouteName='Lekcje' screenOptions={{animation: 'shift', headerShown: false}}>
+                        <Tabs.Screen name="Uczniowie" component={StudentsScreen} options={{
+                            tabBarIcon: ({ focused, color, size }) => {
+                                return <Text style={{ fontSize: 22 }}>{account()}</Text>;
+                            }
+                        }} />
                         <Tabs.Screen name="Lekcje" component={LessonsScreen} options={{
                             tabBarIcon: ({ focused, color, size }) => {
                                 return <Text style={{ fontSize: 22 }}>{clipboard()}</Text>;
                             }
                         }} />
-                        <Tabs.Screen name="Other" component={() => { return <View></View> }} options={{
+                        <Tabs.Screen name="Ustawienia" component={() => { return <View></View> }} options={{
                             tabBarIcon: ({ focused, color, size }) => {
-                                return <Text style={{ fontSize: 22 }}>{account()}</Text>;
+                                return <Text style={{ fontSize: 22 }}>{cog()}</Text>;
                             }
                         }} />
                     </Tabs.Navigator>

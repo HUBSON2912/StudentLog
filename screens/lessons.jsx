@@ -1,7 +1,7 @@
 import { FlatList, View } from "react-native";
 import { PlusComponent } from "../components/pluscomponent";
 import { Lesson } from "../components/lesson";
-import { theme } from "../colors";
+import { theme } from "../theme";
 
 export default function LessonsScreen() {
 

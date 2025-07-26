@@ -15,3 +15,15 @@ export function plus() {
 export function account() {
     return decode("&#128100;");
 }
+
+export function cog() {
+    return decode("&#9881;");
+}
+
+export function phone() {
+    return decode("&#9743;");
+}
+
+export function mail() {
+    return decode("&#9993;");
+}

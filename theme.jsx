@@ -1,10 +1,9 @@
-export const theme={
+export const theme = {
     light: {
         background: "#fbfbfb",
         iconActive: "#2e71f3",
         iconDisabled: "#2b3b49",
         primary: "#2f70f3",
-        section: "#ffffff",
         status: {
             done: "#2f70f3",
             paid: "#4b8f62",
@@ -15,5 +14,17 @@ export const theme={
             gray: "#4c5660",
             white: "#ffffff"
         }
+    },
+    styles: {
+        section: {
+            flex: 1,
+            backgroundColor: "#ffffff",
+            marginVertical: 5,
+            borderRadius: 10,
+            padding: 15,
+            gap: 3
+        }
     }
 };
+
+console.log(theme.styles.section);
