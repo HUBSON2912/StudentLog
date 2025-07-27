@@ -15,6 +15,8 @@ export default function LessonsScreen() {
             topic: "Pierwsza zasada termodynamiki",
             date: "14.02.2025",
             time: "13:45",
+            price: 60,
+            time_during: 1, // hour
             status: 0
         },
         {
@@ -26,6 +28,8 @@ export default function LessonsScreen() {
             topic: "Interferencja fal elektromagnetycznych",
             date: "14.02.2025",
             time: "13:45",
+            price: 60,
+            time_during: 1, // hour
             status: 2
         },
         {
@@ -37,6 +41,8 @@ export default function LessonsScreen() {
             topic: "Dodawanie ułamków zwykłych",
             date: "14.02.2025",
             time: "13:45",
+            price: 60,
+            time_during: 1, // hour
             status: 1
         },
         {
@@ -48,6 +54,8 @@ export default function LessonsScreen() {
             topic: "Dodawanie ułamków zwykłych",
             date: "14.02.2025",
             time: "13:45",
+            price: 60,
+            time_during: 1, // hour
             status: 2
         },
         {
@@ -59,6 +67,8 @@ export default function LessonsScreen() {
             topic: "Pierwsza zasada termodynamiki",
             date: "14.02.2025",
             time: "13:45",
+            price: 60,
+            time_during: 1, // hour
             status: 0
         },
         {
@@ -70,6 +80,8 @@ export default function LessonsScreen() {
             topic: "Interferencja fal elektromagnetycznych",
             date: "14.02.2025",
             time: "13:45",
+            price: 60,
+            time_during: 1, // hour
             status: 2
         },
         {
@@ -81,6 +93,8 @@ export default function LessonsScreen() {
             topic: "Dodawanie ułamków zwykłych",
             date: "14.02.2025",
             time: "13:45",
+            price: 60,
+            time_during: 1, // hour
             status: 1
         },
         {
@@ -92,6 +106,8 @@ export default function LessonsScreen() {
             topic: "Dodawanie ułamków zwykłych",
             date: "14.02.2025",
             time: "13:45",
+            price: 60,
+            time_during: 1, // hour
             status: 2
         },  
     ]
