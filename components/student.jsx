@@ -67,11 +67,11 @@ export function Student({ item }) {
 
     return (
         <View style={theme.styles.section}>
-            <Text style={styles.text}>{item.name} {item.surname}</Text>
-            <Text style={[styles.description, { display: (printPhone ? "flex" : "none") }]}>{phoneNum}</Text>
-            <Text style={[styles.description, { display: (printEmail ? "flex" : "none"), paddingLeft: 3 }]}>{email}</Text>
-            <Text style={[styles.description, { display: (printRemotelyData ? "flex" : "none") }]}>{remotelyPlatformNick}</Text>
-            <Text style={[styles.description, { display: (printHomeAdress ? "flex" : "none") }]}>
+            <Text style={theme.styles.text}>{item.name} {item.surname}</Text>
+            <Text style={[theme.styles.description, { display: (printPhone ? "flex" : "none") }]}>{phoneNum}</Text>
+            <Text style={[theme.styles.description, { display: (printEmail ? "flex" : "none"), paddingLeft: 3 }]}>{email}</Text>
+            <Text style={[theme.styles.description, { display: (printRemotelyData ? "flex" : "none") }]}>{remotelyPlatformNick}</Text>
+            <Text style={[theme.styles.description, { display: (printHomeAdress ? "flex" : "none") }]}>
                 {
                     homeAdress
                 }
@@ -89,18 +89,10 @@ export function Student({ item }) {
 }
 
 const styles = StyleSheet.create({
-    description: {
-        color: theme.light.text.gray,
-        fontSize: 16
-    },
     icon: {
         position: "absolute",
         top: 10,
         right: 10
-    },
-    text: {
-        fontSize: 20,
-        color: theme.light.text.black,
     },
 });
 

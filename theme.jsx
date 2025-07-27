@@ -1,6 +1,8 @@
 export const theme = {
     light: {
         background: "#fbfbfb",
+        border: "#84919f",
+        error: "#e23e3e",
         iconActive: "#2e71f3",
         iconDisabled: "#2b3b49",
         primary: "#2f70f3",
@@ -16,9 +18,17 @@ export const theme = {
             black: "#2a3846",
             gray: "#4c5660",
             white: "#ffffff"
-        }
+        },
     },
     styles: {
+        description: {
+            color: "#4c5660",
+            fontSize: 16
+        },
+        text: {
+            fontSize: 20,
+            color: "#2a3846",
+        },
         section: {
             flex: 1,
             backgroundColor: "#ffffff",
@@ -26,6 +36,6 @@ export const theme = {
             borderRadius: 10,
             padding: 15,
             gap: 3
-        }
+        },
     }
 };

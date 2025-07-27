@@ -7,6 +7,7 @@ export default function LessonsScreen() {
 
     const lessons = [
         {
+            id: 0,
             student_name: "Jan",
             student_surname: "Nowak",
             subject: "Matematyka",
@@ -17,6 +18,7 @@ export default function LessonsScreen() {
             status: 0
         },
         {
+            id: 1,
             student_name: "Jan",
             student_surname: "Nowak",
             subject: "Matematyka",
@@ -27,6 +29,7 @@ export default function LessonsScreen() {
             status: 2
         },
         {
+            id: 2,
             student_name: "Jan",
             student_surname: "Nowak",
             subject: "Matematyka",
@@ -37,6 +40,7 @@ export default function LessonsScreen() {
             status: 1
         },
         {
+            id: 3,
             student_name: "Jan",
             student_surname: "Nowak",
             subject: "Matematyka",
@@ -47,6 +51,7 @@ export default function LessonsScreen() {
             status: 2
         },
         {
+            id: 4,
             student_name: "Jan",
             student_surname: "Nowak",
             subject: "Matematyka",
@@ -57,6 +62,7 @@ export default function LessonsScreen() {
             status: 0
         },
         {
+            id: 5,
             student_name: "Jan",
             student_surname: "Nowak",
             subject: "Matematyka",
@@ -67,6 +73,7 @@ export default function LessonsScreen() {
             status: 2
         },
         {
+            id: 6,
             student_name: "Jan",
             student_surname: "Nowak",
             subject: "Matematyka",
@@ -77,6 +84,7 @@ export default function LessonsScreen() {
             status: 1
         },
         {
+            id: 7,
             student_name: "Jan",
             student_surname: "Nowak",
             subject: "Matematyka",

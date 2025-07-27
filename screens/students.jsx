@@ -7,6 +7,7 @@ export default function StudentsScreen() {
 
     const students = [
         {
+            id: 0,
             name: "Jan",
             surname: "Nowak",
             phone: "123456798",
@@ -20,6 +21,7 @@ export default function StudentsScreen() {
             flat_nr: null
         },
         {
+            id: 1,
             name: "Jan",
             surname: "Nowak",
             phone: "123456798",
@@ -33,6 +35,7 @@ export default function StudentsScreen() {
             flat_nr: null
         },
         {
+            id: 2,
             name: "Jan",
             surname: "Nowak",
             phone: "123456798",
@@ -46,6 +49,7 @@ export default function StudentsScreen() {
             flat_nr: null
         },
         {
+            id: 3,
             name: "Jan",
             surname: "Nowak",
             phone: "123456798",
@@ -59,6 +63,7 @@ export default function StudentsScreen() {
             flat_nr: 5
         },
         {
+            id: 4,
             name: "Jan",
             surname: "Nowak",
             phone: "123456798",
