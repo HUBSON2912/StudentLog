@@ -27,3 +27,11 @@ export function phone() {
 export function mail() {
     return decode("&#9993;");
 }
+
+export function arrowDown() {
+    return decode("&#9660;");
+}
+
+export function arrowUp() {
+    return decode("&#9650;");
+}

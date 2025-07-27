@@ -4,8 +4,11 @@ export const theme = {
         iconActive: "#2e71f3",
         iconDisabled: "#2b3b49",
         primary: "#2f70f3",
+        primaryPale: "#e0ebff",
+        primaryHalf: "#6e9cf7",
+        secondary: "#4b8f62",
         status: {
-            done: "#2f70f3",
+            done: "#ffd700",
             paid: "#4b8f62",
             planned: "#f2f0f3",
         },
@@ -26,5 +29,3 @@ export const theme = {
         }
     }
 };
-
-console.log(theme.styles.section);

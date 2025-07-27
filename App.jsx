@@ -1,11 +1,12 @@
 import { SafeAreaView, Text, StyleSheet, View, Image } from 'react-native';
 import { theme } from './theme';
 import { PaperProvider } from 'react-native-paper';
-import LessonsScreen from './screens/lessons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { account, clipboard, cog } from './functions/getUnicodeItems';
+import LessonsScreen from './screens/lessons';
 import StudentsScreen from './screens/students';
+import SettingsScreen from './screens/settings';
 
 const Tabs = createBottomTabNavigator();
 
@@ -36,7 +37,7 @@ export default function App() {
                                 return <Text style={{ fontSize: 22 }}>{clipboard()}</Text>;
                             }
                         }} />
-                        <Tabs.Screen name="Ustawienia" component={() => { return <View></View> }} options={{
+                        <Tabs.Screen name="Ustawienia" component={SettingsScreen} options={{
                             tabBarIcon: ({ focused, color, size }) => {
                                 return <Text style={{ fontSize: 22 }}>{cog()}</Text>;
                             }

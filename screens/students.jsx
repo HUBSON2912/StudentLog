@@ -10,46 +10,66 @@ export default function StudentsScreen() {
             name: "Jan",
             surname: "Nowak",
             phone: "123456798",
-            form: 0,
-            place: "Discord",
             email: "aaa@bbbb.ccc",
-            nick: "Chair"
+            form: 0,
+            platform: "Discord",
+            nick: "Chair",
+            city: "",
+            street: "",
+            house_nr: "",
+            flat_nr: null
         },
         {
             name: "Jan",
             surname: "Nowak",
             phone: "123456798",
+            email: "aaa@bbbb.ccc",
+            form: 2,
+            platform: "Discord",
+            nick: "Chair",
+            city: "Kraków",
+            street: "Polna",
+            house_nr: "123b",
+            flat_nr: null
+        },
+        {
+            name: "Jan",
+            surname: "Nowak",
+            phone: "123456798",
+            email: "aaa@bbbb.ccc",
+            form: 0,
+            platform: "Discord",
+            nick: "Chair",
+            city: "",
+            street: "",
+            house_nr: "",
+            flat_nr: null
+        },
+        {
+            name: "Jan",
+            surname: "Nowak",
+            phone: "123456798",
+            email: "aaa@bbbb.ccc",
             form: 1,
-            place: "Pierławki 3",
-            email: "aaa@bbbb.ccc",
-            nick: "Chair"
-        },
-        {
-            name: "Jan",
-            surname: "Nowak",
-            phone: "",
-            form: 0,
-            place: "Discord",
-            email: "aaa@bbbb.ccc",
-            nick: "Chair"
+            platform: "",
+            nick: "",
+            city: "Warszawa",
+            street: "Piotra Michałowskiego",
+            house_nr: 3,
+            flat_nr: 5
         },
         {
             name: "Jan",
             surname: "Nowak",
             phone: "123456798",
+            email: "aaa@bbbb.ccc",
             form: 0,
-            place: "Discord",
-            email: "",
-            nick: "Chair"
-        },
-        {
-            name: "Jan",
-            surname: "Nowak",
-            phone: "123456798",
-            form: 0,
-            place: "Discord",
-            email: "",
-            nick: "Chair"
+            platform: "Discord",
+            nick: "Chair",
+            city: "",
+            street: "",
+            house_nr: "",
+            flat_nr: null
         },
     ]
 
