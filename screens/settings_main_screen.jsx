@@ -94,6 +94,15 @@ export default function SettingsMainScreen({ navigation }) {
 
                     />
                 </View>
+                <View style={[theme.styles.section, styles.optionContainer]}>
+                    <Text style={[styles.text, styles.label]}>Pierwsza lekcja darmowa</Text>
+                    <Switch
+                        value={showMoney}
+                        onValueChange={switchShowMoney}
+                        color={theme.light.primary}
+
+                    />
+                </View>
                 <View style={[theme.styles.section, { alignItems: "center" }]}>
                     <View style={styles.optionContainer}>
 
@@ -144,7 +153,7 @@ const styles = StyleSheet.create({
     arrowDown: {
         position: "absolute",
         color: theme.light.text.black,
-        right: 0
+        right: 5
     },
     button: {
         backgroundColor: theme.light.primaryHalf,

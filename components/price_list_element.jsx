@@ -7,7 +7,7 @@ export default function PriceLiseElement({item}) {
     return (
         <View style={[theme.styles.section, { flexDirection: "row" }]}>
             <View style={{ flex: 3 }}>
-                <Text style={theme.styles.text}>{item.subject}</Text>
+                <Text style={theme.styles.h2}>{item.subject}</Text>
                 <Text style={theme.styles.description}>{item.level}</Text>
             </View>
             <Text style={styles.priceNumber}>{item.price} {currency}</Text>
@@ -17,7 +17,7 @@ export default function PriceLiseElement({item}) {
 
 const styles=StyleSheet.create({
     priceNumber: {
-        ...theme.styles.text,
+        ...theme.styles.h2,
         flex: 1,
         textAlign: "center",
         textAlignVertical: "center"

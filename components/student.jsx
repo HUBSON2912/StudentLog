@@ -67,7 +67,7 @@ export function Student({ item }) {
 
     return (
         <View style={theme.styles.section}>
-            <Text style={theme.styles.text}>{item.name} {item.surname}</Text>
+            <Text style={theme.styles.h2}>{item.name} {item.surname}</Text>
             <Text style={[theme.styles.description, { display: (printPhone ? "flex" : "none") }]}>{phoneNum}</Text>
             <Text style={[theme.styles.description, { display: (printEmail ? "flex" : "none"), paddingLeft: 3 }]}>{email}</Text>
             <Text style={[theme.styles.description, { display: (printRemotelyData ? "flex" : "none") }]}>{remotelyPlatformNick}</Text>

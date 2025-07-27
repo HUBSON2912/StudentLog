@@ -1,3 +1,5 @@
+import { StyleSheet } from "react-native"
+
 export const theme = {
     light: {
         background: "#fbfbfb",
@@ -20,14 +22,20 @@ export const theme = {
             white: "#ffffff"
         },
     },
-    styles: {
+    styles: StyleSheet.create({
         description: {
             color: "#4c5660",
             fontSize: 16
         },
-        text: {
+        h2: {
             fontSize: 20,
             color: "#2a3846",
+            textAlignVertical: "center"
+        },
+        text: {
+            fontSize: 16,
+            color: "#2a3846",
+            textAlignVertical: "center"
         },
         section: {
             flex: 1,
@@ -37,5 +45,5 @@ export const theme = {
             padding: 15,
             gap: 3
         },
-    }
+    }),
 };

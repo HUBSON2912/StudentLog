@@ -1,22 +1,24 @@
-import { decode } from "html-entities";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Text } from "react-native-paper";
 import { theme } from "../theme";
 import { plus } from "../functions/getUnicodeItems";
 
-export function PlusComponent() {
-    
+export function PlusComponent({ onPress = (() => { console.log("TODO") }) }) {
     return (
-        <View style={styles.plusView}>
-            <Text style={styles.plus}>{plus()}</Text>
-        </View>
+        <TouchableOpacity style={styles.plusView}
+            onPress={onPress}
+        >
+            <View>
+                <Text style={styles.plus}>{plus()}</Text>
+            </View>
+        </TouchableOpacity>
     );
 }
 
 const styles = StyleSheet.create({
     plus: {
-        fontSize: 45, 
-        marginTop: '-14%', 
+        fontSize: 45,
+        marginTop: '-14%',
         color: "white"
     },
     plusView: {

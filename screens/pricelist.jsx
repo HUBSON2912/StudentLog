@@ -35,7 +35,6 @@ export default function PriceList({ navigation }) {
                 }}
             />
 
-
             <View style={styles.buttonPanel}>
                 <Button
                     mode="contained"
