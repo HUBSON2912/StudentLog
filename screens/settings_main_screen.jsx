@@ -64,7 +64,6 @@ export default function SettingsMainScreen({ navigation }) {
                     <SelectDropdown
                         data={languages}
                         onSelect={(sel, index) => {
-                            console.log(sel, index);
                             setSelectedLanguage(sel);
                         }}
                         renderButton={renderDropdownButton}

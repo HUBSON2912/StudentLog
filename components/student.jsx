@@ -1,8 +1,9 @@
-import { Image, StyleSheet, View } from "react-native";
+import { Image, StyleSheet, TouchableNativeFeedback, View } from "react-native";
 import { theme } from "../theme";
 import { Text } from "react-native-paper";
 import { bullet, mail, phone } from "../functions/getUnicodeItems";
 import { useState } from "react";
+import { useNavigation } from "@react-navigation/native";
 
 function getForm(form) {
     switch (form) {
@@ -18,6 +19,8 @@ function getForm(form) {
 }
 
 export function Student({ item }) {
+
+    const navigation = useNavigation();
 
     let email = "";
     let printEmail = false;
@@ -66,25 +69,29 @@ export function Student({ item }) {
 
 
     return (
-        <View style={theme.styles.section}>
-            <Text style={theme.styles.h2}>{item.name} {item.surname}</Text>
-            <Text style={[theme.styles.description, { display: (printPhone ? "flex" : "none") }]}>{phoneNum}</Text>
-            <Text style={[theme.styles.description, { display: (printEmail ? "flex" : "none"), paddingLeft: 3 }]}>{email}</Text>
-            <Text style={[theme.styles.description, { display: (printRemotelyData ? "flex" : "none") }]}>{remotelyPlatformNick}</Text>
-            <Text style={[theme.styles.description, { display: (printHomeAdress ? "flex" : "none") }]}>
-                {
-                    homeAdress
-                }
-            </Text>
+        <TouchableNativeFeedback onPress={() => {
+            navigation.navigate("EditStudent", { studentID: item.id });
+        }}>
+            <View style={theme.styles.section}>
+                <Text style={theme.styles.h2}>{item.name} {item.surname}</Text>
+                <Text style={[theme.styles.description, { display: (printPhone ? "flex" : "none") }]}>{phoneNum}</Text>
+                <Text style={[theme.styles.description, { display: (printEmail ? "flex" : "none"), paddingLeft: 3 }]}>{email}</Text>
+                <Text style={[theme.styles.description, { display: (printRemotelyData ? "flex" : "none") }]}>{remotelyPlatformNick}</Text>
+                <Text style={[theme.styles.description, { display: (printHomeAdress ? "flex" : "none") }]}>
+                    {
+                        homeAdress
+                    }
+                </Text>
 
-            <View style={styles.icon}>
-                <Image
-                    source={formImages[item.form]}
-                    style={{ width: 80, height: 80 }}
-                    resizeMode="contain"
-                />
+                <View style={styles.icon}>
+                    <Image
+                        source={formImages[item.form]}
+                        style={{ width: 80, height: 80 }}
+                        resizeMode="contain"
+                    />
+                </View>
             </View>
-        </View>
+        </TouchableNativeFeedback >
     );
 }
 

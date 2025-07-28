@@ -1,11 +1,24 @@
 import { KeyboardAvoidingView, ScrollView, StyleSheet, View } from "react-native";
-import { Button, Switch, Text, TextInput } from "react-native-paper";
+import { Button, Text, TextInput } from "react-native-paper";
 import { theme } from "../theme";
-import { use, useState } from "react";
+import { useEffect, useState } from "react";
 import { arrowDown } from "../functions/getUnicodeItems";
 import SelectDropdown from "react-native-select-dropdown";
+import { getByIDStudents, insertIntoStudents, updateIDStudents } from "../functions/database";
 
-export default function EditStudent({ navigation, id }) {
+// possible tables name
+const students = "students";
+const lessons = "lessons";
+const priceList = "price_list";
+
+export default function EditStudent({ navigation, route }) {
+
+    const { studentID } = route.params;
+
+    let studentData = {};
+
+    if (studentID !== null)
+        studentData = getByIDStudents(studentID);
 
     const possibleForms = [
         { id: 0, title: "Zdalnie" },
@@ -23,7 +36,26 @@ export default function EditStudent({ navigation, id }) {
     const [city, setCity] = useState("");
     const [street, setStreet] = useState("");
     const [houseNr, setHouseNr] = useState("");
-    const [flatNr, setFlatNr] = useState(null);
+    const [flatNr, setFlatNr] = useState("");
+
+    let [done, setDone] = useState(false);
+
+    useEffect(() => {
+        if (!done && studentID !== null && studentData && Object.keys(studentData).length > 0) {
+            setName(studentData.name || "");
+            setSurname(studentData.surname || "");
+            setPhoneNumber(studentData.phone || "");
+            setEmail(studentData.email || "");
+            setForm(possibleForms[studentData.form] || possibleForms[0]);
+            setPlatform(studentData.platform || "");
+            setNick(studentData.nick || "");
+            setCity(studentData.city || "");
+            setStreet(studentData.street || "");
+            setHouseNr(studentData.house_nr || "");
+            setFlatNr(studentData.flat_nr || "");
+            setDone(true);
+        }
+    }, [studentData, studentID]);
 
     const renderDropdownButton = (sel, isOpen) => {
         return (
@@ -45,7 +77,29 @@ export default function EditStudent({ navigation, id }) {
         );
     }
 
+    const handleSaveButton = () => {
+        const newStudentData = {
+            name: name,
+            surname: surname,
+            phone: phoneNum,
+            email: email,
+            form: form.id,
+            platform: platform,
+            nick: nick,
+            city: city,
+            street: street,
+            house_nr: houseNr,
+            flat_nr: flatNr
+        };
 
+        if (!studentID) {
+            insertIntoStudents(newStudentData);
+        }
+        else {
+            updateIDStudents(studentID, newStudentData);
+        }
+        navigation.pop();
+    }
 
     return (
         <View style={styles.container}>
@@ -108,10 +162,7 @@ export default function EditStudent({ navigation, id }) {
                         <Text style={[theme.styles.text, styles.label]}>Forma</Text>
                         <SelectDropdown
                             data={possibleForms}
-                            onSelect={(sel, index) => {
-                                setForm(sel);
-                                console.log(sel)
-                            }}
+                            onSelect={(sel, index) => setForm(sel)}
                             renderButton={renderDropdownButton}
                             renderItem={renderDropdownItem}
                             defaultValue={form}
@@ -134,7 +185,7 @@ export default function EditStudent({ navigation, id }) {
                                 />
                             </View>
                             <View style={[theme.styles.section, styles.optionContainer]}>
-                                <Text style={[theme.styles.text, styles.label]}>Nick</Text>
+                                <Text style={[theme.styles.text, styles.label]}>Nazwa użytkownika</Text>
                                 <TextInput
                                     mode="outlined"
                                     style={styles.textInput}
@@ -201,7 +252,27 @@ export default function EditStudent({ navigation, id }) {
                             </View>
                         </>}
                 </KeyboardAvoidingView>
-                <Button mode="contained">Zapisz</Button>
+
+                <View style={styles.buttonPanel}>
+                    {/* cancel button */}
+                    <Button
+                        mode="contained"
+                        style={[styles.button, { backgroundColor: theme.light.error }]}
+                        onPress={() => navigation.pop()}
+                    >
+                        <Text style={styles.buttonLabel}>Anuluj</Text>
+                    </Button>
+
+
+                    {/* save button */}
+                    <Button
+                        mode="contained"
+                        style={styles.button}
+                        onPress={handleSaveButton}
+                    >
+                        <Text style={styles.buttonLabel}>Zapisz</Text>
+                    </Button>
+                </View>
             </ScrollView>
         </View>
     );
@@ -214,13 +285,20 @@ const styles = StyleSheet.create({
         right: 5
     },
     button: {
-        backgroundColor: theme.light.primaryHalf,
-        marginVertical: 5
+        backgroundColor: theme.light.primary,
+        marginVertical: 5,
+        flex: 1
     },
     buttonLabel: {
         color: theme.light.text.white,
         fontWeight: "bold",
         letterSpacing: 1
+    },
+    buttonPanel: {
+        justifyContent: "center",
+        gap: 10,
+        flexDirection: "row",
+        flex: 1
     },
     container: {
         flex: 1,
