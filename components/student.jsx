@@ -1,22 +1,11 @@
-import { Image, StyleSheet, TouchableNativeFeedback, View } from "react-native";
+import { Alert, Animated, Image, StyleSheet, TouchableNativeFeedback, View } from "react-native";
 import { theme } from "../theme";
 import { Text } from "react-native-paper";
 import { bullet, mail, phone } from "../functions/getUnicodeItems";
 import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-
-function getForm(form) {
-    switch (form) {
-        case 0:
-            return "Zdalnie";
-        case 1:
-            return "Stacjonarnie";
-        case 2:
-            return "Mieszanie";
-        default:
-            break;
-    }
-}
+import { deleteIDStudent } from "../functions/database";
+import Section from "./section";
 
 export function Student({ item }) {
 
@@ -66,45 +55,56 @@ export function Student({ item }) {
     }
 
 
+    const handleEditing = () => {
+        navigation.navigate("EditStudent", { studentID: item.id });
+    };
 
+    const handleDelete = () => {
+        Alert.alert("Potwierdzenie",
+            `Czy na pewno chcesz usunąć tego ucznia?\n\nID: ${item.id} \nImię: ${item.name} \nNazwisko: ${item.surname}`,
+            [
+                { text: "Tak", onPress: () => { deleteIDStudent(item.id) } },
+                { text: "Nie", onPress: () => { } }
+            ],
+            { cancelable: true }
+        )
+    };
 
     return (
-        <TouchableNativeFeedback onPress={() => {
-            navigation.navigate("EditStudent", { studentID: item.id });
-        }}>
-            <View style={theme.styles.section}>
+        <Section onPressBehaviour="fade"
+            onLongPress={() => {
+                Alert.alert("Co zamierzasz zrobić", `Wybierz co zamierzasz zrobić z tym rekordem. \n\nID: ${item.id} \nImię: ${item.name} \nNazwisko: ${item.surname}`,
+                    [
+                        { text: "Anuluj", onPress: () => { }, style: "cancel" },
+                        { text: "Edytuj", onPress: handleEditing },
+                        { text: "Usuń", onPress: handleDelete },
+                    ],
+                    { cancelable: true }
+                )
+            }}
+            style={{flexDirection: "row", alignItems: "stretch"}}
+        >
+            <View style={{flex:1, }}>
                 <Text style={theme.styles.h2}>{item.name} {item.surname}</Text>
                 <Text style={[theme.styles.description, { display: (printPhone ? "flex" : "none") }]}>{phoneNum}</Text>
                 <Text style={[theme.styles.description, { display: (printEmail ? "flex" : "none"), paddingLeft: 3 }]}>{email}</Text>
                 <Text style={[theme.styles.description, { display: (printRemotelyData ? "flex" : "none") }]}>{remotelyPlatformNick}</Text>
-                <Text style={[theme.styles.description, { display: (printHomeAdress ? "flex" : "none") }]}>
-                    {
-                        homeAdress
-                    }
-                </Text>
-
-                <View style={styles.icon}>
-                    <Image
-                        source={formImages[item.form]}
-                        style={{ width: 80, height: 80 }}
-                        resizeMode="contain"
-                    />
-                </View>
+                <Text style={[theme.styles.description, { display: (printHomeAdress ? "flex" : "none") }]}>{homeAdress}</Text>
             </View>
-        </TouchableNativeFeedback >
+
+            <View style={{justifyContent: "center"}}>
+                <Image
+                    source={formImages[item.form]}
+                    style={{ width: 80, height: 80 }}
+                    resizeMode="contain"
+                />
+            </View>
+        </Section>
     );
 }
 
-const styles = StyleSheet.create({
-    icon: {
-        position: "absolute",
-        top: 10,
-        right: 10
-    },
-});
-
 /**
- * https://www.iconarchive.com/show/fluentui-emoji-flat-icons-by-microsoft/House-With-Garden-Flat-icon.html domek link
- * https://www.iconarchive.com/show/fluentui-emoji-flat-icons-by-microsoft/Desktop-Computer-Flat-icon.html komp link
- * https://www.iconarchive.com/show/fluentui-emoji-flat-icons-by-microsoft/Shuffle-Tracks-Button-Flat-icon.html mixed link
+ * https://www.iconarchive.com/show/fluentui-emoji-flat-icons-by-microsoft/House-With-Garden-Flat-icon.html house icon link
+ * https://www.iconarchive.com/show/fluentui-emoji-flat-icons-by-microsoft/Desktop-Computer-Flat-icon.html computer icon link
+ * https://www.iconarchive.com/show/fluentui-emoji-flat-icons-by-microsoft/Shuffle-Tracks-Button-Flat-icon.html mixed icon link
  */

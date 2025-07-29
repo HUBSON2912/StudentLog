@@ -59,7 +59,7 @@ export default function EditStudent({ navigation, route }) {
 
     const renderDropdownButton = (sel, isOpen) => {
         return (
-            <View style={[styles.optionValue]}>
+            <View style={[styles.optionValue, {borderRadius: 5, paddingVertical: 5, justifyContent: "center", borderColor: theme.light.border, borderWidth: 1}]}>
                 <Text style={theme.styles.text}>{form.title}</Text>
                 <Text style={styles.arrowDown}>{arrowDown()}</Text>
             </View>
@@ -282,7 +282,7 @@ const styles = StyleSheet.create({
     arrowDown: {
         position: "absolute",
         color: theme.light.text.black,
-        right: 5
+        right: 10
     },
     button: {
         backgroundColor: theme.light.primary,
