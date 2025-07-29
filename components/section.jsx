@@ -8,7 +8,6 @@ export default function Section({
     style = {},
     onPress = null,
     onLongPress = null,
-    onDoublePress = null,
     onPressIn = null,
     onPressOut = null,
 }) {
@@ -79,11 +78,15 @@ export default function Section({
             break;
     }
 
+    let click=0;
+
+
     return (
         <TouchableNativeFeedback style={[theme.styles.section, style]}
             onPressIn={onPressIn || pressIn}
             onPressOut={onPressOut || pressOut}
             onLongPress={onLongPress}
+            onPress={onPress}
         >
             <Animated.View
                 style={[theme.styles.section, {

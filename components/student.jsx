@@ -1,11 +1,11 @@
-import { Alert, Animated, Image, StyleSheet, TouchableNativeFeedback, View } from "react-native";
+import { Alert, Image, View } from "react-native";
 import { theme } from "../theme";
 import { Text } from "react-native-paper";
 import { bullet, mail, phone } from "../functions/getUnicodeItems";
-import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { deleteIDStudent } from "../functions/database";
 import Section from "./section";
+import { useState } from "react";
 
 export function Student({ item }) {
 
@@ -70,6 +70,11 @@ export function Student({ item }) {
         )
     };
 
+    const [expand, setExpand]=useState(false);
+    const onPress=()=>{
+        setExpand(!expand);
+    }
+
     return (
         <Section onPressBehaviour="fade"
             onLongPress={() => {
@@ -82,17 +87,18 @@ export function Student({ item }) {
                     { cancelable: true }
                 )
             }}
-            style={{flexDirection: "row", alignItems: "stretch"}}
+            style={{ flexDirection: "row", alignItems: "stretch" }}
+            onPress={onPress}
         >
-            <View style={{flex:1, }}>
+            <View style={{ flex: 1, }}>
                 <Text style={theme.styles.h2}>{item.name} {item.surname}</Text>
                 <Text style={[theme.styles.description, { display: (printPhone ? "flex" : "none") }]}>{phoneNum}</Text>
-                <Text style={[theme.styles.description, { display: (printEmail ? "flex" : "none"), paddingLeft: 3 }]}>{email}</Text>
-                <Text style={[theme.styles.description, { display: (printRemotelyData ? "flex" : "none") }]}>{remotelyPlatformNick}</Text>
-                <Text style={[theme.styles.description, { display: (printHomeAdress ? "flex" : "none") }]}>{homeAdress}</Text>
+                <Text style={[theme.styles.description, { display: (printEmail ? "flex" : "none"), paddingLeft: 3 }]} numberOfLines={expand?10:1}>{email}</Text>
+                <Text style={[theme.styles.description, { display: (printRemotelyData ? "flex" : "none") }]} numberOfLines={expand?10:1}>{remotelyPlatformNick}</Text>
+                <Text style={[theme.styles.description, { display: (printHomeAdress ? "flex" : "none") }]} numberOfLines={expand?10:1}>{homeAdress}</Text>
             </View>
 
-            <View style={{justifyContent: "center"}}>
+            <View style={{ justifyContent: "center" }}>
                 <Image
                     source={formImages[item.form]}
                     style={{ width: 80, height: 80 }}

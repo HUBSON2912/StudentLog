@@ -23,7 +23,7 @@ export default function EditStudent({ navigation, route }) {
     const possibleForms = [
         { id: 0, title: "Zdalnie" },
         { id: 1, title: "Stacjonarnie" },
-        { id: 2, title: "Mieszanie" },
+        { id: 2, title: "Mieszana" },
     ];
 
     const [name, setName] = useState("");
@@ -70,7 +70,7 @@ export default function EditStudent({ navigation, route }) {
         return (
             <View style={[
                 styles.dropdownItem,
-                isSelected && { backgroundColor: theme.light.primaryPale }
+                { backgroundColor: (isSelected?theme.light.primaryPale: "white") }
             ]}>
                 <Text style={theme.styles.text}>{item.title}</Text>
             </View>
