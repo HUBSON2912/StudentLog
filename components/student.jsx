@@ -76,7 +76,7 @@ export function Student({ item }) {
     }
 
     return (
-        <Section onPressBehaviour="fade"
+        <Section onPressBehaviour="scale"
             onLongPress={() => {
                 Alert.alert("Co zamierzasz zrobić", `Wybierz co zamierzasz zrobić z tym rekordem. \n\nID: ${item.id} \nImię: ${item.name} \nNazwisko: ${item.surname}`,
                     [

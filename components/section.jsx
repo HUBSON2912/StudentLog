@@ -17,7 +17,7 @@ export default function Section({
     const [scaleAnim] = useState(new Animated.Value(1)); // Initial scale: 1
     const handlePressIn = () => {
         Animated.spring(scaleAnim, {
-            toValue: 0.97,
+            toValue: 0.95,
             useNativeDriver: true,
         }).start();
     };
