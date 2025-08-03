@@ -197,3 +197,17 @@ export function getByIDStudents(id) {
     __getByIDStudents(id).then(setStudent);
     return student;
 }
+
+
+
+// db.executeSql(
+//         `CREATE TABLE IF NOT EXISTS students (
+//             id INTEGER PRIMARY KEY AUTOINCREMENT,
+//             student_id INTEGER,
+//             subject TEXT,
+//             level TEXT,
+//             date TEXT,
+//             topic TEXT,
+//             duration INTEGER,
+//             price INTEGER
+//         );`);

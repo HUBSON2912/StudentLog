@@ -11,7 +11,7 @@ export default function RectangleRadioButton({ text = "", onSelect = () => { }, 
                 onPress={onSelect}
             >
                 <View style={{ alignItems: "center", justifyContent: "center", flex: 1 }}>
-                    <Text style={[theme.styles.text, { textAlign: "center", flex: 1 }]}>{text}</Text>
+                    <Text style={[theme.styles.text, { textAlign: "center", flex: 1, padding: 3 }]}>{text}</Text>
                 </View>
             </TouchableOpacity>
         </View>

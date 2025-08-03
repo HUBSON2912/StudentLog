@@ -1,4 +1,4 @@
-export function getMonthName(month) {
+function getMonthName(month) {
     switch (month) {
         case 0:
             return "styczeń";
@@ -29,33 +29,95 @@ export function getMonthName(month) {
     }
 }
 
-export function getShortMonthName(month) {
+function getShortMonthName(month) {
     return getMonthName(month).substring(0, 3);
 }
 
+function getDayString(date) {
+    return String(date.getDate()).padStart(2, '0');
+}
+
+function getMonthNumberAsString(date) {
+    return String(date.getMonth() + 1).padStart(2, '0');
+}
+
+function getYearString(date) {
+    return String(date.getFullYear());
+}
+
+function getHourString(date) {
+    return String(date.getHours()).padStart(2, "0");
+}
+
+function getMinuteAsString(date) {
+    return String(date.getMinutes()).padStart(2, "0");
+}
+
+
+
+
+// European format
+
 export function getDD_MM_YYYYDate(date) {
-    const dayAsString = String(date.getDate()).padStart(2, '0');
-    const monthAsString = String(date.getMonth() + 1).padStart(2, '0');
-    const yearAsString = String(date.getFullYear());
+    const dayAsString = getDayString(date);
+    const monthAsString = getMonthNumberAsString(date);
+    const yearAsString = getYearString();
+
     return (dayAsString + "." + monthAsString + "." + yearAsString);
 }
 
+
 export function getDD_Month_YYYYDate(date) {
-    const dayAsString = String(date.getDate()).padStart(2, '0');
+    const dayAsString = getDayString(date);
     const monthAsString = getMonthName(date.getMonth());
-    const yearAsString = String(date.getFullYear());
+    const yearAsString = getYearString(date);
+
     return (dayAsString + " " + monthAsString + " " + yearAsString);
 }
 
 export function getDD_Mon_YYYYDate(date) {
-    const dayAsString = String(date.getDate()).padStart(2, '0');
+    const dayAsString = getDayString(date);
     const monthAsString = getShortMonthName(date.getMonth());
-    const yearAsString = String(date.getFullYear());
+    const yearAsString = getYearString(date);
+
     return (dayAsString + " " + monthAsString + " " + yearAsString);
 }
 
-export function getDD_MM_YY_HH_MMDate(date) {
-    const hourAsString=String(date.getHours()).padStart(2,"0");
-    const minuteAsString=String(date.getMinutes()).padStart(2,"0");
-    return getDD_MM_YYYYDate(date)+" "+hourAsString+":"+minuteAsString;
+export function getDD_MM_YYYY_HH_MMDate(date) {
+    const hourAsString = getHourString(date);
+    const minuteAsString = getMinuteAsString(date);
+
+    return getDD_MM_YYYYDate(date) + " " + hourAsString + ":" + minuteAsString;
+}
+
+export function getDD_Month_YYYY_HH_MMDate(date) {
+    const hourAsString = getHourString(date);
+    const minuteAsString = getMinuteAsString(date);
+
+    return getDD_Month_YYYYDate(date) + " " + hourAsString + ":" + minuteAsString;
+}
+
+export function getDD_Mon_YYYY_HH_MMDate(date) {
+    const hourAsString = getHourString(date);
+    const minuteAsString = getMinuteAsString(date);
+
+    return getDD_Mon_YYYYDate(date) + " " + hourAsString + ":" + minuteAsString;
+}
+
+
+// American format
+
+export function getMM_DD_YYYYDate(date) {
+    const dayAsString = getDayString(date);
+    const monthAsString = getMonthNumberAsString(date);
+    const yearAsString = getYearString();
+
+    return (monthAsString + "/" + dayAsString + "/" + yearAsString);
+}
+
+export function getMM_DD_YYYY_HH_MMDate(date) {
+    const hourAsString = getHourString(date);
+    const minuteAsString = getMinuteAsString(date);
+
+    return getMM_DD_YYYYDate(date) + " " + hourAsString + ":" + minuteAsString;
 }
