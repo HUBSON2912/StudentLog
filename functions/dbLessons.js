@@ -4,6 +4,7 @@ import SQLite from 'react-native-sqlite-storage';
 SQLite.enablePromise(true);
 
 export const lessons = "lessons";
+export const students = "students";
 
 export function insertIntoLessons(lesson) {
     SQLite.openDatabase({ name: 'studentlog.db', location: 'default' })
@@ -24,7 +25,7 @@ export function insertIntoLessons(lesson) {
             return db.executeSql(
                 `INSERT INTO ${lessons} 
                     (student_id, subject, level, date, topic, duration, price)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                 VALUES (?, ?, ?, ?, ?, ?, ?)`,
                 [
                     lesson.student_id,
                     lesson.subject,
@@ -106,7 +107,7 @@ async function __getAllLessons() {
             price INTEGER
         );`);
 
-    const [rows] = await db.executeSql(`SELECT * FROM ${lessons}`);
+    const [rows] = await db.executeSql(`SELECT * FROM ${lessons} INNER JOIN ${students} ON ${students}.id=${lessons}.student_id`);
     const result = [];
 
     for (let i = 0; i < rows.rows.length; i++)
@@ -134,7 +135,7 @@ async function __getByIDLessons(id) {
     return result;
 }
 
-export async function deleteIDStudent(id) {
+export async function deleteIDLessons(id) {
     const db = await SQLite.openDatabase({ name: 'studentlog.db', location: 'default' });
     await db.executeSql(
         `CREATE TABLE IF NOT EXISTS ${lessons} (
@@ -157,9 +158,9 @@ export function getAllLessons() {
 }
 
 export function getByIDLessons(id) {
-    const [student, setStudent] = useState({});
-    __getByIDLessons(id).then(setStudent);
-    return student;
+    const [lesson, setLesson] = useState({});
+    __getByIDLessons(id).then(setLesson);
+    return lesson;
 }
 
 

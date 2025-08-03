@@ -54,18 +54,21 @@ function getMinuteAsString(date) {
 }
 
 
-
+export function ISOToDate(iso) {
+    const [yyyy, mm, dd] = iso.split("T")[0].split("-").map((x) => parseInt(x));
+    const [hh, min, ss] = iso.split("T")[1].split(":").map((x) => parseInt(x));;
+    return new Date(yyyy, mm, dd, hh, min);
+}
 
 // European format
 
 export function getDD_MM_YYYYDate(date) {
     const dayAsString = getDayString(date);
     const monthAsString = getMonthNumberAsString(date);
-    const yearAsString = getYearString();
+    const yearAsString = getYearString(date);
 
     return (dayAsString + "." + monthAsString + "." + yearAsString);
 }
-
 
 export function getDD_Month_YYYYDate(date) {
     const dayAsString = getDayString(date);

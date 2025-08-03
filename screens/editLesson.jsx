@@ -4,10 +4,11 @@ import { theme } from "../theme";
 import { useEffect, useState } from "react";
 import { arrowDown } from "../functions/getUnicodeItems";
 import SelectDropdown from "react-native-select-dropdown";
-import { getAllStudents, insertIntoStudents, updateIDStudents } from "../functions/dbStudents";
 import RectangleRadioButton from "../components/rectRadioButton";
 import DatePicker from "react-native-date-picker";
-import { getDD_MM_YY_HH_MMDate, getDD_MM_YYYYDate, getDD_Mon_YYYY_HH_MMDate, getDD_Mon_YYYYDate } from "../functions/date";
+import { getDD_MM_YY_HH_MMDate, getDD_MM_YYYYDate, getDD_Mon_YYYY_HH_MMDate, getDD_Mon_YYYYDate, ISOToDate } from "../functions/date";
+import { insertIntoLessons, updateIDLessons } from "../functions/dbLessons";
+import { getAllStudents } from "../functions/dbStudents";
 
 
 export default function EditLesson({ navigation, route }) {
@@ -31,6 +32,19 @@ export default function EditLesson({ navigation, route }) {
     const [topic, setTopic] = useState("");
     const [duration, setDuration] = useState(1);
     const [price, setPrice] = useState(null);
+
+
+
+
+
+    // stuff for picking date
+    const [mode, setMode] = useState("");
+
+    const [selectedDateTime_oneLesson, setDateTime_oneLesson] = useState(new Date())
+    const [isDatePickerOpen_oneLesson, setDateVisibility_oneLesson] = useState(false);
+    const [isTimePickerOpen_oneLesson, setTimeVisibility_oneLesson] = useState(false);
+
+
 
     // functions for rendering
     const renderDropdownButtonChooseStudent = (sel, isOpen) => {
@@ -58,7 +72,13 @@ export default function EditLesson({ navigation, route }) {
     // handling events
     const handleSaveButton = () => {
         const newLessonData = {
-            studentID
+            student_id: studentID.id,
+            subject: subject,
+            level: level,
+            date: selectedDateTime_oneLesson.toISOString(),
+            topic: topic,
+            duration: duration,
+            price: price,
         }
 
         // TODO
@@ -66,22 +86,16 @@ export default function EditLesson({ navigation, route }) {
         // check if there is no drop database
 
         if (!lessonID) {
-            insertIntoStudents(newStudentData);
+            insertIntoLessons(newLessonData);
         }
         else {
-            updateIDStudents(lessonID, newStudentData);
+            updateIDLessons(lessonID, newLessonData);
         }
         navigation.pop();
     }
 
 
 
-    // stuff for picking date
-    const [mode, setMode] = useState("");
-
-    const [selectedDateTime_oneLesson, setDateTime_oneLesson] = useState(new Date())
-    const [isDatePickerOpen_oneLesson, setDateVisibility_oneLesson] = useState(false);
-    const [isTimePickerOpen_oneLesson, setTimeVisibility_oneLesson] = useState(false);
 
 
 
@@ -92,11 +106,11 @@ export default function EditLesson({ navigation, route }) {
             setStudentID(lessonData.studentID || "");
             setSubject(lessonData.subject || "");
             setLevel(lessonData.phone || "");
-            setDateTime_oneLesson(lessonData.date || "");
+            setDateTime_oneLesson(ISOToDate(lessonData.date) || "");
             setTopic(lessonData.topic || "");
             setDuration(lessonData.duration || "");
             setPrice(lessonData.price || "");
-            
+
             setMode("one-lesson");
             setAreDataSet(true);
         }
@@ -236,7 +250,7 @@ export default function EditLesson({ navigation, route }) {
                                     style={styles.textInput}
                                     placeholder="Czas"
                                     value={String(duration)}
-                                    onChangeText={setDuration}
+                                    onChangeText={val => setDuration(parseInt(val))}
                                     activeOutlineColor={theme.light.primaryHalf}
                                     contentStyle={theme.styles.text}
                                     keyboardType="number-pad"
@@ -251,7 +265,7 @@ export default function EditLesson({ navigation, route }) {
                                     style={styles.textInput}
                                     placeholder="Cena"
                                     value={price}
-                                    onChangeText={setPrice}
+                                    onChangeText={val => setPrice(parseInt(val))}
                                     activeOutlineColor={theme.light.primaryHalf}
                                     contentStyle={theme.styles.text}
                                     keyboardType="number-pad"
