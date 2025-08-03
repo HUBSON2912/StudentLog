@@ -37,7 +37,7 @@ export const theme = {
         text: {
             fontSize: 16,
             color: "#2a3846",
-            textAlignVertical: "center"
+            textAlignVertical: "center",
         },
         section: {
             flex: 1,

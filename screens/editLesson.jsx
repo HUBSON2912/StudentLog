@@ -1,15 +1,14 @@
-import { KeyboardAvoidingView, ScrollView, StyleSheet, View } from "react-native";
+import { KeyboardAvoidingView, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Button, Text, TextInput } from "react-native-paper";
 import { theme } from "../theme";
 import { useEffect, useState } from "react";
 import { arrowDown } from "../functions/getUnicodeItems";
 import SelectDropdown from "react-native-select-dropdown";
-import { getByIDStudents, insertIntoStudents, updateIDStudents } from "../functions/database";
+import { getAllStudents, insertIntoStudents, updateIDStudents } from "../functions/database";
+import RectangleRadioButton from "../components/rectRadioButton";
+import DatePicker from "react-native-date-picker";
+import { getDD_MM_YY_HH_MMDate, getDD_MM_YYYYDate, getDD_Mon_YYYYDate } from "../functions/date";
 
-// possible tables name
-const students = "students";
-const lessons = "lessons";
-const priceList = "price_list";
 
 export default function EditLesson({ navigation, route }) {
 
@@ -21,73 +20,51 @@ export default function EditLesson({ navigation, route }) {
         { id: 2, title: "Mieszana" },
     ];
 
-    const lessonData={};
+    const lessonData = {};
 
-    const [name, setName] = useState("");
-    const [surname, setSurname] = useState("");
-    const [phoneNum, setPhoneNumber] = useState("");
-    const [email, setEmail] = useState("");
-    const [form, setForm] = useState(possibleForms[0]);
-    const [platform, setPlatform] = useState("");
-    const [nick, setNick] = useState("");
-    const [city, setCity] = useState("");
-    const [street, setStreet] = useState("");
-    const [houseNr, setHouseNr] = useState("");
-    const [flatNr, setFlatNr] = useState("");
+    const [studentID, setStudentID] = useState(null);
+    const [subject, setSubject] = useState("");
+    const [level, setLevel] = useState("");
+
 
     let [haveISetTheData, setAreDataSet] = useState(false);
 
     useEffect(() => {
         if (!haveISetTheData && lessonID !== null && lessonData && Object.keys(lessonData).length > 0) {
-            setName(lessonData.name || "");
-            setSurname(lessonData.surname || "");
-            setPhoneNumber(lessonData.phone || "");
-            setEmail(lessonData.email || "");
-            setForm(possibleForms[lessonData.form] || possibleForms[0]);
-            setPlatform(lessonData.platform || "");
-            setNick(lessonData.nick || "");
-            setCity(lessonData.city || "");
-            setStreet(lessonData.street || "");
-            setHouseNr(lessonData.house_nr || "");
-            setFlatNr(lessonData.flat_nr || "");
+            setStudentID(lessonData.studentID || "");
+            setSubject(lessonData.subject || "");
+            setLevel(lessonData.phone || "");
+
             setAreDataSet(true);
         }
     }, [lessonData, lessonID]);
 
-    const renderDropdownButton = (sel, isOpen) => {
+
+
+    const students = getAllStudents();
+
+    const renderDropdownButtonChooseStudent = (sel, isOpen) => {
         return (
-            <View style={[styles.optionValue, {borderRadius: 5, paddingVertical: 5, justifyContent: "center", borderColor: theme.light.border, borderWidth: 1}]}>
-                <Text style={theme.styles.text}>{form.title}</Text>
+            <View style={[styles.optionValue, { borderRadius: 5, paddingVertical: 5, justifyContent: "center", borderColor: theme.light.border, borderWidth: 1 }]}>
+                <Text style={theme.styles.text}>{sel ? sel.id : "Wybierz ucznia"}</Text>
                 <Text style={styles.arrowDown}>{arrowDown()}</Text>
             </View>
         );
     };
 
-    const renderDropdownItem = (item, index, isSelected) => {
+    const renderDropdownItemChooseStudent = (item, index, isSelected) => {
         return (
             <View style={[
                 styles.dropdownItem,
-                { backgroundColor: (isSelected?theme.light.primaryPale: "white") }
+                { backgroundColor: (isSelected ? theme.light.primaryPale : "white") }
             ]}>
-                <Text style={theme.styles.text}>{item.title}</Text>
+                <Text style={theme.styles.text}>{item.studentID} {item.subject}</Text>
             </View>
         );
     }
 
     const handleSaveButton = () => {
-        const newStudentData = {
-            name: name,
-            surname: surname,
-            phone: phoneNum,
-            email: email,
-            form: form.id,
-            platform: platform,
-            nick: nick,
-            city: city,
-            street: street,
-            house_nr: houseNr,
-            flat_nr: flatNr
-        };
+        const newStudentData = {}
 
         if (!lessonID) {
             insertIntoStudents(newStudentData);
@@ -98,6 +75,13 @@ export default function EditLesson({ navigation, route }) {
         navigation.pop();
     }
 
+
+    const [mode, setMode] = useState("");
+
+    const [selectedDateTime_oneLesson, setDateTime_oneLesson] = useState(new Date())
+    const [isDatePickerOpen_oneLesson, setDateVisibility_oneLesson] = useState(false);
+    const [isTimePickerOpen_oneLesson, setTimeVisibility_oneLesson] = useState(false);
+
     return (
         <View style={styles.container}>
             <ScrollView style={styles.container}>
@@ -105,11 +89,10 @@ export default function EditLesson({ navigation, route }) {
                     <View style={[theme.styles.section, styles.optionContainer]}>
                         <Text style={[theme.styles.text, styles.label]}>Uczeń</Text>
                         <SelectDropdown
-                            data={possibleForms}
-                            onSelect={(sel, index) => setForm(sel)}
-                            renderButton={renderDropdownButton}
-                            renderItem={renderDropdownItem}
-                            defaultValue={form}
+                            data={students}
+                            onSelect={(sel, index) => setStudentID(sel)}
+                            renderButton={renderDropdownButtonChooseStudent}
+                            renderItem={renderDropdownItemChooseStudent}
                         />
                     </View>
                     <View style={[theme.styles.section, styles.optionContainer]}>
@@ -121,8 +104,8 @@ export default function EditLesson({ navigation, route }) {
                             mode="outlined"
                             style={styles.textInput}
                             placeholder="Przedmiot"
-                            value={surname}
-                            onChangeText={setSurname}
+                            value={subject}
+                            onChangeText={setSubject}
                             activeOutlineColor={theme.light.primaryHalf}
                             contentStyle={theme.styles.text}
                             textContentType="familyName"
@@ -135,8 +118,8 @@ export default function EditLesson({ navigation, route }) {
                             mode="outlined"
                             style={styles.textInput}
                             placeholder="Poziom"
-                            value={phoneNum}
-                            onChangeText={setPhoneNumber}
+                            value={level}
+                            onChangeText={setLevel}
                             activeOutlineColor={theme.light.primaryHalf}
                             contentStyle={theme.styles.text}
                             keyboardType="number-pad"
@@ -144,78 +127,64 @@ export default function EditLesson({ navigation, route }) {
                     </View>
                     <View style={[theme.styles.section, styles.optionContainer]}>
                         <Text style={[theme.styles.text, styles.label]}>Tryb dodawania</Text>
-                        {/* rectangles like radiobuttons: add one, add every second/third ... day, add every monday */}
                         {/* if add one then just set one date but in the other case start date and the end date and show the set lessons at the bottom */}
-                        <TextInput
-                            mode="outlined"
-                            style={styles.textInput}
-                            placeholder="Poziom"
-                            value={phoneNum}
-                            onChangeText={setPhoneNumber}
-                            activeOutlineColor={theme.light.primaryHalf}
-                            contentStyle={theme.styles.text}
-                            keyboardType="number-pad"
-                        />
+                        <View style={{ flex: 4, flexDirection: "row", gap: 10 }}>
+                            <RectangleRadioButton
+                                text="Jedna lekcja"
+                                onSelect={() => setMode("one-lesson")}
+                                isSelected={mode === "one-lesson"}
+                            />
+                            <RectangleRadioButton
+                                text="Regularnie"
+                                onSelect={() => setMode("regulary")}
+                                isSelected={mode === "regulary"}
+                            />
+                        </View>
                     </View>
-                    <View style={[theme.styles.section, styles.optionContainer]}>
-                        <Text style={[theme.styles.text, styles.label]}>Data i godzina</Text>
-                        {/* open DatePicker mode date and when closed then open datePicker mode time */}
-                        <TextInput
-                            mode="outlined"
-                            style={styles.textInput}
-                            placeholder="Data i godzina"
-                            value={email}
-                            onChangeText={setEmail}
-                            activeOutlineColor={theme.light.primaryHalf}
-                            contentStyle={theme.styles.text}
-                            keyboardType="email-address"
-                            textContentType="emailAddress"
-                        />
-                    </View>
-                    <View style={[theme.styles.section, styles.optionContainer]}>
-                        <Text style={[theme.styles.text, styles.label]}>Temat</Text>
-                        {/* possible iff you are in "add one" mode */}
-                        <TextInput
-                            mode="outlined"
-                            style={styles.textInput}
-                            placeholder="Temat"
-                            value={email}
-                            onChangeText={setEmail}
-                            activeOutlineColor={theme.light.primaryHalf}
-                            contentStyle={theme.styles.text}
-                            keyboardType="email-address"
-                            textContentType="emailAddress"
-                        />
-                    </View>
-                    <View style={[theme.styles.section, styles.optionContainer]}>
-                        <Text style={[theme.styles.text, styles.label]}>Czas trwania</Text>
-                        <TextInput
-                            mode="outlined"
-                            style={styles.textInput}
-                            placeholder="Czas trwania"
-                            value={email}
-                            onChangeText={setEmail}
-                            activeOutlineColor={theme.light.primaryHalf}
-                            contentStyle={theme.styles.text}
-                            keyboardType="email-address"
-                            textContentType="emailAddress"
-                        />
-                    </View>
-                    <View style={[theme.styles.section, styles.optionContainer]}>
-                        <Text style={[theme.styles.text, styles.label]}>Cena</Text>
-                        <TextInput
-                            mode="outlined"
-                            style={styles.textInput}
-                            placeholder="Cena"
-                            value={email}
-                            onChangeText={setEmail}
-                            activeOutlineColor={theme.light.primaryHalf}
-                            contentStyle={theme.styles.text}
-                            keyboardType="email-address"
-                            textContentType="emailAddress"
-                        />
-                        {/* <Button mode="outlined">Auto</Button> */}
-                    </View>
+
+                    {mode == "one-lesson" &&
+
+                        <View style={[theme.styles.section, styles.optionContainer]}>
+                            <Text style={[theme.styles.text, styles.label]}>Data i godzina</Text>
+
+                            <Button
+                                mode="outlined"
+                                style={{ flex: 2 }}
+                                onPress={() => setDateVisibility_oneLesson(true)}
+                            >
+                                <Text style={theme.styles.text}>{getDD_MM_YY_HH_MMDate(selectedDateTime_oneLesson)}</Text>
+                            </Button>
+
+                            <DatePicker
+                                modal
+                                mode="date"
+                                date={selectedDateTime_oneLesson}
+                                open={isDatePickerOpen_oneLesson}
+                                onConfirm={(date) => {
+                                    setDateTime_oneLesson(new Date(date.getFullYear(), date.getMonth(), date.getDate(), selectedDateTime_oneLesson.getHours(), selectedDateTime_oneLesson.getMinutes()));
+                                    setDateVisibility_oneLesson(false);
+                                    setTimeVisibility_oneLesson(true);
+                                }}
+                                onCancel={() => {
+                                    setDateVisibility_oneLesson(false);
+                                }}
+                            />
+                            <DatePicker
+                                modal
+                                mode="time"
+                                date={selectedDateTime_oneLesson}
+                                open={isTimePickerOpen_oneLesson}
+                                onConfirm={(date) => {
+                                    setDateTime_oneLesson(new Date(selectedDateTime_oneLesson.getFullYear(), selectedDateTime_oneLesson.getMonth(), selectedDateTime_oneLesson.getDate(), date.getHours(), date.getMinutes()));
+                                    setTimeVisibility_oneLesson(false);
+                                }}
+                                onCancel={() => {
+                                    setTimeVisibility_oneLesson(false);
+                                }}
+                            />
+                        </View>
+
+                    }
 
 
                 </KeyboardAvoidingView>
@@ -303,3 +272,65 @@ const styles = StyleSheet.create({
         backgroundColor: theme.light.background,
     }
 });
+
+
+/*
+<View style={[theme.styles.section, styles.optionContainer]}>
+                        <Text style={[theme.styles.text, styles.label]}>Data i godzina</Text>
+                        {//open DatePicker mode date and when closed then open datePicker mode time }
+                        <TextInput
+                            mode="outlined"
+                            style={styles.textInput}
+                            placeholder="Data i godzina"
+                            value={email}
+                            onChangeText={setEmail}
+                            activeOutlineColor={theme.light.primaryHalf}
+                            contentStyle={theme.styles.text}
+                            keyboardType="email-address"
+                            textContentType="emailAddress"
+                        />
+                    </View>
+                    <View style={[theme.styles.section, styles.optionContainer]}>
+                        <Text style={[theme.styles.text, styles.label]}>Temat</Text>
+                        {// possible iff you are in "add one" mode }
+                        <TextInput
+                            mode="outlined"
+                            style={styles.textInput}
+                            placeholder="Temat"
+                            value={email}
+                            onChangeText={setEmail}
+                            activeOutlineColor={theme.light.primaryHalf}
+                            contentStyle={theme.styles.text}
+                            keyboardType="email-address"
+                            textContentType="emailAddress"
+                        />
+                    </View>
+                    <View style={[theme.styles.section, styles.optionContainer]}>
+                        <Text style={[theme.styles.text, styles.label]}>Czas trwania</Text>
+                        <TextInput
+                            mode="outlined"
+                            style={styles.textInput}
+                            placeholder="Czas trwania"
+                            value={email}
+                            onChangeText={setEmail}
+                            activeOutlineColor={theme.light.primaryHalf}
+                            contentStyle={theme.styles.text}
+                            keyboardType="email-address"
+                            textContentType="emailAddress"
+                        />
+                    </View>
+                    <View style={[theme.styles.section, styles.optionContainer]}>
+                        <Text style={[theme.styles.text, styles.label]}>Cena</Text>
+                        <TextInput
+                            mode="outlined"
+                            style={styles.textInput}
+                            placeholder="Cena"
+                            value={email}
+                            onChangeText={setEmail}
+                            activeOutlineColor={theme.light.primaryHalf}
+                            contentStyle={theme.styles.text}
+                            keyboardType="email-address"
+                            textContentType="emailAddress"
+                        />
+                        {// <Button mode="outlined">Auto</Button>}
+                    </View>   */
