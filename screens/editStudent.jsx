@@ -4,7 +4,7 @@ import { theme } from "../theme";
 import { useEffect, useState } from "react";
 import { arrowDown } from "../functions/getUnicodeItems";
 import SelectDropdown from "react-native-select-dropdown";
-import { getByIDStudents, insertIntoStudents, updateIDStudents } from "../functions/database";
+import { getByIDStudents, insertIntoStudents, updateIDStudents } from "../functions/dbStudents";
 
 // possible tables name
 const students = "students";

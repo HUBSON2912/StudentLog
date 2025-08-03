@@ -4,7 +4,7 @@ import { theme } from "../theme";
 import { useEffect, useState } from "react";
 import { arrowDown } from "../functions/getUnicodeItems";
 import SelectDropdown from "react-native-select-dropdown";
-import { getAllStudents, insertIntoStudents, updateIDStudents } from "../functions/database";
+import { getAllStudents, insertIntoStudents, updateIDStudents } from "../functions/dbStudents";
 import RectangleRadioButton from "../components/rectRadioButton";
 import DatePicker from "react-native-date-picker";
 import { getDD_MM_YY_HH_MMDate, getDD_MM_YYYYDate, getDD_Mon_YYYY_HH_MMDate, getDD_Mon_YYYYDate } from "../functions/date";

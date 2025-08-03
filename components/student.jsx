@@ -3,7 +3,7 @@ import { theme } from "../theme";
 import { Text } from "react-native-paper";
 import { bullet, mail, phone } from "../functions/getUnicodeItems";
 import { useNavigation } from "@react-navigation/native";
-import { deleteIDStudent } from "../functions/database";
+import { deleteIDStudent } from "../functions/dbStudents";
 import Section from "./section";
 import { useState } from "react";
 

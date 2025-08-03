@@ -2,7 +2,7 @@ import { FlatList, TouchableOpacity, View } from "react-native";
 import { PlusComponent } from "../components/pluscomponent";
 import { theme } from "../theme";
 import { Student } from "../components/student";
-import { getAllStudents } from "../functions/database";
+import { getAllStudents } from "../functions/dbStudents";
 
 export default function StudentsListScreen({ navigation }) {
 
