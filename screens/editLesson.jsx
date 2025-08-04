@@ -6,32 +6,26 @@ import { arrowDown } from "../functions/getUnicodeItems";
 import SelectDropdown from "react-native-select-dropdown";
 import RectangleRadioButton from "../components/rectRadioButton";
 import DatePicker from "react-native-date-picker";
-import { getDD_MM_YY_HH_MMDate, getDD_MM_YYYYDate, getDD_Mon_YYYY_HH_MMDate, getDD_Mon_YYYYDate, ISOToDate } from "../functions/date";
-import { insertIntoLessons, updateIDLessons } from "../functions/dbLessons";
-import { getAllStudents } from "../functions/dbStudents";
+import { getDD_Mon_YYYY_HH_MMDate, ISOToDate } from "../functions/date";
+import { getByIDLessons, insertIntoLessons, updateIDLessons } from "../functions/dbLessons";
+import { getAllStudents, getByIDStudents } from "../functions/dbStudents";
 
 
 export default function EditLesson({ navigation, route }) {
 
     const { lessonID } = route.params;
 
-    const possibleForms = [
-        { id: 0, title: "Zdalnie" },
-        { id: 1, title: "Stacjonarnie" },
-        { id: 2, title: "Mieszana" },
-    ];
-
-    const lessonData = {};
+    const lessonData = getByIDLessons(lessonID);
     const students = getAllStudents();
 
 
     // creating states for data that are given in the form
-    const [studentID, setStudentID] = useState(null);
+    const [student, setStudent] = useState(null);
     const [subject, setSubject] = useState("");
     const [level, setLevel] = useState("");
     const [topic, setTopic] = useState("");
     const [duration, setDuration] = useState(1);
-    const [price, setPrice] = useState(null);
+    const [price, setPrice] = useState(0);
 
 
 
@@ -72,7 +66,7 @@ export default function EditLesson({ navigation, route }) {
     // handling events
     const handleSaveButton = () => {
         const newLessonData = {
-            student_id: studentID.id,
+            student_id: student.id,
             subject: subject,
             level: level,
             date: selectedDateTime_oneLesson.toISOString(),
@@ -80,6 +74,8 @@ export default function EditLesson({ navigation, route }) {
             duration: duration,
             price: price,
         }
+
+        console.log(newLessonData);
 
         // TODO
         // check if all the data were typed in
@@ -96,29 +92,24 @@ export default function EditLesson({ navigation, route }) {
 
 
 
-
-
+    console.log("stop");
 
     // fetch all the data if I want to edit
     let [haveISetTheData, setAreDataSet] = useState(false);
     useEffect(() => {
         if (!haveISetTheData && lessonID !== null && lessonData && Object.keys(lessonData).length > 0) {
-            setStudentID(lessonData.studentID || "");
-            setSubject(lessonData.subject || "");
-            setLevel(lessonData.phone || "");
-            setDateTime_oneLesson(ISOToDate(lessonData.date) || "");
-            setTopic(lessonData.topic || "");
-            setDuration(lessonData.duration || "");
-            setPrice(lessonData.price || "");
+            // setStudent();
+            setSubject(lessonData.subject);
+            setLevel(lessonData.level);
+            setDateTime_oneLesson(ISOToDate(lessonData.date));
+            setTopic(lessonData.topic);
+            setDuration(lessonData.duration);
+            setPrice(lessonData.price ? lessonData.price : 0);
 
             setMode("one-lesson");
             setAreDataSet(true);
         }
     }, [lessonData, lessonID]);
-
-
-
-
 
     return (
         <View style={styles.container}>
@@ -128,9 +119,13 @@ export default function EditLesson({ navigation, route }) {
                         <Text style={[theme.styles.text, styles.label]}>Uczeń</Text>
                         <SelectDropdown
                             data={students}
-                            onSelect={(sel, index) => setStudentID(sel)}
+                            onSelect={(sel, index) => {
+                                setStudent(sel);
+                                console.log(sel);
+                            }}
                             renderButton={renderDropdownButtonChooseStudent}
                             renderItem={renderDropdownItemChooseStudent}
+                            defaultValue={getByIDStudents(lessonData.student_id)}
                         />
                     </View>
                     <View style={[theme.styles.section, styles.optionContainer]}>
@@ -264,7 +259,7 @@ export default function EditLesson({ navigation, route }) {
                                     mode="outlined"
                                     style={styles.textInput}
                                     placeholder="Cena"
-                                    value={price}
+                                    value={String(price)}
                                     onChangeText={val => setPrice(parseInt(val))}
                                     activeOutlineColor={theme.light.primaryHalf}
                                     contentStyle={theme.styles.text}

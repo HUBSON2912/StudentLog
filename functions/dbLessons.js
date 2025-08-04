@@ -107,7 +107,7 @@ async function __getAllLessons() {
             price INTEGER
         );`);
 
-    const [rows] = await db.executeSql(`SELECT * FROM ${lessons} INNER JOIN ${students} ON ${students}.id=${lessons}.student_id`);
+    const [rows] = await db.executeSql(`SELECT ${lessons}.id, ${lessons}.student_id, ${lessons}.subject, ${lessons}.level, ${lessons}.date, ${lessons}.topic, ${lessons}.duration, ${lessons}.price, ${students}.name, ${students}.surname FROM ${lessons} INNER JOIN ${students} ON ${students}.id=${lessons}.student_id;`);
     const result = [];
 
     for (let i = 0; i < rows.rows.length; i++)
@@ -115,6 +115,7 @@ async function __getAllLessons() {
 
     return result;
 }
+
 
 async function __getByIDLessons(id) {
 
@@ -164,4 +165,27 @@ export function getByIDLessons(id) {
 }
 
 
+async function __getTotalEarning() {
+    const db = await SQLite.openDatabase({ name: 'studentlog.db', location: 'default' });
+    await db.executeSql(
+        `CREATE TABLE IF NOT EXISTS ${lessons} (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            student_id INTEGER,
+            subject TEXT,
+            level TEXT,
+            date TEXT,
+            topic TEXT,
+            duration INTEGER,
+            price INTEGER
+        );`)
+    const [rows] = await db.executeSql(`SELECT Sum(price) AS earnings FROM ${lessons}`);
+    const result = rows.rows.item(0);
+    return result.earnings;
+}
 
+
+export function getTotalEarning() {
+    const [earnings, setEarnings]=useState(0);
+    __getTotalEarning().then(setEarnings);
+    return earnings;
+}

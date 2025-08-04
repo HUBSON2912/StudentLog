@@ -104,7 +104,7 @@ export function getDD_Mon_YYYY_HH_MMDate(date) {
     const hourAsString = getHourString(date);
     const minuteAsString = getMinuteAsString(date);
 
-    return getDD_Mon_YYYYDate(date) + " " + hourAsString + ":" + minuteAsString;
+    return getDD_Mon_YYYYDate(date) + "  " + hourAsString + ":" + minuteAsString;
 }
 
 
@@ -122,5 +122,5 @@ export function getMM_DD_YYYY_HH_MMDate(date) {
     const hourAsString = getHourString(date);
     const minuteAsString = getMinuteAsString(date);
 
-    return getMM_DD_YYYYDate(date) + " " + hourAsString + ":" + minuteAsString;
+    return getMM_DD_YYYYDate(date) + "  " + hourAsString + ":" + minuteAsString;
 }

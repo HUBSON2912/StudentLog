@@ -7,10 +7,12 @@ import { account, clipboard, cog } from './functions/getUnicodeItems';
 import LessonsScreen from './screens/lessons';
 import StudentsScreen from './screens/students';
 import SettingsScreen from './screens/settings';
+import { getTotalEarning } from './functions/dbLessons';
 
 const Tabs = createBottomTabNavigator();
 
 export default function App() {
+
     return (
         <PaperProvider>
             <NavigationContainer>
@@ -22,7 +24,7 @@ export default function App() {
                     </View>
                     <View style={{ marginVertical: 15 }}>
                         <Text style={[styles.text, { fontWeight: "500" }]}>
-                            Zarobki: 1234 zł
+                            Zarobki: {getTotalEarning()} zł
                         </Text>
                     </View>
 
