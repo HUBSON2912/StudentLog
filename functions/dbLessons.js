@@ -180,12 +180,28 @@ async function __getTotalEarning() {
         );`)
     const [rows] = await db.executeSql(`SELECT Sum(price) AS earnings FROM ${lessons}`);
     const result = rows.rows.item(0);
-    return result.earnings;
+    return result.earnings ? result.earnings : 0;
+}
+
+export function getTotalEarning() {
+    const [earnings, setEarnings] = useState(0);
+    __getTotalEarning().then(setEarnings);
+    return earnings;
 }
 
 
-export function getTotalEarning() {
-    const [earnings, setEarnings]=useState(0);
-    __getTotalEarning().then(setEarnings);
-    return earnings;
+export async function dropDBLessons() {
+    const db = await SQLite.openDatabase({ name: 'studentlog.db', location: 'default' });
+    await db.executeSql(
+        `CREATE TABLE IF NOT EXISTS ${lessons} (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            student_id INTEGER,
+            subject TEXT,
+            level TEXT,
+            date TEXT,
+            topic TEXT,
+            duration INTEGER,
+            price INTEGER
+        );`)
+    const [rows] = await db.executeSql(`DELETE FROM ${lessons};`);
 }

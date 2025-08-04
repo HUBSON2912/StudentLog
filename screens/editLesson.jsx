@@ -117,16 +117,26 @@ export default function EditLesson({ navigation, route }) {
                 <KeyboardAvoidingView>
                     <View style={[theme.styles.section, styles.optionContainer]}>
                         <Text style={[theme.styles.text, styles.label]}>Uczeń</Text>
-                        <SelectDropdown
-                            data={students}
-                            onSelect={(sel, index) => {
-                                setStudent(sel);
-                                console.log(sel);
-                            }}
-                            renderButton={renderDropdownButtonChooseStudent}
-                            renderItem={renderDropdownItemChooseStudent}
-                            defaultValue={getByIDStudents(lessonData.student_id)}
-                        />
+
+                        {
+                            students.length == 0 &&
+                            <Text>Brak uczniów.</Text>
+                        }
+
+                        {
+                            students.length != 0 &&
+
+                            <SelectDropdown
+                                data={students}
+                                onSelect={(sel, index) => {
+                                    setStudent(sel);
+                                    console.log(sel);
+                                }}
+                                renderButton={renderDropdownButtonChooseStudent}
+                                renderItem={renderDropdownItemChooseStudent}
+                                defaultValue={lessonID ? getByIDStudents(lessonData.student_id) : null}
+                            />
+                        }
                     </View>
                     <View style={[theme.styles.section, styles.optionContainer]}>
                         <Text style={[theme.styles.text, styles.label]}>Przedmiot</Text>

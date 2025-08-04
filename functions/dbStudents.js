@@ -199,15 +199,22 @@ export function getByIDStudents(id) {
 }
 
 
-
-// db.executeSql(
-//         `CREATE TABLE IF NOT EXISTS students (
-//             id INTEGER PRIMARY KEY AUTOINCREMENT,
-//             student_id INTEGER,
-//             subject TEXT,
-//             level TEXT,
-//             date TEXT,
-//             topic TEXT,
-//             duration INTEGER,
-//             price INTEGER
-//         );`);
+export async function dropDBStudent() {
+    const db = await SQLite.openDatabase({ name: 'studentlog.db', location: 'default' });
+    await db.executeSql(
+        `CREATE TABLE IF NOT EXISTS students (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT,
+            surname TEXT,
+            phone TEXT,
+            email TEXT,
+            form INTEGER,
+            platform TEXT,
+            nick TEXT,
+            city TEXT,
+            street TEXT,
+            house_nr TEXT,
+            flat_nr TEXT
+        );`);
+    const [rows] = await db.executeSql(`DELETE FROM students;`);
+}
