@@ -2,19 +2,25 @@ import { StyleSheet, View } from "react-native";
 import { Text } from "react-native-paper";
 import { theme } from "../theme";
 
+export const possibleStatus = [
+    { id: 0, name: "Zaplanowane" },
+    { id: 1, name: "Wykonane" },
+    { id: 2, name: "Opłacone" }
+]
+
 export function StatusLabel(status) {
     switch (status) {
         case 0:
             return (<View style={[styles.statusLabel, { backgroundColor: theme.light.status.planned, borderRadius: 10 }]}>
-                <Text style={{color: "black"}}>Zaplanowane</Text>
-            </View>);
-        case 2:
-            return (<View style={[styles.statusLabel, { backgroundColor: theme.light.status.paid, borderRadius: 10 }]}>
-                <Text style={{ color: theme.light.text.white }}>Opłacone</Text>
+                <Text style={{ color: "black" }}>Zaplanowane</Text>
             </View>);
         case 1:
             return (<View style={[styles.statusLabel, { backgroundColor: theme.light.status.done, borderRadius: 10 }]}>
                 <Text style={{ color: theme.light.text.white }}>Wykonane</Text>
+            </View>);
+        case 2:
+            return (<View style={[styles.statusLabel, { backgroundColor: theme.light.status.paid, borderRadius: 10 }]}>
+                <Text style={{ color: theme.light.text.white }}>Opłacone</Text>
             </View>);
 
         default:
@@ -22,7 +28,7 @@ export function StatusLabel(status) {
     }
 }
 
-const styles=StyleSheet.create({
+const styles = StyleSheet.create({
     statusLabel: {
         position: 'absolute',
         bottom: 10,

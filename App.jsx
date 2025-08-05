@@ -8,10 +8,19 @@ import LessonsScreen from './screens/lessons';
 import StudentsScreen from './screens/students';
 import SettingsScreen from './screens/settings';
 import { getTotalEarning } from './functions/dbLessons';
+import { useEffect, useState } from 'react';
 
 const Tabs = createBottomTabNavigator();
 
 export default function App() {
+
+    const [earnings, setEarnings]=useState(0);
+    useEffect(()=>{
+        const countEarnings=async () => {
+            setEarnings(await getTotalEarning());
+        }
+        countEarnings();
+    },[])
 
     return (
         <PaperProvider>
@@ -24,7 +33,7 @@ export default function App() {
                     </View>
                     <View style={{ marginVertical: 15 }}>
                         <Text style={[styles.text, { fontWeight: "500" }]}>
-                            Zarobki: {getTotalEarning()} zł
+                            Zarobki: {earnings} zł
                         </Text>
                     </View>
 

@@ -6,17 +6,19 @@ import { arrowDown } from "../functions/getUnicodeItems";
 import SelectDropdown from "react-native-select-dropdown";
 import RectangleRadioButton from "../components/rectRadioButton";
 import DatePicker from "react-native-date-picker";
-import { getDD_Mon_YYYY_HH_MMDate, ISOToDate } from "../functions/date";
+import { getDD_MM_YYYY_HH_MMDate, ISOToDate } from "../functions/date";
 import { getByIDLessons, insertIntoLessons, updateIDLessons } from "../functions/dbLessons";
 import { getAllStudents, getByIDStudents } from "../functions/dbStudents";
+import { possibleStatus, StatusLabel } from "../components/statuslabel";
 
 
 export default function EditLesson({ navigation, route }) {
 
     const { lessonID } = route.params;
 
-    const lessonData = getByIDLessons(lessonID);
-    const students = getAllStudents();
+    const [lessonData, setLessonData] = useState({});
+    const [students, setStudents] = useState([]);
+    const [defaultStudent, setDefStudent] = useState({});
 
 
     // creating states for data that are given in the form
@@ -27,7 +29,27 @@ export default function EditLesson({ navigation, route }) {
     const [duration, setDuration] = useState(1);
     const [price, setPrice] = useState(0);
 
+    useEffect(() => {
+        const fetchData = async () => {
+            setStudents(await getAllStudents());
+            if (lessonID !== null) {
+                setLessonData(await getByIDLessons(lessonID));
+            }
+        }
+        fetchData();
+    }, [])
 
+    useEffect(() => {
+        const fetchDefaultStudent = async () => {
+            if (lessonID !== null) {
+                setDefStudent(await getByIDStudents(lessonData.student_id));
+                setStudent(defaultStudent);
+            }
+        }
+        fetchDefaultStudent();
+    }, [lessonData])
+
+    const [error, setError] = useState("");
 
 
 
@@ -65,21 +87,31 @@ export default function EditLesson({ navigation, route }) {
 
     // handling events
     const handleSaveButton = () => {
+        // TODO
+        // check if there is no drop database
+
+        if (
+            !student ||
+            !subject ||
+            !level ||
+            !selectedDateTime_oneLesson ||
+            !topic ||
+            !duration ||
+            !price
+        ) {
+            setError("Uzupełnij wszystkie dane");
+            return;
+        }
+
         const newLessonData = {
             student_id: student.id,
             subject: subject,
             level: level,
             date: selectedDateTime_oneLesson.toISOString(),
             topic: topic,
-            duration: duration,
-            price: price,
+            duration: parseInt(duration),
+            price: parseInt(price),
         }
-
-        console.log(newLessonData);
-
-        // TODO
-        // check if all the data were typed in
-        // check if there is no drop database
 
         if (!lessonID) {
             insertIntoLessons(newLessonData);
@@ -91,20 +123,16 @@ export default function EditLesson({ navigation, route }) {
     }
 
 
-
-    console.log("stop");
-
     // fetch all the data if I want to edit
     let [haveISetTheData, setAreDataSet] = useState(false);
     useEffect(() => {
         if (!haveISetTheData && lessonID !== null && lessonData && Object.keys(lessonData).length > 0) {
-            // setStudent();
             setSubject(lessonData.subject);
             setLevel(lessonData.level);
             setDateTime_oneLesson(ISOToDate(lessonData.date));
             setTopic(lessonData.topic);
-            setDuration(lessonData.duration);
-            setPrice(lessonData.price ? lessonData.price : 0);
+            setDuration(String(lessonData.duration));
+            setPrice(String(lessonData.price));
 
             setMode("one-lesson");
             setAreDataSet(true);
@@ -120,7 +148,7 @@ export default function EditLesson({ navigation, route }) {
 
                         {
                             students.length == 0 &&
-                            <Text>Brak uczniów.</Text>
+                            <Text style={[styles.textInput, theme.styles.text, { textAlign: "center", backgroundColor: "white" }]}>Brak zapisanych uczniów.</Text>
                         }
 
                         {
@@ -130,11 +158,10 @@ export default function EditLesson({ navigation, route }) {
                                 data={students}
                                 onSelect={(sel, index) => {
                                     setStudent(sel);
-                                    console.log(sel);
                                 }}
                                 renderButton={renderDropdownButtonChooseStudent}
                                 renderItem={renderDropdownItemChooseStudent}
-                                defaultValue={lessonID ? getByIDStudents(lessonData.student_id) : null}
+                                defaultValue={defaultStudent}
                             />
                         }
                     </View>
@@ -168,6 +195,7 @@ export default function EditLesson({ navigation, route }) {
                             keyboardType="default"
                         />
                     </View>
+
                     <View style={[theme.styles.section, styles.optionContainer]}>
                         <Text style={[theme.styles.text, styles.label]}>Tryb dodawania</Text>
                         {/* if add one then just set one date but in the other case start date and the end date and show the set lessons at the bottom */}
@@ -195,7 +223,7 @@ export default function EditLesson({ navigation, route }) {
                                     style={{ flex: 2 }}
                                     onPress={() => setDateVisibility_oneLesson(true)}
                                 >
-                                    <Text style={theme.styles.text}>{getDD_Mon_YYYY_HH_MMDate(selectedDateTime_oneLesson)}</Text>
+                                    <Text style={theme.styles.text}>{getDD_MM_YYYY_HH_MMDate(selectedDateTime_oneLesson)}</Text>
                                 </Button>
 
                                 <DatePicker
@@ -227,6 +255,19 @@ export default function EditLesson({ navigation, route }) {
                                 />
                             </View>
                             <View style={[theme.styles.section, styles.optionContainer]}>
+                                <Text style={[theme.styles.text, styles.label]}>Status</Text>
+                                {/* if there is price list you can use SelectDropdown */}
+                                <SelectDropdown
+                                    data={possibleStatus}
+                                    onSelect={(sel, index) => {
+                                        // setStudent(sel);
+                                    }}
+                                    renderButton={(sel, isOpen)=>{return <View style={{backgroundColor: "red", flex:1}}>{StatusLabel(sel?sel.id:0)}</View>}}
+                                    renderItem={(item, index, isSelected)=>{return <View><StatusLabel status={item.id}/></View>}}
+                                    defaultValue={defaultStudent}
+                                />
+                            </View>
+                            <View style={[theme.styles.section, styles.optionContainer]}>
                                 <Text style={[theme.styles.text, styles.label]}>Temat</Text>
                                 {/* if there is price list you can use SelectDropdown */}
                                 <TextInput
@@ -254,8 +295,8 @@ export default function EditLesson({ navigation, route }) {
                                     mode="outlined"
                                     style={styles.textInput}
                                     placeholder="Czas"
-                                    value={String(duration)}
-                                    onChangeText={val => setDuration(parseInt(val))}
+                                    value={duration}
+                                    onChangeText={val => setDuration(val)}
                                     activeOutlineColor={theme.light.primaryHalf}
                                     contentStyle={theme.styles.text}
                                     keyboardType="number-pad"
@@ -269,13 +310,14 @@ export default function EditLesson({ navigation, route }) {
                                     mode="outlined"
                                     style={styles.textInput}
                                     placeholder="Cena"
-                                    value={String(price)}
-                                    onChangeText={val => setPrice(parseInt(val))}
+                                    value={price}
+                                    onChangeText={val => setPrice(val)}
                                     activeOutlineColor={theme.light.primaryHalf}
                                     contentStyle={theme.styles.text}
                                     keyboardType="number-pad"
                                 />
 
+                                {/* auto price */}
                                 <Button
                                     style={{
                                         position: "absolute",
@@ -295,14 +337,11 @@ export default function EditLesson({ navigation, route }) {
                         </>
                     }
 
-
-
-
-
-
                 </KeyboardAvoidingView>
 
+                <Text style={styles.errorMessage}>{error}</Text>
                 <View style={styles.buttonPanel}>
+
                     {/* cancel button */}
                     <Button
                         mode="contained"
@@ -363,6 +402,12 @@ const styles = StyleSheet.create({
         paddingVertical: 8,
         borderBottomColor: theme.light.text.gray,
         borderBottomWidth: 1
+    },
+    errorMessage: {
+        color: theme.light.error,
+        fontSize: 18,
+        textAlign: "center",
+        margin: 5
     },
     label: {
         flex: 2

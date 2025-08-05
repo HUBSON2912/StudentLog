@@ -116,7 +116,7 @@ export function updateIDStudents(id, data) {
         });
 }
 
-async function __getAllStudents() {
+export async function getAllStudents() {
 
     const db = await SQLite.openDatabase({ name: 'studentlog.db', location: 'default' });
     await db.executeSql(
@@ -143,7 +143,7 @@ async function __getAllStudents() {
     return result;
 }
 
-async function __getByIDStudents(id) {
+export async function getByIDStudents(id) {
 
     const db = await SQLite.openDatabase({ name: 'studentlog.db', location: 'default' });
     await db.executeSql(
@@ -186,17 +186,17 @@ export async function deleteIDStudent(id) {
     const [rows] = await db.executeSql(`DELETE FROM students WHERE id = ${id};`);
 }
 
-export function getAllStudents() {
-    const [students, setStudents] = useState([]);
-    __getAllStudents().then(setStudents);
-    return students;
-}
+// export function getAllStudents() {
+//     const [students, setStudents] = useState([]);
+//     __getAllStudents().then(setStudents);
+//     return students;
+// }
 
-export function getByIDStudents(id) {
-    const [student, setStudent] = useState({});
-    __getByIDStudents(id).then(setStudent);
-    return student;
-}
+// export function getByIDStudents(id) {
+//     const [student, setStudent] = useState({});
+//     __getByIDStudents(id).then(setStudent);
+//     return student;
+// }
 
 
 export async function dropDBStudent() {

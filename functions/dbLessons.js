@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import SQLite from 'react-native-sqlite-storage';
 
 SQLite.enablePromise(true);
@@ -18,14 +17,15 @@ export function insertIntoLessons(lesson) {
                     date TEXT,
                     topic TEXT,
                     duration INTEGER,
-                    price INTEGER
+                    price INTEGER,
+                    status INTEGER
                 );`).then(() => db);
         })
         .then(db => {
             return db.executeSql(
                 `INSERT INTO ${lessons} 
-                    (student_id, subject, level, date, topic, duration, price)
-                 VALUES (?, ?, ?, ?, ?, ?, ?)`,
+                    (student_id, subject, level, date, topic, duration, price, status)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
                 [
                     lesson.student_id,
                     lesson.subject,
@@ -33,7 +33,8 @@ export function insertIntoLessons(lesson) {
                     lesson.date,
                     lesson.topic,
                     lesson.duration,
-                    lesson.price
+                    lesson.price,
+                    lesson.status
                 ]
             );
         })
@@ -46,7 +47,6 @@ export function insertIntoLessons(lesson) {
 }
 
 export function updateIDLessons(id, data) {
-    console.log("aaa");
     SQLite.openDatabase({ name: 'studentlog.db', location: 'default' })
         .then(db => {
             return db.executeSql(
@@ -58,7 +58,8 @@ export function updateIDLessons(id, data) {
                     date TEXT,
                     topic TEXT,
                     duration INTEGER,
-                    price INTEGER
+                    price INTEGER,
+                    status INTEGER
                 );`).then(() => db);
         })
         .then(db => {
@@ -70,7 +71,8 @@ export function updateIDLessons(id, data) {
                     date = ?,
                     topic = ?,
                     duration = ?,
-                    price = ?
+                    price = ?,
+                    status = ?
                  WHERE id = ?`,
                 [
                     data.student_id,
@@ -80,6 +82,7 @@ export function updateIDLessons(id, data) {
                     data.topic,
                     data.duration,
                     data.price,
+                    data.status,
                     id
                 ]
             );
@@ -92,7 +95,7 @@ export function updateIDLessons(id, data) {
         });
 }
 
-async function __getAllLessons() {
+export async function getAllLessons() {
 
     const db = await SQLite.openDatabase({ name: 'studentlog.db', location: 'default' });
     await db.executeSql(
@@ -104,10 +107,11 @@ async function __getAllLessons() {
             date TEXT,
             topic TEXT,
             duration INTEGER,
-            price INTEGER
+            price INTEGER,
+            status INTEGER
         );`);
 
-    const [rows] = await db.executeSql(`SELECT ${lessons}.id, ${lessons}.student_id, ${lessons}.subject, ${lessons}.level, ${lessons}.date, ${lessons}.topic, ${lessons}.duration, ${lessons}.price, ${students}.name, ${students}.surname FROM ${lessons} INNER JOIN ${students} ON ${students}.id=${lessons}.student_id;`);
+    const [rows] = await db.executeSql(`SELECT ${lessons}.id, ${lessons}.student_id, ${lessons}.subject, ${lessons}.level, ${lessons}.date, ${lessons}.topic, ${lessons}.duration, ${lessons}.price, ${lessons}.status, ${students}.name, ${students}.surname FROM ${lessons} INNER JOIN ${students} ON ${students}.id=${lessons}.student_id;`);
     const result = [];
 
     for (let i = 0; i < rows.rows.length; i++)
@@ -117,7 +121,7 @@ async function __getAllLessons() {
 }
 
 
-async function __getByIDLessons(id) {
+export async function getByIDLessons(id) {
 
     const db = await SQLite.openDatabase({ name: 'studentlog.db', location: 'default' });
     await db.executeSql(
@@ -129,7 +133,8 @@ async function __getByIDLessons(id) {
             date TEXT,
             topic TEXT,
             duration INTEGER,
-            price INTEGER
+            price INTEGER,
+            status INTEGER
         );`)
     const [rows] = await db.executeSql(`SELECT * FROM ${lessons} WHERE id=${id}`);
     const result = rows.rows.item(0);
@@ -147,25 +152,26 @@ export async function deleteIDLessons(id) {
             date TEXT,
             topic TEXT,
             duration INTEGER,
-            price INTEGER
+            price INTEGER,
+            status INTEGER
         );`)
     const [rows] = await db.executeSql(`DELETE FROM ${lessons} WHERE id = ${id};`);
 }
 
-export function getAllLessons() {
-    const [lessons, setLessons] = useState([]);
-    __getAllLessons().then(setLessons);
-    return lessons;
-}
+// export function getAllLessons() {
+//     const [lessons, setLessons] = useState([]);
+//     getAllLessons().then(setLessons);
+//     return lessons;
+// }
 
-export function getByIDLessons(id) {
-    const [lesson, setLesson] = useState({});
-    __getByIDLessons(id).then(setLesson);
-    return lesson;
-}
+// export function getByIDLessons(id) {
+//     const [lesson, setLesson] = useState({});
+//     getByIDLessons(id).then(setLesson);
+//     return lesson;
+// }
 
 
-async function __getTotalEarning() {
+export async function getTotalEarning() {
     const db = await SQLite.openDatabase({ name: 'studentlog.db', location: 'default' });
     await db.executeSql(
         `CREATE TABLE IF NOT EXISTS ${lessons} (
@@ -176,18 +182,19 @@ async function __getTotalEarning() {
             date TEXT,
             topic TEXT,
             duration INTEGER,
-            price INTEGER
+            price INTEGER,
+            status INTEGER
         );`)
     const [rows] = await db.executeSql(`SELECT Sum(price) AS earnings FROM ${lessons}`);
     const result = rows.rows.item(0);
     return result.earnings ? result.earnings : 0;
 }
 
-export function getTotalEarning() {
-    const [earnings, setEarnings] = useState(0);
-    __getTotalEarning().then(setEarnings);
-    return earnings;
-}
+// export function getTotalEarning() {
+//     const [earnings, setEarnings] = useState(0);
+//     getTotalEarning().then(setEarnings);
+//     return earnings;
+// }
 
 
 export async function dropDBLessons() {
@@ -201,7 +208,8 @@ export async function dropDBLessons() {
             date TEXT,
             topic TEXT,
             duration INTEGER,
-            price INTEGER
+            price INTEGER,
+            status INTEGER
         );`)
     const [rows] = await db.executeSql(`DELETE FROM ${lessons};`);
 }

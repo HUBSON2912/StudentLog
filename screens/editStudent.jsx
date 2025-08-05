@@ -6,24 +6,31 @@ import { arrowDown } from "../functions/getUnicodeItems";
 import SelectDropdown from "react-native-select-dropdown";
 import { getByIDStudents, insertIntoStudents, updateIDStudents } from "../functions/dbStudents";
 
-// possible tables name
-const students = "students";
-const lessons = "lessons";
-const priceList = "price_list";
+const REMOTELY_FORM = 0;
+const STATIONARY_FORM = 1;
+const MIXED_FORM = 2;
 
 export default function EditStudent({ navigation, route }) {
 
     const { studentID } = route.params;
 
-    let studentData = {};
+    const [studentData, setStudentData] = useState({});
 
-    if (studentID !== null)
-        studentData = getByIDStudents(studentID);
+    const [error, setError] = useState("");
+
+    useEffect(() => {
+        const fetchStudentData = async () => {
+            if (studentID !== null) {
+                setStudentData(await getByIDStudents(studentID))
+            }
+        };
+        fetchStudentData();
+    });
 
     const possibleForms = [
-        { id: 0, title: "Zdalnie" },
-        { id: 1, title: "Stacjonarnie" },
-        { id: 2, title: "Mieszana" },
+        { id: REMOTELY_FORM, title: "Zdalnie" },
+        { id: STATIONARY_FORM, title: "Stacjonarnie" },
+        { id: MIXED_FORM, title: "Mieszana" },
     ];
 
     const [name, setName] = useState("");
@@ -59,7 +66,7 @@ export default function EditStudent({ navigation, route }) {
 
     const renderDropdownButton = (sel, isOpen) => {
         return (
-            <View style={[styles.optionValue, {borderRadius: 5, paddingVertical: 5, justifyContent: "center", borderColor: theme.light.border, borderWidth: 1}]}>
+            <View style={[styles.optionValue, { borderRadius: 5, paddingVertical: 5, justifyContent: "center", borderColor: theme.light.border, borderWidth: 1 }]}>
                 <Text style={theme.styles.text}>{form.title}</Text>
                 <Text style={styles.arrowDown}>{arrowDown()}</Text>
             </View>
@@ -70,7 +77,7 @@ export default function EditStudent({ navigation, route }) {
         return (
             <View style={[
                 styles.dropdownItem,
-                { backgroundColor: (isSelected?theme.light.primaryPale: "white") }
+                { backgroundColor: (isSelected ? theme.light.primaryPale : "white") }
             ]}>
                 <Text style={theme.styles.text}>{item.title}</Text>
             </View>
@@ -78,6 +85,37 @@ export default function EditStudent({ navigation, route }) {
     }
 
     const handleSaveButton = () => {
+        if (
+            !name ||
+            !surname ||
+            !(phoneNum || email) ||
+            !form
+        ) {
+            setError("Uzupełnij wszystkie dane");
+            return;
+        }
+
+        if (form.id != STATIONARY_FORM) {
+            if (
+                !platform ||
+                !nick
+            ) {
+                setError("Uzupełnij wszystkie dane");
+                return;
+            }
+        }
+
+        if (form.id != REMOTELY_FORM) {
+            if (
+                !city ||
+                !houseNr
+                // you can skip street and flat number
+            ) {
+                setError("Uzupełnij wszystkie dane");
+                return;
+            }
+        }
+
         const newStudentData = {
             name: name,
             surname: surname,
@@ -170,7 +208,7 @@ export default function EditStudent({ navigation, route }) {
                     </View>
 
 
-                    {form.id != 1 &&   //if the form is setted as "stationary" then do not print the inputs for remotely teaching
+                    {form.id != STATIONARY_FORM &&   //if the form is setted as "stationary" then do not print the inputs for remotely teaching
                         <>
                             <View style={[theme.styles.section, styles.optionContainer]}>
                                 <Text style={[theme.styles.text, styles.label]}>Platforma</Text>
@@ -200,7 +238,7 @@ export default function EditStudent({ navigation, route }) {
                         </>}
 
 
-                    {form.id != 0 &&   // adress is printed if only form is NOT "remotely"
+                    {form.id != REMOTELY_FORM &&   // adress is printed if only form is NOT "remotely"
                         <>
                             <View style={[theme.styles.section, styles.optionContainer]}>
                                 <Text style={[theme.styles.text, styles.label]}>Miejscowość</Text>
@@ -252,7 +290,7 @@ export default function EditStudent({ navigation, route }) {
                             </View>
                         </>}
                 </KeyboardAvoidingView>
-
+                <Text style={styles.errorMessage}>{error}</Text>
                 <View style={styles.buttonPanel}>
                     {/* cancel button */}
                     <Button
@@ -313,6 +351,12 @@ const styles = StyleSheet.create({
         paddingVertical: 8,
         borderBottomColor: theme.light.text.gray,
         borderBottomWidth: 1
+    },
+    errorMessage: {
+        color: theme.light.error,
+        fontSize: 18,
+        textAlign: "center",
+        margin: 5
     },
     label: {
         flex: 2
