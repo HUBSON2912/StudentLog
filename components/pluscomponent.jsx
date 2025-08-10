@@ -3,7 +3,7 @@ import { Text } from "react-native-paper";
 import { theme } from "../theme";
 import { plus } from "../functions/getUnicodeItems";
 
-export function PlusComponent({ onPress = (() => { console.log("TODO") }) }) {
+export function PlusComponent({ onPress = (() => { }) }) {
     return (
         <TouchableOpacity style={styles.plusView}
             onPress={onPress}

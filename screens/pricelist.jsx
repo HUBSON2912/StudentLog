@@ -4,6 +4,12 @@ import { Button, Text } from "react-native-paper";
 import PriceLiseElement from "../components/price_list_element";
 
 export default function PriceList({ navigation }) {
+    /** todo
+     * create WHOLE db table for it
+     * save prices
+     * edit price
+     * delete price
+     */
 
     const prices = [
         {
@@ -39,7 +45,7 @@ export default function PriceList({ navigation }) {
                 <Button
                     mode="contained"
                     style={[styles.button, { backgroundColor: theme.light.error, flex: 1 }]}
-                    onPress={()=> navigation.pop()}
+                    onPress={() => navigation.pop()}
                 >
                     <Text style={styles.buttonLabel}>
                         Anuluj
@@ -48,8 +54,8 @@ export default function PriceList({ navigation }) {
                 <Button
                     mode="contained"
                     style={[styles.button, { backgroundColor: theme.light.primary, flex: 1 }]}
-                    onPress={()=> {
-                        console.log("TODO save prices");
+                    onPress={() => {
+                        // TODO save in db
                         navigation.pop()
                     }}
                 >

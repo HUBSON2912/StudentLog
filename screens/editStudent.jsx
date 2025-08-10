@@ -12,6 +12,10 @@ const MIXED_FORM = 2;
 
 export default function EditStudent({ navigation, route }) {
 
+    /** todo
+     * create option "regulary" to add more than one lesson at once. like every friday or sth.
+     */
+
     const { studentID } = route.params;
 
     const [studentData, setStudentData] = useState({});

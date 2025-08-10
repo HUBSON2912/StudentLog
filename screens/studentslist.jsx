@@ -7,6 +7,12 @@ import { Text } from "react-native-paper";
 import { useEffect, useState } from "react";
 
 export default function StudentsListScreen({ navigation }) {
+    
+    /** todo
+     * check if works the fetching message bellow
+     * 
+     */
+    
     const [message, setMessage] = useState("Wczytywanie...");
 
     const [students, setStudents] = useState([]);

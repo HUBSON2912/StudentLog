@@ -7,7 +7,7 @@ import { Text } from "react-native-paper";
 import { useEffect, useState } from "react";
 
 export default function LessonsList({ navigation }) {
-
+    
     const [message, setMessage] = useState("Wczytywanie...");
     const [lessons, setLessons] = useState([]);
     useEffect(() => {

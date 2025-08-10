@@ -14,6 +14,11 @@ const Tabs = createBottomTabNavigator();
 
 export default function App() {
 
+    /** TODO
+     * get all saved data from AsyncStorage
+     * theme=theme.color  (theme.light change in theme.color)
+     */
+    
     const [earnings, setEarnings]=useState(0);
     useEffect(()=>{
         const countEarnings=async () => {
@@ -82,22 +87,3 @@ const styles = StyleSheet.create({
         fontWeight: "bold"
     },
 });
-
-
-/*
-npm i react-native-date-picker
-npm i react-native-paper
-npm install @react-navigation/native
-npm install react-native-screens react-native-safe-area-context
-npm install @react-navigation/native-stack
-npm install --save react-native-sqlite-storage
-npm install @react-navigation/bottom-tabs
-npm install react-native-svg
-
-
-
-
-npm i @react-native-vector-icons/ionicons
-npm install @react-native-material/core   
-npm install @react-native-vector-icons/material-design-icons
-*/

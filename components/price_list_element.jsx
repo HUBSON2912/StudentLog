@@ -3,6 +3,9 @@ import { Text } from "react-native-paper";
 import { theme } from "../theme";
 
 export default function PriceLiseElement({item}) {
+    /** todo
+     * get the currency from asyncstorage
+     */
     const currency = "zł";
     return (
         <View style={[theme.styles.section, { flexDirection: "row" }]}>

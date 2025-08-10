@@ -87,8 +87,7 @@ export default function EditLesson({ navigation, route }) {
 
     // handling events
     const handleSaveButton = () => {
-        // TODO
-        // check if there is no drop database
+        // check if there is no drop database or shit like this
 
         if (
             !student ||
@@ -326,10 +325,10 @@ export default function EditLesson({ navigation, route }) {
                                         alignContent: "center",
                                         top: 18,
                                         right: 7
-                                        // display: if i didnt specified subject, level, time or I turned off the price list then NONE
+                                        // todo display: if i didnt specified subject, level, time or I turned off the price list then NONE
                                     }}
 
-                                    onPress={console.log("TODO")}
+                                    onPress={()=>{/* todo automatic price*/}}
                                 >
                                     <Image source={require("../assets/images/magic.png")} style={{ width: 32, height: 32 }} />
                                 </Button>

@@ -4,11 +4,15 @@ import { theme } from "../theme";
 import { StatusLabel } from "./statuslabel";
 import { bullet } from "../functions/getUnicodeItems";
 import Section from "./section";
-import { getDD_Mon_YYYY_HH_MMDate, ISOToDate } from "../functions/date";
+import { getDD_Mon_YYYY_HH_MMDate } from "../functions/date";
 import { useNavigation } from "@react-navigation/native";
 import { deleteIDLessons } from "../functions/dbLessons";
 
 export function Lesson({ item }) {
+    /** TODO 
+     * verify if displaing the status works propertly, not sure about it
+     * display a note that there is no topic given in the lesson
+     */
 
     const navigation = useNavigation();
 
@@ -37,7 +41,6 @@ export function Lesson({ item }) {
             { cancelable: true }
         )
     }
-
 
 
     const [yyyy, mm, dd] = item.date.split("T")[0].split("-");

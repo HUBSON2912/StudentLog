@@ -1,7 +1,7 @@
 import { ScrollView, StyleSheet, View } from "react-native";
 import { Button, Switch, Text } from "react-native-paper";
 import { theme } from "../theme";
-import { use, useState } from "react";
+import { useState } from "react";
 import { arrowDown } from "../functions/getUnicodeItems";
 import SelectDropdown from "react-native-select-dropdown";
 
@@ -11,13 +11,15 @@ export default function SettingsMainScreen({ navigation }) {
 
     const [selectedLanguage, setSelectedLanguage] = useState("Polski");
     const [isDarkMode, setDarkMode] = useState(false);
-    const [showMoney, setShowMoney]=useState(false);
+    const [showMoney, setShowMoney] = useState(false);
     const [usePriceList, setUsePriceList] = useState(false);
 
-    /**
-     * TODO:
+    /** TODO:
      * useEfect() for changing the language and for the darkmode and price list
-     * price list screen
+     * or show message like "You have to re-open your app"
+     * export and import buttons
+     * saving data in AsyncStorage
+     * 
      */
 
 
@@ -128,7 +130,7 @@ export default function SettingsMainScreen({ navigation }) {
                 <Button
                     mode="contained"
                     style={styles.button}
-                    onPress={() => { console.log("TODO") }}
+                    onPress={() => { /* TODO export */ }}
                 >
                     <Text style={styles.buttonLabel}>
                         Eksportuj bazę danych
@@ -137,7 +139,7 @@ export default function SettingsMainScreen({ navigation }) {
                 <Button
                     mode="contained"
                     style={styles.button}
-                    onPress={() => { console.log("TODO") }}
+                    onPress={() => { /* TODO import */ }}
                 >
                     <Text style={styles.buttonLabel}>
                         Importuj bazę danych
