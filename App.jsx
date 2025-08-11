@@ -25,7 +25,7 @@ export default function App() {
             setEarnings(await getTotalEarning());
         }
         countEarnings();
-    },[])
+    })
 
     return (
         <PaperProvider>

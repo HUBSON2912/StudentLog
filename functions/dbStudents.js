@@ -186,19 +186,6 @@ export async function deleteIDStudent(id) {
     const [rows] = await db.executeSql(`DELETE FROM students WHERE id = ${id};`);
 }
 
-// export function getAllStudents() {
-//     const [students, setStudents] = useState([]);
-//     __getAllStudents().then(setStudents);
-//     return students;
-// }
-
-// export function getByIDStudents(id) {
-//     const [student, setStudent] = useState({});
-//     __getByIDStudents(id).then(setStudent);
-//     return student;
-// }
-
-
 export async function dropDBStudent() {
     const db = await SQLite.openDatabase({ name: 'studentlog.db', location: 'default' });
     await db.executeSql(
@@ -216,5 +203,5 @@ export async function dropDBStudent() {
             house_nr TEXT,
             flat_nr TEXT
         );`);
-    const [rows] = await db.executeSql(`DELETE FROM students;`);
+    const [rows] = await db.executeSql(`DROP TABLE students;`);
 }

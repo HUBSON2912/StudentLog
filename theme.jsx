@@ -14,7 +14,7 @@ export const theme = {
         primaryHalf: "#6e9cf7",
         secondary: "#4b8f62",
         status: {
-            done: "#ffd700",
+            done:"#ffc400",
             paid: "#4b8f62",
             planned: "#f2f0f3",
         },

@@ -28,6 +28,7 @@ export default function EditLesson({ navigation, route }) {
     const [topic, setTopic] = useState("");
     const [duration, setDuration] = useState(1);
     const [price, setPrice] = useState(0);
+    const [status, setStatus] = useState(possibleStatus[0]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -96,7 +97,8 @@ export default function EditLesson({ navigation, route }) {
             !selectedDateTime_oneLesson ||
             !topic ||
             !duration ||
-            !price
+            !price ||
+            !status
         ) {
             setError("Uzupełnij wszystkie dane");
             return;
@@ -110,12 +112,14 @@ export default function EditLesson({ navigation, route }) {
             topic: topic,
             duration: parseInt(duration),
             price: parseInt(price),
+            status: status.id
         }
 
         if (!lessonID) {
             insertIntoLessons(newLessonData);
         }
         else {
+            // fix if you want to update the lesson then it disapears on the list but it still exists in the db
             updateIDLessons(lessonID, newLessonData);
         }
         navigation.pop();
@@ -132,6 +136,7 @@ export default function EditLesson({ navigation, route }) {
             setTopic(lessonData.topic);
             setDuration(String(lessonData.duration));
             setPrice(String(lessonData.price));
+            setStatus(possibleStatus[lessonData.status])
 
             setMode("one-lesson");
             setAreDataSet(true);
@@ -255,20 +260,33 @@ export default function EditLesson({ navigation, route }) {
                             </View>
                             <View style={[theme.styles.section, styles.optionContainer]}>
                                 <Text style={[theme.styles.text, styles.label]}>Status</Text>
-                                {/* if there is price list you can use SelectDropdown */}
-                                <SelectDropdown
-                                    data={possibleStatus}
-                                    onSelect={(sel, index) => {
-                                        // setStudent(sel);
-                                    }}
-                                    renderButton={(sel, isOpen)=>{return <View style={{backgroundColor: "red", flex:1}}>{StatusLabel(sel?sel.id:0)}</View>}}
-                                    renderItem={(item, index, isSelected)=>{return <View><StatusLabel status={item.id}/></View>}}
-                                    defaultValue={defaultStudent}
-                                />
+                                <View style={[styles.textInput, styles.statusContainer]}>
+                                    <SelectDropdown
+                                        data={possibleStatus}
+                                        defaultValue={status}
+                                        dropdownStyle={{ backgroundColor: "white", borderRadius: 10 }}
+                                        onSelect={(selected, index) => {
+                                            setStatus(selected);
+                                        }}
+                                        renderButton={(selected, isOpen) => {
+                                            return (
+                                                <View style={styles.statusContainer}>
+                                                    {StatusLabel(status.id, styles.status)}
+                                                </View>
+                                            );
+                                        }}
+                                        renderItem={(item, index, isSelected) => {
+                                            return (
+                                                <View style={styles.statusContainer}>
+                                                    {StatusLabel(item.id, styles.status)}
+                                                </View>
+                                            );
+                                        }}
+                                    />
+                                </View>
                             </View>
                             <View style={[theme.styles.section, styles.optionContainer]}>
                                 <Text style={[theme.styles.text, styles.label]}>Temat</Text>
-                                {/* if there is price list you can use SelectDropdown */}
                                 <TextInput
                                     mode="outlined"
                                     style={styles.textInput}
@@ -328,7 +346,7 @@ export default function EditLesson({ navigation, route }) {
                                         // todo display: if i didnt specified subject, level, time or I turned off the price list then NONE
                                     }}
 
-                                    onPress={()=>{/* todo automatic price*/}}
+                                    onPress={() => {/* todo automatic price*/ }}
                                 >
                                     <Image source={require("../assets/images/magic.png")} style={{ width: 32, height: 32 }} />
                                 </Button>
@@ -420,6 +438,16 @@ const styles = StyleSheet.create({
         flex: 4,
         alignItems: "center",
     },
+    status: {
+        position: "static",
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    statusContainer: {
+        borderRadius: 10,
+        backgroundColor: "white",
+        padding: 3
+    },
     text: {
         color: theme.light.text.black,
         textAlignVertical: "center",
@@ -428,5 +456,6 @@ const styles = StyleSheet.create({
     textInput: {
         flex: 4,
         backgroundColor: theme.light.background,
-    }
+    },
+
 });

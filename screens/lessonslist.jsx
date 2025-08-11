@@ -7,16 +7,13 @@ import { Text } from "react-native-paper";
 import { useEffect, useState } from "react";
 
 export default function LessonsList({ navigation }) {
-    
-    const [message, setMessage] = useState("Wczytywanie...");
+
+    const [message, setMessage] = useState("Brak danych do wyświetlenia");
     const [lessons, setLessons] = useState([]);
     useEffect(() => {
         const fetchLessons = async () => {
             setLessons(await getAllLessons());
-            if (lessons.length == 0) {
-                setMessage("Brak danych do wyświetlenia");
-            }
-            else {
+            if (lessons.length != 0) {
                 setMessage("");
             }
         }

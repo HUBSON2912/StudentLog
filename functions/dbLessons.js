@@ -110,7 +110,7 @@ export async function getAllLessons() {
             price INTEGER,
             status INTEGER
         );`);
-
+    
     const [rows] = await db.executeSql(`SELECT ${lessons}.id, ${lessons}.student_id, ${lessons}.subject, ${lessons}.level, ${lessons}.date, ${lessons}.topic, ${lessons}.duration, ${lessons}.price, ${lessons}.status, ${students}.name, ${students}.surname FROM ${lessons} INNER JOIN ${students} ON ${students}.id=${lessons}.student_id;`);
     const result = [];
 
@@ -158,19 +158,6 @@ export async function deleteIDLessons(id) {
     const [rows] = await db.executeSql(`DELETE FROM ${lessons} WHERE id = ${id};`);
 }
 
-// export function getAllLessons() {
-//     const [lessons, setLessons] = useState([]);
-//     getAllLessons().then(setLessons);
-//     return lessons;
-// }
-
-// export function getByIDLessons(id) {
-//     const [lesson, setLesson] = useState({});
-//     getByIDLessons(id).then(setLesson);
-//     return lesson;
-// }
-
-
 export async function getTotalEarning() {
     const db = await SQLite.openDatabase({ name: 'studentlog.db', location: 'default' });
     await db.executeSql(
@@ -185,17 +172,11 @@ export async function getTotalEarning() {
             price INTEGER,
             status INTEGER
         );`)
-    const [rows] = await db.executeSql(`SELECT Sum(price) AS earnings FROM ${lessons}`);
+                                                                            // status=2 means that I got the money for the lesson (look: possibleStatus in statuslabel.jsx)
+    const [rows] = await db.executeSql(`SELECT Sum(price) AS earnings FROM ${lessons} WHERE status=2`);
     const result = rows.rows.item(0);
     return result.earnings ? result.earnings : 0;
 }
-
-// export function getTotalEarning() {
-//     const [earnings, setEarnings] = useState(0);
-//     getTotalEarning().then(setEarnings);
-//     return earnings;
-// }
-
 
 export async function dropDBLessons() {
     const db = await SQLite.openDatabase({ name: 'studentlog.db', location: 'default' });
@@ -211,5 +192,5 @@ export async function dropDBLessons() {
             price INTEGER,
             status INTEGER
         );`)
-    const [rows] = await db.executeSql(`DELETE FROM ${lessons};`);
+    const [rows] = await db.executeSql(`DROP TABLE ${lessons};`);
 }
