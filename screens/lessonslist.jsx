@@ -2,13 +2,12 @@ import { FlatList, StyleSheet, View } from "react-native";
 import { PlusComponent } from "../components/pluscomponent";
 import { Lesson } from "../components/lesson";
 import { theme } from "../theme";
-import { getAllLessons, getTotalEarning } from "../functions/dbLessons";
+import { deleteStudentsLessons, getAllLessons, getTotalEarning } from "../functions/dbLessons";
 import { Text } from "react-native-paper";
 import { useEffect, useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 
 export default function LessonsList({ navigation }) {
-
     const [earnings, setEarnings] = useState(0);
     const [message, setMessage] = useState("Brak danych do wyświetlenia");
     const [lessons, setLessons] = useState([]);
@@ -17,6 +16,9 @@ export default function LessonsList({ navigation }) {
             setLessons(await getAllLessons());
             if (lessons.length != 0) {
                 setMessage("");
+            }
+            else {
+                setMessage("Brak danych do wyświetlenia");
             }
             setEarnings(await getTotalEarning());
         }

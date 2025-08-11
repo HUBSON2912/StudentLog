@@ -190,6 +190,27 @@ export async function deleteIDLessons(id) {
     const [rows] = await db.executeSql(`DELETE FROM ${lessons} WHERE id = ${id};`);
 }
 
+export async function deleteStudentsLessons(student_id) {
+    const db = await SQLite.openDatabase({ name: 'studentlog.db', location: 'default' });
+    await db.executeSql(
+        `CREATE TABLE IF NOT EXISTS ${lessons} (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            student_id INTEGER,
+            subject TEXT,
+            level TEXT,
+            year INTEGER,
+            month INTEGER,
+            day INTEGER,
+            hour INTEGER,
+            minute INTEGER,
+            topic TEXT,
+            duration INTEGER,
+            price INTEGER,
+            status INTEGER
+        );`)
+    const [rows] = await db.executeSql(`DELETE FROM ${lessons} WHERE student_id = ${student_id};`);
+}
+
 export async function getTotalEarning() {
     const db = await SQLite.openDatabase({ name: 'studentlog.db', location: 'default' });
     await db.executeSql(

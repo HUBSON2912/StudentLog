@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import SQLite from 'react-native-sqlite-storage';
+import { deleteStudentsLessons } from './dbLessons';
 
 SQLite.enablePromise(true);
 
@@ -184,6 +185,7 @@ export async function deleteIDStudent(id) {
             flat_nr TEXT
         );`);
     const [rows] = await db.executeSql(`DELETE FROM students WHERE id = ${id};`);
+    deleteStudentsLessons(id);
 }
 
 export async function dropDBStudent() {

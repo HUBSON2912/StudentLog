@@ -4,14 +4,13 @@ import { theme } from "../theme";
 import { useEffect, useState } from "react";
 import { arrowDown } from "../functions/getUnicodeItems";
 import SelectDropdown from "react-native-select-dropdown";
-import { getByIDStudents, insertIntoStudents, updateIDStudents } from "../functions/dbStudents";
+import { dropDBStudent, getByIDStudents, insertIntoStudents, updateIDStudents } from "../functions/dbStudents";
 
 const REMOTELY_FORM = 0;
 const STATIONARY_FORM = 1;
 const MIXED_FORM = 2;
 
 export default function EditStudent({ navigation, route }) {
-
     /** todo
      * create option "regulary" to add more than one lesson at once. like every friday or sth.
      */

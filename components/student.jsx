@@ -61,7 +61,7 @@ export function Student({ item }) {
 
     const handleDelete = () => {
         Alert.alert("Potwierdzenie",
-            `Czy na pewno chcesz usunąć tego ucznia?\n\nID: ${item.id} \nImię: ${item.name} \nNazwisko: ${item.surname}`,
+            `Czy na pewno chcesz usunąć tego ucznia? Spowoduje to usunięcie wszystkich lekcji przypisanych do tego ucznia. \n\nID: ${item.id} \nImię: ${item.name} \nNazwisko: ${item.surname}`,
             [
                 { text: "Tak", onPress: () => { deleteIDStudent(item.id) } },
                 { text: "Nie", onPress: () => { } }
