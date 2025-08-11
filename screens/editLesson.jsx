@@ -18,8 +18,7 @@ export default function EditLesson({ navigation, route }) {
 
     const [lessonData, setLessonData] = useState({});
     const [students, setStudents] = useState([]);
-    const [defaultStudent, setDefStudent] = useState({});
-
+    const [defStudent, setDefStudent] = useState(null);
 
     // creating states for data that are given in the form
     const [student, setStudent] = useState(null);
@@ -32,11 +31,10 @@ export default function EditLesson({ navigation, route }) {
 
     useEffect(() => {
         const fetchData = async () => {
-            setStudents(await getAllStudents());
             if (lessonID !== null) {
                 setLessonData(await getByIDLessons(lessonID));
-                setStudent(await getByIDStudents(lessonData.student_id));
             }
+            setStudents(await getAllStudents());
         }
         fetchData();
     })
@@ -123,11 +121,11 @@ export default function EditLesson({ navigation, route }) {
     // fetch all the data if I want to edit
     let [haveISetTheData, setAreDataSet] = useState(false);
     useEffect(() => {
-        if (!haveISetTheData && lessonID !== null && lessonData && Object.keys(lessonData).length > 0) {
+        const setFetchedLessonData = async () => {
+            setDefStudent(await getByIDStudents(lessonData.student_id));
+            setStudent(await getByIDStudents(lessonData.student_id));
             setSubject(lessonData.subject);
             setLevel(lessonData.level);
-            // let dateTemp=new Date(lessonData.year, lessonData.month - 1, lessonData.day, lessonData.hour, lessonData.minute);
-            // dateTemp=new Date(dateTemp.getTime()-dateTemp.getTimezoneOffset()*1000*60);
             setDateTime_oneLesson(new Date(lessonData.year, lessonData.month - 1, lessonData.day, lessonData.hour, lessonData.minute));
             setTopic(lessonData.topic);
             setDuration(String(lessonData.duration));
@@ -136,6 +134,9 @@ export default function EditLesson({ navigation, route }) {
 
             setMode("one-lesson");
             setAreDataSet(true);
+        }
+        if (!haveISetTheData && lessonID !== null && lessonData && Object.keys(lessonData).length > 0) {
+            setFetchedLessonData();
         }
     }, [lessonData, lessonID]);
 
@@ -158,10 +159,11 @@ export default function EditLesson({ navigation, route }) {
                                 data={students}
                                 onSelect={(sel, index) => {
                                     setStudent(sel);
+                                    console.log("aaa");
                                 }}
                                 renderButton={renderDropdownButtonChooseStudent}
                                 renderItem={renderDropdownItemChooseStudent}
-                                defaultValue={student}
+                                defaultValue={defStudent}
                             />
                         }
                     </View>
@@ -310,8 +312,8 @@ export default function EditLesson({ navigation, route }) {
                                     mode="outlined"
                                     style={styles.textInput}
                                     placeholder="Czas"
-                                    value={duration}
-                                    onChangeText={val => setDuration(val)}
+                                    value={String(duration)}
+                                    onChangeText={val => setDuration(parseFloat(val))}
                                     activeOutlineColor={theme.light.primaryHalf}
                                     contentStyle={theme.styles.text}
                                     keyboardType="number-pad"
@@ -344,7 +346,9 @@ export default function EditLesson({ navigation, route }) {
                                         // todo display: if i didnt specified subject, level, time or I turned off the price list then NONE
                                     }}
 
-                                    onPress={() => {/* todo automatic price*/ }}
+                                    onPress={() => {
+                                        /* todo automatic price*/
+                                    }}
                                 >
                                     <Image source={require("../assets/images/magic.png")} style={{ width: 32, height: 32 }} />
                                 </Button>

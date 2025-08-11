@@ -1,22 +1,23 @@
-import { FlatList, View } from "react-native";
+import { FlatList, StyleSheet, View } from "react-native";
 import { PlusComponent } from "../components/pluscomponent";
 import { theme } from "../theme";
 import { Student } from "../components/student";
 import { getAllStudents } from "../functions/dbStudents";
 import { Text } from "react-native-paper";
 import { useEffect, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function StudentsListScreen({ navigation }) {
-    
+
     /** todo
      * check if works the fetching message bellow
      * 
      */
-    
+
     const [message, setMessage] = useState("Wczytywanie...");
 
     const [students, setStudents] = useState([]);
-    useEffect(() => {
+    useFocusEffect(() => {
         const fetchStudents = async () => {
             setStudents(await getAllStudents());
             if (students.length == 0) {
@@ -31,17 +32,22 @@ export default function StudentsListScreen({ navigation }) {
 
     return (
         <View style={{ backgroundColor: theme.light.background, flex: 1 }}>
-
-                <Text style={[
-                    theme.styles.description,
-                    {
-                        marginTop: 50,
-                        fontSize: 22,
-                        textAlign: "center",
-                        display: (message?"flex":"none")
-                    }]}>
-                    {message}
+            <View style={{ marginVertical: 15 }}>
+                <Text style={[styles.text, { fontWeight: "500" }]}>
+                    Ilość uczniów: {students.length}
                 </Text>
+            </View>
+
+            <Text style={[
+                theme.styles.description,
+                {
+                    marginTop: 50,
+                    fontSize: 22,
+                    textAlign: "center",
+                    display: (message ? "flex" : "none")
+                }]}>
+                {message}
+            </Text>
 
             <FlatList
                 data={students}
@@ -54,6 +60,11 @@ export default function StudentsListScreen({ navigation }) {
                 }} />
         </View>
     );
-
-
 }
+
+const styles = StyleSheet.create({
+    text: {
+        fontSize: 18,
+        color: theme.light.text.black,
+    },
+});

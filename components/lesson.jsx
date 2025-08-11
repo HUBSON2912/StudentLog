@@ -22,7 +22,7 @@ export function Lesson({ item }) {
 
     const handleDelete = () => {
         Alert.alert("Potwierdzenie",
-            `Czy na pewno chcesz usunąć tego ucznia?\n\nID: ${item.id} \nImię: ${item.name} \nNazwisko: ${item.surname}`,
+            `Czy na pewno chcesz usunąć tę lekcję?\n\nID: ${item.id} \nUczeń: ${item.name} ${item.surname}\nPrzedmiot: ${item.subject} ${item.level}\nData: ${item.year}-${String(item.month).padStart(2, "0")}-${String(item.day).padStart(2, "0")} ${item.hour}:${item.minute}`,
             [
                 { text: "Tak", onPress: () => { deleteIDLessons(item.id) } },
                 { text: "Nie", onPress: () => { } }
@@ -32,7 +32,7 @@ export function Lesson({ item }) {
     };
 
     const showAlert = () => {
-        Alert.alert("Co zamierzasz zrobić", `Wybierz co zamierzasz zrobić z tym rekordem. \n\nID: ${item.id} \nImię: ${item.name} \nNazwisko: ${item.surname}`,
+        Alert.alert("Co zamierzasz zrobić", `Wybierz co zamierzasz zrobić z tym rekordem. \n\nID: ${item.id} \nUczeń: ${item.name} ${item.surname}\nPrzedmiot: ${item.subject} ${item.level}\nData: ${item.year}-${String(item.month).padStart(2, "0")}-${String(item.day).padStart(2, "0")} ${String(item.hour).padStart(2, "0")}:${String(item.minute).padStart(2, "0")}`,
             [
                 { text: "Anuluj", onPress: () => { }, style: "cancel" },
                 { text: "Edytuj", onPress: handleEditing },
