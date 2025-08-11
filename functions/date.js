@@ -57,7 +57,7 @@ function getMinuteAsString(date) {
 export function ISOToDate(iso) {
     const [yyyy, mm, dd] = iso.split("T")[0].split("-").map((x) => parseInt(x));
     const [hh, min, ss] = iso.split("T")[1].split(":").map((x) => parseInt(x));;
-    return new Date(yyyy, mm, dd, hh, min);
+    return new Date(yyyy, mm-1, dd, hh, min);
 }
 
 // European format

@@ -7,7 +7,7 @@ import SelectDropdown from "react-native-select-dropdown";
 import RectangleRadioButton from "../components/rectRadioButton";
 import DatePicker from "react-native-date-picker";
 import { getDD_MM_YYYY_HH_MMDate, ISOToDate } from "../functions/date";
-import { getByIDLessons, insertIntoLessons, updateIDLessons } from "../functions/dbLessons";
+import { dropDBLessons, getByIDLessons, insertIntoLessons, updateIDLessons } from "../functions/dbLessons";
 import { getAllStudents, getByIDStudents } from "../functions/dbStudents";
 import { possibleStatus, StatusLabel } from "../components/statuslabel";
 
@@ -35,20 +35,11 @@ export default function EditLesson({ navigation, route }) {
             setStudents(await getAllStudents());
             if (lessonID !== null) {
                 setLessonData(await getByIDLessons(lessonID));
+                setStudent(await getByIDStudents(lessonData.student_id));
             }
         }
         fetchData();
-    }, [])
-
-    useEffect(() => {
-        const fetchDefaultStudent = async () => {
-            if (lessonID !== null) {
-                setDefStudent(await getByIDStudents(lessonData.student_id));
-                setStudent(defaultStudent);
-            }
-        }
-        fetchDefaultStudent();
-    }, [lessonData])
+    })
 
     const [error, setError] = useState("");
 
@@ -108,18 +99,21 @@ export default function EditLesson({ navigation, route }) {
             student_id: student.id,
             subject: subject,
             level: level,
-            date: selectedDateTime_oneLesson.toISOString(),
+            year: selectedDateTime_oneLesson.getFullYear(),
+            month: selectedDateTime_oneLesson.getMonth() + 1,
+            day: selectedDateTime_oneLesson.getDate(),
+            hour: selectedDateTime_oneLesson.getHours(),
+            minute: selectedDateTime_oneLesson.getMinutes(),
             topic: topic,
             duration: parseInt(duration),
             price: parseInt(price),
             status: status.id
         }
-
+        console.log(newLessonData);
         if (!lessonID) {
             insertIntoLessons(newLessonData);
         }
         else {
-            // fix if you want to update the lesson then it disapears on the list but it still exists in the db
             updateIDLessons(lessonID, newLessonData);
         }
         navigation.pop();
@@ -132,7 +126,9 @@ export default function EditLesson({ navigation, route }) {
         if (!haveISetTheData && lessonID !== null && lessonData && Object.keys(lessonData).length > 0) {
             setSubject(lessonData.subject);
             setLevel(lessonData.level);
-            setDateTime_oneLesson(ISOToDate(lessonData.date));
+            // let dateTemp=new Date(lessonData.year, lessonData.month - 1, lessonData.day, lessonData.hour, lessonData.minute);
+            // dateTemp=new Date(dateTemp.getTime()-dateTemp.getTimezoneOffset()*1000*60);
+            setDateTime_oneLesson(new Date(lessonData.year, lessonData.month - 1, lessonData.day, lessonData.hour, lessonData.minute));
             setTopic(lessonData.topic);
             setDuration(String(lessonData.duration));
             setPrice(String(lessonData.price));
@@ -165,7 +161,7 @@ export default function EditLesson({ navigation, route }) {
                                 }}
                                 renderButton={renderDropdownButtonChooseStudent}
                                 renderItem={renderDropdownItemChooseStudent}
-                                defaultValue={defaultStudent}
+                                defaultValue={student}
                             />
                         }
                     </View>
@@ -236,6 +232,7 @@ export default function EditLesson({ navigation, route }) {
                                     date={selectedDateTime_oneLesson}
                                     open={isDatePickerOpen_oneLesson}
                                     onConfirm={(date) => {
+                                        console.log(date.getFullYear(), date.getMonth(), date.getDate(), selectedDateTime_oneLesson.getHours(), selectedDateTime_oneLesson.getMinutes())
                                         setDateTime_oneLesson(new Date(date.getFullYear(), date.getMonth(), date.getDate(), selectedDateTime_oneLesson.getHours(), selectedDateTime_oneLesson.getMinutes()));
                                         setDateVisibility_oneLesson(false);
                                         setTimeVisibility_oneLesson(true);
@@ -250,6 +247,7 @@ export default function EditLesson({ navigation, route }) {
                                     date={selectedDateTime_oneLesson}
                                     open={isTimePickerOpen_oneLesson}
                                     onConfirm={(date) => {
+                                        console.log(selectedDateTime_oneLesson.getFullYear(), selectedDateTime_oneLesson.getMonth(), selectedDateTime_oneLesson.getDate(), date.getHours(), date.getMinutes());
                                         setDateTime_oneLesson(new Date(selectedDateTime_oneLesson.getFullYear(), selectedDateTime_oneLesson.getMonth(), selectedDateTime_oneLesson.getDate(), date.getHours(), date.getMinutes()));
                                         setTimeVisibility_oneLesson(false);
                                     }}

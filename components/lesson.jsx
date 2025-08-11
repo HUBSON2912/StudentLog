@@ -43,10 +43,10 @@ export function Lesson({ item }) {
     }
 
 
-    const [yyyy, mm, dd] = item.date.split("T")[0].split("-");
-    const [hh, min, ss] = item.date.split("T")[1].split(":");
-    let date = new Date(yyyy, mm, dd, hh, min);
-    date = new Date(date.getTime() - date.getTimezoneOffset() * 1000 * 60);
+    const [yyyy, mm, dd] = [item.year, item.month, item.day];
+    const [hh, min] = [item.hour, item.minute];
+    let date = new Date(yyyy, mm-1, dd, hh, min);
+    // date = new Date(date.getTime() - date.getTimezoneOffset() * 1000 * 60);
 
     return (
         <Section

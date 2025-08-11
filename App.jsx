@@ -7,13 +7,13 @@ import { account, clipboard, cog } from './functions/getUnicodeItems';
 import LessonsScreen from './screens/lessons';
 import StudentsScreen from './screens/students';
 import SettingsScreen from './screens/settings';
-import { getTotalEarning } from './functions/dbLessons';
+import { dropDBLessons, getTotalEarning } from './functions/dbLessons';
 import { useEffect, useState } from 'react';
 
 const Tabs = createBottomTabNavigator();
 
 export default function App() {
-
+    
     /** TODO
      * get all saved data from AsyncStorage
      * theme=theme.color  (theme.light change in theme.color)
