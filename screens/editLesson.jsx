@@ -65,6 +65,7 @@ export default function EditLesson({ navigation, route }) {
     const [isDateEndPickerOpen_regulary, setDateEndVisibility_regulary] = useState(false);
 
 
+    //note its better to keep the hour in the selectedDaty instead of false/true, null if not selected
     // selecting the days of the week
     const [selectedDays, setSelectedDays] = useState([false, false, false, false, false, false, false]);
     const handleSelectingDaysOfWeek = (value) => {
