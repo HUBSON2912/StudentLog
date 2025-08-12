@@ -53,6 +53,26 @@ function getMinuteAsString(date) {
     return String(date.getMinutes()).padStart(2, "0");
 }
 
+export function getWeekDayName(dayIndex) {
+    switch (dayIndex) {
+        case 0:
+            return "Poniedziałek";
+        case 1:
+            return "Wtorek";
+        case 2:
+            return "Środa";
+        case 3:
+            return "Czwartek";
+        case 4:
+            return "Piątek";
+        case 5:
+            return "Sobota";
+        case 6:
+            return "Niedziela";
+        default:
+            return;
+    }
+}
 
 export function ISOToDate(iso) {
     const [yyyy, mm, dd] = iso.split("T")[0].split("-").map((x) => parseInt(x));

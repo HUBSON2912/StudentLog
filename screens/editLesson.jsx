@@ -6,13 +6,19 @@ import { arrowDown } from "../functions/getUnicodeItems";
 import SelectDropdown from "react-native-select-dropdown";
 import RectangleRadioButton from "../components/rectRadioButton";
 import DatePicker from "react-native-date-picker";
-import { getDD_MM_YYYY_HH_MMDate, ISOToDate } from "../functions/date";
+import { getDD_MM_YYYY_HH_MMDate, getDD_MM_YYYYDate, ISOToDate } from "../functions/date";
 import { dropDBLessons, getByIDLessons, insertIntoLessons, updateIDLessons } from "../functions/dbLessons";
 import { getAllStudents, getByIDStudents } from "../functions/dbStudents";
 import { possibleStatus, StatusLabel } from "../components/statuslabel";
+import CheckboxDayTime from "../components/checkboxdaytime";
 
 
 export default function EditLesson({ navigation, route }) {
+
+    /** todo
+ * create option "regulary" to add more than one lesson at once. like every friday or sth.
+ */
+
 
     const { lessonID } = route.params;
 
@@ -46,11 +52,26 @@ export default function EditLesson({ navigation, route }) {
     // stuff for picking date
     const [mode, setMode] = useState("");
 
+    // one lesson
     const [selectedDateTime_oneLesson, setDateTime_oneLesson] = useState(new Date())
     const [isDatePickerOpen_oneLesson, setDateVisibility_oneLesson] = useState(false);
     const [isTimePickerOpen_oneLesson, setTimeVisibility_oneLesson] = useState(false);
 
+    // regulary
+    const today = new Date();  // temporary
+    const [selectedDateBegin_regulary, setDateBegin_regulary] = useState(new Date());
+    const [isDateBeginPickerOpen_regulary, setDateBeginVisibility_regulary] = useState(false);
+    const [selectedDateEnd_regulary, setDateEnd_regulary] = useState(new Date(today.getFullYear(), today.getMonth() + 1, today.getDate()));
+    const [isDateEndPickerOpen_regulary, setDateEndVisibility_regulary] = useState(false);
 
+
+    // selecting the days of the week
+    const [selectedDays, setSelectedDays] = useState([false, false, false, false, false, false, false]);
+    const handleSelectingDaysOfWeek = (value) => {
+        let temp = [...selectedDays];
+        temp[value] = !temp[value];
+        setSelectedDays(temp);
+    }
 
     // functions for rendering
     const renderDropdownButtonChooseStudent = (sel, isOpen) => {
@@ -107,7 +128,6 @@ export default function EditLesson({ navigation, route }) {
             price: parseInt(price),
             status: status.id
         }
-        console.log(newLessonData);
         if (!lessonID) {
             insertIntoLessons(newLessonData);
         }
@@ -144,6 +164,8 @@ export default function EditLesson({ navigation, route }) {
         <View style={styles.container}>
             <ScrollView style={styles.container}>
                 <KeyboardAvoidingView>
+
+                    {/* student input */}
                     <View style={[theme.styles.section, styles.optionContainer]}>
                         <Text style={[theme.styles.text, styles.label]}>Uczeń</Text>
 
@@ -167,6 +189,8 @@ export default function EditLesson({ navigation, route }) {
                             />
                         }
                     </View>
+
+                    {/* subject input */}
                     <View style={[theme.styles.section, styles.optionContainer]}>
                         <Text style={[theme.styles.text, styles.label]}>Przedmiot</Text>
 
@@ -183,6 +207,8 @@ export default function EditLesson({ navigation, route }) {
                             textContentType="familyName"
                         />
                     </View>
+
+                    {/* level input */}
                     <View style={[theme.styles.section, styles.optionContainer]}>
                         <Text style={[theme.styles.text, styles.label]}>Poziom</Text>
                         {/* if there is price list you can use SelectDropdown */}
@@ -198,9 +224,61 @@ export default function EditLesson({ navigation, route }) {
                         />
                     </View>
 
+                    {/* duration input */}
+                    <View style={[theme.styles.section, styles.optionContainer]}>
+                        <Text style={[theme.styles.text, styles.label]}>Czas</Text>
+                        <TextInput
+                            mode="outlined"
+                            style={styles.textInput}
+                            placeholder="Czas"
+                            value={String(duration)}
+                            onChangeText={val => setDuration(parseFloat(val))}
+                            activeOutlineColor={theme.light.primaryHalf}
+                            contentStyle={theme.styles.text}
+                            keyboardType="number-pad"
+                        />
+                    </View>
+
+                    {/* price input */}
+                    <View style={[theme.styles.section, styles.optionContainer]}>
+                        <Text style={[theme.styles.text, styles.label]}>Cena</Text>
+
+                        <TextInput
+                            mode="outlined"
+                            style={styles.textInput}
+                            placeholder="Cena"
+                            value={price}
+                            onChangeText={val => setPrice(val)}
+                            activeOutlineColor={theme.light.primaryHalf}
+                            contentStyle={theme.styles.text}
+                            keyboardType="number-pad"
+                        />
+
+                        {/* auto price button */}
+                        <Button
+                            style={{
+                                position: "absolute",
+                                // backgroundColor: "red",
+                                justifyContent: "center",
+                                alignContent: "center",
+                                top: 18,
+                                right: 7
+                                // todo display: if i didnt specified subject, level, time or I turned off the price list then NONE
+                            }}
+
+                            onPress={() => {
+                                /* todo automatic price*/
+                            }}
+                        >
+                            <Image source={require("../assets/images/magic.png")} style={{ width: 32, height: 32 }} />
+                        </Button>
+                    </View>
+
+
+                    {/* mode: you can add one lesson or add lessons on every Monday, Tuesday... */}
                     <View style={[theme.styles.section, styles.optionContainer]}>
                         <Text style={[theme.styles.text, styles.label]}>Tryb dodawania</Text>
-                        {/* if add one then just set one date but in the other case start date and the end date and show the set lessons at the bottom */}
+
                         <View style={{ flex: 4, flexDirection: "row", gap: 10 }}>
                             <RectangleRadioButton
                                 text="Jedna lekcja"
@@ -215,8 +293,10 @@ export default function EditLesson({ navigation, route }) {
                         </View>
                     </View>
 
+                    {/* if you want to add one lesson */}
                     {mode == "one-lesson" &&
                         <>
+                            {/* date and hour */}
                             <View style={[theme.styles.section, styles.optionContainer]}>
                                 <Text style={[theme.styles.text, styles.label]}>Data i godzina</Text>
 
@@ -234,7 +314,6 @@ export default function EditLesson({ navigation, route }) {
                                     date={selectedDateTime_oneLesson}
                                     open={isDatePickerOpen_oneLesson}
                                     onConfirm={(date) => {
-                                        console.log(date.getFullYear(), date.getMonth(), date.getDate(), selectedDateTime_oneLesson.getHours(), selectedDateTime_oneLesson.getMinutes())
                                         setDateTime_oneLesson(new Date(date.getFullYear(), date.getMonth(), date.getDate(), selectedDateTime_oneLesson.getHours(), selectedDateTime_oneLesson.getMinutes()));
                                         setDateVisibility_oneLesson(false);
                                         setTimeVisibility_oneLesson(true);
@@ -258,6 +337,8 @@ export default function EditLesson({ navigation, route }) {
                                     }}
                                 />
                             </View>
+
+                            {/* status input */}
                             <View style={[theme.styles.section, styles.optionContainer]}>
                                 <Text style={[theme.styles.text, styles.label]}>Status</Text>
                                 <View style={[styles.textInput, styles.statusContainer]}>
@@ -285,6 +366,8 @@ export default function EditLesson({ navigation, route }) {
                                     />
                                 </View>
                             </View>
+
+                            {/* topic input: aviable only for one lesson, every lesson in the range would be about different thing */}
                             <View style={[theme.styles.section, styles.optionContainer]}>
                                 <Text style={[theme.styles.text, styles.label]}>Temat</Text>
                                 <TextInput
@@ -300,59 +383,68 @@ export default function EditLesson({ navigation, route }) {
                             </View>
                         </>
                     }
-
-
                     {
-                        mode !== "" &&
+                        mode === "regulary" &&
                         <>
-
                             <View style={[theme.styles.section, styles.optionContainer]}>
-                                <Text style={[theme.styles.text, styles.label]}>Czas</Text>
-                                <TextInput
-                                    mode="outlined"
-                                    style={styles.textInput}
-                                    placeholder="Czas"
-                                    value={String(duration)}
-                                    onChangeText={val => setDuration(parseFloat(val))}
-                                    activeOutlineColor={theme.light.primaryHalf}
-                                    contentStyle={theme.styles.text}
-                                    keyboardType="number-pad"
-                                />
-                            </View>
-
-                            <View style={[theme.styles.section, styles.optionContainer]}>
-                                <Text style={[theme.styles.text, styles.label]}>Cena</Text>
-
-                                <TextInput
-                                    mode="outlined"
-                                    style={styles.textInput}
-                                    placeholder="Cena"
-                                    value={price}
-                                    onChangeText={val => setPrice(val)}
-                                    activeOutlineColor={theme.light.primaryHalf}
-                                    contentStyle={theme.styles.text}
-                                    keyboardType="number-pad"
-                                />
-
-                                {/* auto price */}
                                 <Button
-                                    style={{
-                                        position: "absolute",
-                                        // backgroundColor: "red",
-                                        justifyContent: "center",
-                                        alignContent: "center",
-                                        top: 18,
-                                        right: 7
-                                        // todo display: if i didnt specified subject, level, time or I turned off the price list then NONE
-                                    }}
-
-                                    onPress={() => {
-                                        /* todo automatic price*/
-                                    }}
+                                    mode="text"
+                                    style={{ flex: 2 }}
+                                    onPress={() => setDateBeginVisibility_regulary(true)}
                                 >
-                                    <Image source={require("../assets/images/magic.png")} style={{ width: 32, height: 32 }} />
+                                    <Text style={theme.styles.text}>Od: {getDD_MM_YYYYDate(selectedDateBegin_regulary)}</Text>
                                 </Button>
+
+                                <Button
+                                    mode="text"
+                                    style={{ flex: 2 }}
+                                    onPress={() => setDateEndVisibility_regulary(true)}
+                                >
+                                    <Text style={theme.styles.text}>Do: {getDD_MM_YYYYDate(selectedDateEnd_regulary)}</Text>
+                                </Button>
+
+                                {/* todo the end date cannot be greater than the begin date */}
+
+                                <DatePicker
+                                    modal
+                                    mode="date"
+                                    date={selectedDateBegin_regulary}
+                                    open={isDateBeginPickerOpen_regulary}
+                                    onConfirm={(date) => {
+                                        setDateBegin_regulary(date);
+                                        setDateBeginVisibility_regulary(false);
+                                    }}
+                                    onCancel={() => {
+                                        setDateBeginVisibility_regulary(false);
+                                    }}
+                                />
+
+                                <DatePicker
+                                    modal
+                                    mode="date"
+                                    date={selectedDateEnd_regulary}
+                                    open={isDateEndPickerOpen_regulary}
+                                    onConfirm={(date) => {
+                                        setDateEnd_regulary(date);
+                                        setDateEndVisibility_regulary(false);
+                                    }}
+                                    onCancel={() => {
+                                        setDateEndVisibility_regulary(false);
+                                    }}
+                                />
                             </View>
+
+                            <View style={[theme.styles.section, styles.optionContainer, { flexDirection: "column" }]}>
+                                <CheckboxDayTime dayIndex={0} onSelect={handleSelectingDaysOfWeek} />
+                                <CheckboxDayTime dayIndex={1} onSelect={handleSelectingDaysOfWeek} />
+                                <CheckboxDayTime dayIndex={2} onSelect={handleSelectingDaysOfWeek} />
+                                <CheckboxDayTime dayIndex={3} onSelect={handleSelectingDaysOfWeek} />
+                                <CheckboxDayTime dayIndex={4} onSelect={handleSelectingDaysOfWeek} />
+                                <CheckboxDayTime dayIndex={5} onSelect={handleSelectingDaysOfWeek} />
+                                <CheckboxDayTime dayIndex={6} onSelect={handleSelectingDaysOfWeek} />
+                            </View>
+
+
                         </>
                     }
 
