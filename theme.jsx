@@ -20,6 +20,7 @@ export const theme = {
         },
         text: {
             black: "#2a3846",
+            error: "#f56f6f",
             gray: "#4c5660",
             white: "#ffffff"
         },

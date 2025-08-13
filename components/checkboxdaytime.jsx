@@ -5,15 +5,19 @@ import { getWeekDayName } from "../functions/date";
 import { theme } from "../theme";
 import DatePicker from "react-native-date-picker";
 
-export default function CheckboxDayTime({ dayIndex = 0, onSelect }) {
+export default function CheckboxDayTime({ dayIndex, onSelect }) {
     const [checked, setChecked] = useState(false);
 
     const [time, setTime] = useState(new Date());
     const [isPickerOpen, setPickerVisiability] = useState(false);
 
     const handleCheck = () => {
+        if (checked)
+            onSelect(dayIndex, null);
+        else
+            onSelect(dayIndex, time);
+
         setChecked(!checked);
-        onSelect(dayIndex);
     };
 
     return (
@@ -35,12 +39,12 @@ export default function CheckboxDayTime({ dayIndex = 0, onSelect }) {
             </TouchableOpacity>
             <Button
                 disabled={!checked}
-                onPress={()=>{
+                onPress={() => {
                     setPickerVisiability(true);
                 }}
                 textColor={theme.light.primaryHalf}
             >
-                {time.getHours()}:{String(time.getMinutes()).padStart(2,'0')}
+                {time.getHours()}:{String(time.getMinutes()).padStart(2, '0')}
             </Button>
 
             <DatePicker
@@ -50,6 +54,7 @@ export default function CheckboxDayTime({ dayIndex = 0, onSelect }) {
                 onCancel={() => { setPickerVisiability(false) }}
                 onConfirm={(date) => {
                     setTime(date);
+                    onSelect(dayIndex, date);
                     setPickerVisiability(false);
                 }}
                 open={isPickerOpen}

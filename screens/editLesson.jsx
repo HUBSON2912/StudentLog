@@ -6,7 +6,7 @@ import { arrowDown } from "../functions/getUnicodeItems";
 import SelectDropdown from "react-native-select-dropdown";
 import RectangleRadioButton from "../components/rectRadioButton";
 import DatePicker from "react-native-date-picker";
-import { getDD_MM_YYYY_HH_MMDate, getDD_MM_YYYYDate, ISOToDate } from "../functions/date";
+import { getDD_MM_YYYY_HH_MMDate, getDD_MM_YYYYDate, getWeekDayName, ISOToDate } from "../functions/date";
 import { dropDBLessons, getByIDLessons, insertIntoLessons, updateIDLessons } from "../functions/dbLessons";
 import { getAllStudents, getByIDStudents } from "../functions/dbStudents";
 import { possibleStatus, StatusLabel } from "../components/statuslabel";
@@ -67,10 +67,10 @@ export default function EditLesson({ navigation, route }) {
 
     //note its better to keep the hour in the selectedDaty instead of false/true, null if not selected
     // selecting the days of the week
-    const [selectedDays, setSelectedDays] = useState([false, false, false, false, false, false, false]);
-    const handleSelectingDaysOfWeek = (value) => {
+    const [selectedDays, setSelectedDays] = useState([null, null, null, null, null, null, null]);
+    const handleSelectingDaysOfWeek = (index, time) => {
         let temp = [...selectedDays];
-        temp[value] = !temp[value];
+        temp[index] = time;
         setSelectedDays(temp);
     }
 
@@ -98,7 +98,7 @@ export default function EditLesson({ navigation, route }) {
 
 
     // handling events
-    const handleSaveButton = () => {
+    const handleSaveButton_oneLesson = () => {
         // check if there is no drop database or shit like this
 
         if (
@@ -125,7 +125,7 @@ export default function EditLesson({ navigation, route }) {
             hour: selectedDateTime_oneLesson.getHours(),
             minute: selectedDateTime_oneLesson.getMinutes(),
             topic: topic,
-            duration: parseInt(duration),
+            duration: parseFloat(duration),
             price: parseInt(price),
             status: status.id
         }
@@ -136,6 +136,81 @@ export default function EditLesson({ navigation, route }) {
             updateIDLessons(lessonID, newLessonData);
         }
         navigation.pop();
+    }
+
+    // idea add a calendar with all your lessons
+
+    const isArrayFilledByNULL = (arr) => {
+        let temp = [...arr];
+        temp = temp.filter((val, ind, arr) => { return val; });
+        return temp.length == 0;
+    }
+
+    const handleSaveButton_regulary = () => {
+        if (
+            !student ||
+            !subject ||
+            !level ||
+            !duration ||
+            !price ||
+            isArrayFilledByNULL(selectedDays)
+        ) {
+            setError("Uzupełnij wszystkie dane");
+            return;
+        }
+
+        if (selectedDateBegin_regulary.getTime() > selectedDateEnd_regulary.getTime()) {
+            setError("Nieprawidłowy zakres dat")
+            return;
+        }
+        console.log(selectedDays);
+        for (let i = 0; i < 7; i++) {
+            if (selectedDays[i]) {
+                console.log(selectedDays[i].getHours(), selectedDays[i].getMinutes());
+            }
+
+        }
+
+        let newLessonsArray = [];
+        for (let day = new Date(selectedDateBegin_regulary.getFullYear(), selectedDateBegin_regulary.getMonth(), selectedDateBegin_regulary.getDate(), 3, 0, 0, 0);
+            true;
+            day = new Date(day.getFullYear(), day.getMonth(), day.getDate() + 1, 3, 0, 0, 0)) {
+
+            const dayoftheweek = day.getDay() == 0 ? 6 : (day.getDay() - 1); // monday is the first (the 0th) dat of the week and sunday is the last
+            console.log(day.toISOString(), getWeekDayName(dayoftheweek));
+            if (selectedDays[dayoftheweek]) {
+                const newLessonData = {
+                    student_id: student.id,
+                    subject: subject,
+                    level: level,
+                    year: day.getFullYear(),
+                    month: day.getMonth() + 1,
+                    day: day.getDate(),
+                    hour: selectedDays[dayoftheweek].getHours(),
+                    minute: selectedDays[dayoftheweek].getMinutes(),
+                    topic: "",
+                    duration: parseFloat(duration),
+                    price: parseInt(price),
+                    status: 0   // planned
+                }
+                newLessonsArray.push(newLessonData);
+            }
+
+            if (
+                day.getFullYear() == selectedDateEnd_regulary.getFullYear() &&
+                day.getMonth() == selectedDateEnd_regulary.getMonth() &&
+                day.getDate() == selectedDateEnd_regulary.getDate()) 
+                {
+                break;
+            }
+        }
+        
+        for(let i=0; i<newLessonsArray.length; i++) {
+            insertIntoLessons(newLessonsArray[i]);
+        }
+
+        navigation.pop();
+
     }
 
 
@@ -468,7 +543,12 @@ export default function EditLesson({ navigation, route }) {
                     <Button
                         mode="contained"
                         style={styles.button}
-                        onPress={handleSaveButton}
+                        onPress={() => {
+                            if (mode == "one-lesson")
+                                handleSaveButton_oneLesson();
+                            else if (mode == "regulary")
+                                handleSaveButton_regulary();
+                        }}
                     >
                         <Text style={styles.buttonLabel}>Zapisz</Text>
                     </Button>

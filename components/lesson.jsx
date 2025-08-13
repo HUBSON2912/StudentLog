@@ -58,7 +58,8 @@ export function Lesson({ item }) {
                 <Text style={theme.styles.h2}>{item.price} zł</Text>
             </View>
             <Text style={theme.styles.description}>{item.subject} {bullet()} {item.level}</Text>
-            <Text style={[theme.styles.description, { marginTop: -6 }]}>{item.topic}</Text>
+            {item.topic && <Text style={[theme.styles.description, { marginTop: -6 }]}>{item.topic}</Text>}
+            {!item.topic && <Text style={[theme.styles.description, { marginTop: -6, fontWeight: "bold", color: theme.light.text.error }]}>UZUPEŁNIJ TEMAT</Text>}
             <Text style={theme.styles.description}>{getDD_Mon_YYYY_HH_MMDate(date)}</Text>
             {StatusLabel(item.status)}
         </Section>
