@@ -96,7 +96,7 @@ export function Student({ item }) {
                 <Text style={[theme.styles.description, { display: (printEmail ? "flex" : "none"), paddingLeft: 3 }]} numberOfLines={expand ? 10 : 1}>{email}</Text>
                 <Text style={[theme.styles.description, { display: (printRemotelyData ? "flex" : "none") }]} numberOfLines={expand ? 10 : 1}>{remotelyPlatformNick}</Text>
                 <Text style={[theme.styles.description, { display: (printHomeAdress ? "flex" : "none") }]} numberOfLines={expand ? 10 : 1}>{homeAdress}</Text>
-                <Text style={[theme.styles.description, { display: (expand ? "flex" : "none") }]}>{!item.money ? 0 : item.money} zł {bullet()} {item.lessons_amount} lekcji</Text>
+                <Text style={[theme.styles.description, { display: (expand ? "flex" : "none") }]}>{!item.money ? 0 : item.money} zł {bullet()} {item.lessons_amount} lekcji opłaconych</Text>
             </View>
 
             <View style={{ justifyContent: "center" }}>

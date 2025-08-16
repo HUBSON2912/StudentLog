@@ -134,7 +134,7 @@ export async function getAllLessons() {
             price INTEGER,
             status INTEGER
         );`);
-    
+
     const [rows] = await db.executeSql(`SELECT ${lessons}.id, ${lessons}.student_id, ${lessons}.subject, ${lessons}.level, ${lessons}.year, ${lessons}.month, ${lessons}.day, ${lessons}.hour, ${lessons}.minute, ${lessons}.topic, ${lessons}.duration, ${lessons}.price, ${lessons}.status, ${students}.name, ${students}.surname FROM ${lessons} INNER JOIN ${students} ON ${students}.id=${lessons}.student_id;`);
     const result = [];
 
@@ -229,7 +229,7 @@ export async function getTotalEarning() {
             price INTEGER,
             status INTEGER
         );`)
-                                                                            // status=2 means that I got the money for the lesson (look: possibleStatus in statuslabel.jsx)
+    // status=2 means that I got the money for the lesson (look: possibleStatus in statuslabel.jsx)
     const [rows] = await db.executeSql(`SELECT Sum(price) AS earnings FROM ${lessons} WHERE status=2`);
     const result = rows.rows.item(0);
     return result.earnings ? result.earnings : 0;
@@ -275,8 +275,13 @@ export async function getEarningsPerStudent() {
             price INTEGER,
             status INTEGER
         );`);
-    
-    const [rows]=await db.executeSql("SELECT s.id AS student_id, Sum(l.price) AS money, Count(l.id) AS lessons_amount FROM students s LEFT JOIN lessons l ON l.student_id=s.id GROUP BY student_id;");
+
+    const [rows] = await db.executeSql(
+        `SELECT s.id AS student_id, Sum(l.price) AS money, Count(l.id) AS lessons_amount 
+        FROM students s 
+        LEFT JOIN lessons l ON l.student_id = s.id AND l.status = 2
+        GROUP BY s.id;`
+    );
     const result = [];
 
     for (let i = 0; i < rows.rows.length; i++)
