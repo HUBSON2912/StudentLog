@@ -22,7 +22,7 @@ export function Lesson({ item }) {
 
     const handleDelete = () => {
         Alert.alert("Potwierdzenie",
-            `Czy na pewno chcesz usunąć tę lekcję?\n\nID: ${item.id} \nUczeń: ${item.name} ${item.surname}\nPrzedmiot: ${item.subject} ${item.level}\nData: ${item.year}-${String(item.month).padStart(2, "0")}-${String(item.day).padStart(2, "0")} ${item.hour}:${item.minute}`,
+            `Czy na pewno chcesz usunąć tę lekcję?\n\nID: ${item.id} \nUczeń: ${item.name} ${item.surname}\nPrzedmiot: ${item.subject} ${item.level}\nData: ${item.year}-${String(item.month).padStart(2, "0")}-${String(item.day).padStart(2, "0")} ${item.hour}:${String(item.minute).padStart(2, '0')}`,
             [
                 { text: "Tak", onPress: () => { deleteIDLessons(item.id) } },
                 { text: "Nie", onPress: () => { } }
@@ -45,7 +45,7 @@ export function Lesson({ item }) {
 
     const [yyyy, mm, dd] = [item.year, item.month, item.day];
     const [hh, min] = [item.hour, item.minute];
-    let date = new Date(yyyy, mm-1, dd, hh, min);
+    let date = new Date(yyyy, mm - 1, dd, hh, min);
     // date = new Date(date.getTime() - date.getTimezoneOffset() * 1000 * 60);
 
     return (

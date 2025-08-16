@@ -58,7 +58,6 @@ export function insertIntoStudents(student) {
 }
 
 export function updateIDStudents(id, data) {
-    console.log("aaa");
     SQLite.openDatabase({ name: 'studentlog.db', location: 'default' })
         .then(db => {
             return db.executeSql(

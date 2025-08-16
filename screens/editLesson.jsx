@@ -157,13 +157,7 @@ export default function EditLesson({ navigation, route }) {
             setError("Nieprawidłowy zakres dat")
             return;
         }
-        console.log(selectedDays);
-        for (let i = 0; i < 7; i++) {
-            if (selectedDays[i]) {
-                console.log(selectedDays[i].getHours(), selectedDays[i].getMinutes());
-            }
 
-        }
 
         let newLessonsArray = [];
         for (let day = new Date(selectedDateBegin_regulary.getFullYear(), selectedDateBegin_regulary.getMonth(), selectedDateBegin_regulary.getDate(), 3, 0, 0, 0);
@@ -171,7 +165,6 @@ export default function EditLesson({ navigation, route }) {
             day = new Date(day.getFullYear(), day.getMonth(), day.getDate() + 1, 3, 0, 0, 0)) {
 
             const dayoftheweek = day.getDay() == 0 ? 6 : (day.getDay() - 1); // monday is the first (the 0th) dat of the week and sunday is the last
-            console.log(day.toISOString(), getWeekDayName(dayoftheweek));
             if (selectedDays[dayoftheweek]) {
                 const newLessonData = {
                     student_id: student.id,
@@ -397,7 +390,6 @@ export default function EditLesson({ navigation, route }) {
                                     date={selectedDateTime_oneLesson}
                                     open={isTimePickerOpen_oneLesson}
                                     onConfirm={(date) => {
-                                        console.log(selectedDateTime_oneLesson.getFullYear(), selectedDateTime_oneLesson.getMonth(), selectedDateTime_oneLesson.getDate(), date.getHours(), date.getMinutes());
                                         setDateTime_oneLesson(new Date(selectedDateTime_oneLesson.getFullYear(), selectedDateTime_oneLesson.getMonth(), selectedDateTime_oneLesson.getDate(), date.getHours(), date.getMinutes()));
                                         setTimeVisibility_oneLesson(false);
                                     }}

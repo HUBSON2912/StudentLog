@@ -56,6 +56,7 @@ export default function SettingsMainScreen({ navigation }) {
         );
     }
 
+    // todo now do the settings
 
     return (
         <View style={styles.container}>
@@ -95,15 +96,6 @@ export default function SettingsMainScreen({ navigation }) {
 
                     />
                 </View>
-                <View style={[theme.styles.section, styles.optionContainer]}>
-                    <Text style={[styles.text, styles.label]}>Pierwsza lekcja darmowa</Text>
-                    <Switch
-                        value={showMoney}
-                        onValueChange={switchShowMoney}
-                        color={theme.light.primary}
-
-                    />
-                </View>
                 <View style={[theme.styles.section, { alignItems: "center" }]}>
                     <View style={styles.optionContainer}>
 
@@ -112,6 +104,18 @@ export default function SettingsMainScreen({ navigation }) {
                             value={usePriceList}
                             onValueChange={switchUsagePriceList}
                             color={theme.light.primary}
+                        />
+
+
+                    </View>
+                    <View style={[styles.optionContainer, { display: (usePriceList ? "flex" : "none") }]}>
+                        {/* todo change into "discount for the first lesson [%] defaultly 100%" */}
+                        <Text style={[styles.text, styles.label]}>Pierwsza lekcja darmowa</Text>
+                        <Switch
+                            value={showMoney}
+                            onValueChange={switchShowMoney}
+                            color={theme.light.primary}
+
                         />
                     </View>
                     <Button
