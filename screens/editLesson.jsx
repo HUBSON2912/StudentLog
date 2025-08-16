@@ -612,7 +612,7 @@ const styles = StyleSheet.create({
     statusContainer: {
         borderRadius: 10,
         backgroundColor: "white",
-        padding: 3
+        padding: 3,
     },
     text: {
         color: theme.light.text.black,
