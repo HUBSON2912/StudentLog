@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import SQLite from 'react-native-sqlite-storage';
-import { deleteStudentsLessons } from './dbLessons';
+import { deleteStudentsLessons, getEarningsPerStudent } from './dbLessons';
 
 SQLite.enablePromise(true);
 
@@ -135,11 +135,24 @@ export async function getAllStudents() {
             house_nr TEXT,
             flat_nr TEXT
         );`);
-    const [rows] = await db.executeSql('SELECT * FROM students');
+    const [students] = await db.executeSql('SELECT * FROM students;');
+    const moneyPerStudent = await getEarningsPerStudent();
     const result = [];
 
-    for (let i = 0; i < rows.rows.length; i++)
-        result.push(rows.rows.item(i));
+    for (let i = 0; i < students.rows.length; i++) {
+        let newItem = { ...students.rows.item(i) };
+        for (let j = 0; j < moneyPerStudent.length; j++) {
+            if (newItem.id == moneyPerStudent[j].student_id) {
+                newItem = {
+                    ...newItem,
+                    money: moneyPerStudent[j].money,
+                    lessons_amount: moneyPerStudent[j].lessons_amount
+                }
+                result.push(newItem);
+                break;
+            }
+        }
+    }
 
     return result;
 }

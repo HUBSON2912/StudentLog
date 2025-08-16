@@ -255,3 +255,32 @@ export async function dropDBLessons() {
         );`)
     const [rows] = await db.executeSql(`DROP TABLE ${lessons};`);
 }
+
+export async function getEarningsPerStudent() {
+
+    const db = await SQLite.openDatabase({ name: 'studentlog.db', location: 'default' });
+    await db.executeSql(
+        `CREATE TABLE IF NOT EXISTS ${lessons} (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            student_id INTEGER,
+            subject TEXT,
+            level TEXT,
+            year INTEGER,
+            month INTEGER,
+            day INTEGER,
+            hour INTEGER,
+            minute INTEGER,
+            topic TEXT,
+            duration INTEGER,
+            price INTEGER,
+            status INTEGER
+        );`);
+    
+    const [rows]=await db.executeSql("SELECT s.id AS student_id, Sum(l.price) AS money, Count(l.id) AS lessons_amount FROM students s LEFT JOIN lessons l ON l.student_id=s.id GROUP BY student_id;");
+    const result = [];
+
+    for (let i = 0; i < rows.rows.length; i++)
+        result.push(rows.rows.item(i));
+
+    return result;
+}

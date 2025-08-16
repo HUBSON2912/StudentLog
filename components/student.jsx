@@ -70,8 +70,8 @@ export function Student({ item }) {
         )
     };
 
-    const [expand, setExpand]=useState(false);
-    const onPress=()=>{
+    const [expand, setExpand] = useState(false);
+    const onPress = () => {
         setExpand(!expand);
     }
 
@@ -93,9 +93,10 @@ export function Student({ item }) {
             <View style={{ flex: 1, }}>
                 <Text style={theme.styles.h2}>{item.name} {item.surname}</Text>
                 <Text style={[theme.styles.description, { display: (printPhone ? "flex" : "none") }]}>{phoneNum}</Text>
-                <Text style={[theme.styles.description, { display: (printEmail ? "flex" : "none"), paddingLeft: 3 }]} numberOfLines={expand?10:1}>{email}</Text>
-                <Text style={[theme.styles.description, { display: (printRemotelyData ? "flex" : "none") }]} numberOfLines={expand?10:1}>{remotelyPlatformNick}</Text>
-                <Text style={[theme.styles.description, { display: (printHomeAdress ? "flex" : "none") }]} numberOfLines={expand?10:1}>{homeAdress}</Text>
+                <Text style={[theme.styles.description, { display: (printEmail ? "flex" : "none"), paddingLeft: 3 }]} numberOfLines={expand ? 10 : 1}>{email}</Text>
+                <Text style={[theme.styles.description, { display: (printRemotelyData ? "flex" : "none") }]} numberOfLines={expand ? 10 : 1}>{remotelyPlatformNick}</Text>
+                <Text style={[theme.styles.description, { display: (printHomeAdress ? "flex" : "none") }]} numberOfLines={expand ? 10 : 1}>{homeAdress}</Text>
+                <Text style={[theme.styles.description, { display: (expand ? "flex" : "none") }]}>{!item.money ? 0 : item.money} zł {bullet()} {item.lessons_amount} lekcji</Text>
             </View>
 
             <View style={{ justifyContent: "center" }}>

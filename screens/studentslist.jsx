@@ -8,12 +8,6 @@ import { useEffect, useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 
 export default function StudentsListScreen({ navigation }) {
-
-    /** todo
-     * check if works the fetching message bellow
-     * 
-     */
-
     const [message, setMessage] = useState("Wczytywanie...");
 
     const [students, setStudents] = useState([]);
