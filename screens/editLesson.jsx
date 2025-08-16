@@ -7,18 +7,13 @@ import SelectDropdown from "react-native-select-dropdown";
 import RectangleRadioButton from "../components/rectRadioButton";
 import DatePicker from "react-native-date-picker";
 import { getDD_MM_YYYY_HH_MMDate, getDD_MM_YYYYDate, getWeekDayName, ISOToDate } from "../functions/date";
-import { dropDBLessons, getByIDLessons, insertIntoLessons, updateIDLessons } from "../functions/dbLessons";
+import { getByIDLessons, insertIntoLessons, updateIDLessons } from "../functions/dbLessons";
 import { getAllStudents, getByIDStudents } from "../functions/dbStudents";
 import { possibleStatus, StatusLabel } from "../components/statuslabel";
 import CheckboxDayTime from "../components/checkboxdaytime";
 
 
 export default function EditLesson({ navigation, route }) {
-
-    /** todo
- * create option "regulary" to add more than one lesson at once. like every friday or sth.
- */
-
 
     const { lessonID } = route.params;
 
@@ -40,6 +35,7 @@ export default function EditLesson({ navigation, route }) {
             if (lessonID !== null) {
                 setLessonData(await getByIDLessons(lessonID));
             }
+
             setStudents(await getAllStudents());
         }
         fetchData();
@@ -64,8 +60,6 @@ export default function EditLesson({ navigation, route }) {
     const [selectedDateEnd_regulary, setDateEnd_regulary] = useState(new Date(today.getFullYear(), today.getMonth() + 1, today.getDate()));
     const [isDateEndPickerOpen_regulary, setDateEndVisibility_regulary] = useState(false);
 
-
-    //note its better to keep the hour in the selectedDaty instead of false/true, null if not selected
     // selecting the days of the week
     const [selectedDays, setSelectedDays] = useState([null, null, null, null, null, null, null]);
     const handleSelectingDaysOfWeek = (index, time) => {
@@ -78,7 +72,7 @@ export default function EditLesson({ navigation, route }) {
     const renderDropdownButtonChooseStudent = (sel, isOpen) => {
         return (
             <View style={[styles.optionValue, { borderRadius: 5, paddingVertical: 5, justifyContent: "center", borderColor: theme.light.border, borderWidth: 1 }]}>
-                <Text style={theme.styles.text}>{sel ? sel.id + " " + sel.name + " " + sel.surname : "Wybierz ucznia"}</Text>
+                <Text style={theme.styles.text}>{student ? student.id + " " + student.name + " " + student.surname : "Wybierz ucznia"}</Text>
                 <Text style={styles.arrowDown}>{arrowDown()}</Text>
             </View>
         );
@@ -199,13 +193,12 @@ export default function EditLesson({ navigation, route }) {
             if (
                 day.getFullYear() == selectedDateEnd_regulary.getFullYear() &&
                 day.getMonth() == selectedDateEnd_regulary.getMonth() &&
-                day.getDate() == selectedDateEnd_regulary.getDate()) 
-                {
+                day.getDate() == selectedDateEnd_regulary.getDate()) {
                 break;
             }
         }
-        
-        for(let i=0; i<newLessonsArray.length; i++) {
+
+        for (let i = 0; i < newLessonsArray.length; i++) {
             insertIntoLessons(newLessonsArray[i]);
         }
 
@@ -218,8 +211,9 @@ export default function EditLesson({ navigation, route }) {
     let [haveISetTheData, setAreDataSet] = useState(false);
     useEffect(() => {
         const setFetchedLessonData = async () => {
-            setDefStudent(await getByIDStudents(lessonData.student_id));
-            setStudent(await getByIDStudents(lessonData.student_id));
+            const stud = await getByIDStudents(lessonData.student_id);
+            setDefStudent(stud);
+            setStudent(stud);
             setSubject(lessonData.subject);
             setLevel(lessonData.level);
             setDateTime_oneLesson(new Date(lessonData.year, lessonData.month - 1, lessonData.day, lessonData.hour, lessonData.minute));
@@ -235,7 +229,7 @@ export default function EditLesson({ navigation, route }) {
             setFetchedLessonData();
         }
     }, [lessonData, lessonID]);
-
+    
     return (
         <View style={styles.container}>
             <ScrollView style={styles.container}>
@@ -257,7 +251,6 @@ export default function EditLesson({ navigation, route }) {
                                 data={students}
                                 onSelect={(sel, index) => {
                                     setStudent(sel);
-                                    console.log("aaa");
                                 }}
                                 renderButton={renderDropdownButtonChooseStudent}
                                 renderItem={renderDropdownItemChooseStudent}
@@ -478,8 +471,6 @@ export default function EditLesson({ navigation, route }) {
                                 >
                                     <Text style={theme.styles.text}>Do: {getDD_MM_YYYYDate(selectedDateEnd_regulary)}</Text>
                                 </Button>
-
-                                {/* todo the end date cannot be greater than the begin date */}
 
                                 <DatePicker
                                     modal
