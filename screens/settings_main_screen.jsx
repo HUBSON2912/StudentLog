@@ -1,10 +1,11 @@
 import { ScrollView, StyleSheet, View } from "react-native";
 import { Button, Switch, Text } from "react-native-paper";
 import { theme } from "../theme";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { arrowDown } from "../functions/getUnicodeItems";
 import SelectDropdown from "react-native-select-dropdown";
 import { currencies, getCurrencySymbol } from "../functions/currency";
+import { getCurrency, setCurrency } from "../functions/settingsStorage";
 
 export default function SettingsMainScreen({ navigation }) {
 
@@ -59,12 +60,13 @@ export default function SettingsMainScreen({ navigation }) {
 
 
     // default: USD
-    const [currency, setCurrency] = useState({
-        "_code": "USD",
-        "_unicode-decimal": "36",
-        "_unicode-hex": "24",
-        "__text": "United States Dollar"
-    });
+    const [currency, setCurrencyLocal] = useState({});
+    useEffect(() => {
+        const fetchSavedSettings = async () => {
+            setCurrencyLocal(await getCurrency());
+        };
+        fetchSavedSettings();
+    })
 
     const renderCurrencyButton = (sel, isOpen) => {
         return (
@@ -105,6 +107,7 @@ export default function SettingsMainScreen({ navigation }) {
                     <SelectDropdown
                         data={currencies}
                         onSelect={(sel) => {
+                            setCurrencyLocal(sel);
                             setCurrency(sel);
                         }}
                         renderButton={renderCurrencyButton}

@@ -5,10 +5,20 @@ import { bullet, mail, phone } from "../functions/getUnicodeItems";
 import { useNavigation } from "@react-navigation/native";
 import { deleteIDStudent } from "../functions/dbStudents";
 import Section from "./section";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getCurrencySymbol } from "../functions/currency";
+import { getCurrency } from "../functions/settingsStorage";
 
 export function Student({ item }) {
 
+
+    const [curr, setCurr] = useState({});
+    useEffect(() => {
+        const fetchCurr = async () => {
+            setCurr(await getCurrency());
+        }
+        fetchCurr();
+    });
     const navigation = useNavigation();
 
     let email = "";
@@ -96,7 +106,9 @@ export function Student({ item }) {
                 <Text style={[theme.styles.description, { display: (printEmail ? "flex" : "none"), paddingLeft: 3 }]} numberOfLines={expand ? 10 : 1}>{email}</Text>
                 <Text style={[theme.styles.description, { display: (printRemotelyData ? "flex" : "none") }]} numberOfLines={expand ? 10 : 1}>{remotelyPlatformNick}</Text>
                 <Text style={[theme.styles.description, { display: (printHomeAdress ? "flex" : "none") }]} numberOfLines={expand ? 10 : 1}>{homeAdress}</Text>
-                <Text style={[theme.styles.description, { display: (expand ? "flex" : "none") }]}>{!item.money ? 0 : item.money} zł {bullet()} {item.lessons_amount} lekcji opłaconych</Text>
+                <Text style={[theme.styles.description, { display: (expand ? "flex" : "none") }]}>{!item.money ? 0 : item.money} {
+                    getCurrencySymbol(curr["_code"])
+                } {bullet()} {item.lessons_amount} lekcji opłaconych</Text>
             </View>
 
             <View style={{ justifyContent: "center" }}>

@@ -17,7 +17,6 @@ export function getCurrencySymbol(code) {
                 return decode(`&#${val};`)
             });
 
-    console.log(currencyUnicodeSymbol);
     return currencyUnicodeSymbol;
 
 }

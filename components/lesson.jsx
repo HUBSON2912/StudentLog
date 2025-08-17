@@ -7,14 +7,22 @@ import Section from "./section";
 import { getDD_Mon_YYYY_HH_MMDate } from "../functions/date";
 import { useNavigation } from "@react-navigation/native";
 import { deleteIDLessons } from "../functions/dbLessons";
+import { useEffect, useState } from "react";
+import { getCurrency } from "../functions/settingsStorage";
+import { getCurrencySymbol } from "../functions/currency";
 
 export function Lesson({ item }) {
-    /** TODO 
-     * verify if displaing the status works propertly, not sure about it
-     * display a note that there is no topic given in the lesson
-     */
 
     const navigation = useNavigation();
+
+    const [curr, setCurr] = useState({});
+    useEffect(() => {
+        const fetchCurr = async () => {
+            setCurr(await getCurrency());
+        }
+        fetchCurr();
+    });
+
 
     const handleEditing = () => {
         navigation.navigate("EditLesson", { lessonID: item.id });
@@ -22,7 +30,11 @@ export function Lesson({ item }) {
 
     const handleDelete = () => {
         Alert.alert("Potwierdzenie",
-            `Czy na pewno chcesz usunąć tę lekcję?\n\nID: ${item.id} \nUczeń: ${item.name} ${item.surname}\nPrzedmiot: ${item.subject} ${item.level}\nData: ${item.year}-${String(item.month).padStart(2, "0")}-${String(item.day).padStart(2, "0")} ${item.hour}:${String(item.minute).padStart(2, '0')}`,
+            `Czy na pewno chcesz usunąć tę lekcję?\n\n
+            ID: ${item.id} \n
+            Uczeń: ${item.name} ${item.surname}\n
+            Przedmiot: ${item.subject} ${item.level}\n
+            Data: ${item.year}-${String(item.month).padStart(2, "0")}-${String(item.day).padStart(2, "0")} ${item.hour}:${String(item.minute).padStart(2, '0')}`,
             [
                 { text: "Tak", onPress: () => { deleteIDLessons(item.id) } },
                 { text: "Nie", onPress: () => { } }
@@ -32,7 +44,11 @@ export function Lesson({ item }) {
     };
 
     const showAlert = () => {
-        Alert.alert("Co zamierzasz zrobić", `Wybierz co zamierzasz zrobić z tym rekordem. \n\nID: ${item.id} \nUczeń: ${item.name} ${item.surname}\nPrzedmiot: ${item.subject} ${item.level}\nData: ${item.year}-${String(item.month).padStart(2, "0")}-${String(item.day).padStart(2, "0")} ${String(item.hour).padStart(2, "0")}:${String(item.minute).padStart(2, "0")}`,
+        Alert.alert("Co zamierzasz zrobić", `Wybierz co zamierzasz zrobić z tym rekordem. \n\n
+            ID: ${item.id} \n
+            Uczeń: ${item.name} ${item.surname}\n
+            Przedmiot: ${item.subject} ${item.level}\n
+            Data: ${item.year}-${String(item.month).padStart(2, "0")}-${String(item.day).padStart(2, "0")} ${String(item.hour).padStart(2, "0")}:${String(item.minute).padStart(2, "0")}`,
             [
                 { text: "Anuluj", onPress: () => { }, style: "cancel" },
                 { text: "Edytuj", onPress: handleEditing },
@@ -55,7 +71,7 @@ export function Lesson({ item }) {
         >
             <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
                 <Text style={theme.styles.h2}>{item.name} {item.surname}</Text>
-                <Text style={theme.styles.h2}>{item.price} zł</Text>
+                <Text style={theme.styles.h2}>{item.price} {getCurrencySymbol(curr["_code"])}</Text>
             </View>
             <Text style={theme.styles.description}>{item.subject} {bullet()} {item.level}</Text>
             {item.topic && <Text style={[theme.styles.description, { marginTop: -6 }]}>{item.topic}</Text>}
