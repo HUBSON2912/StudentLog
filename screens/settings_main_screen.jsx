@@ -4,6 +4,7 @@ import { theme } from "../theme";
 import { useState } from "react";
 import { arrowDown } from "../functions/getUnicodeItems";
 import SelectDropdown from "react-native-select-dropdown";
+import { currencies, getCurrencySymbol } from "../functions/currency";
 
 export default function SettingsMainScreen({ navigation }) {
 
@@ -36,16 +37,16 @@ export default function SettingsMainScreen({ navigation }) {
         setShowMoney(!showMoney);
     }
 
-    const renderDropdownButton = (sel, isOpen) => {
+    const renderLanguageButton = (sel, isOpen) => {
         return (
-            <View style={[styles.optionValue]}>
-                <Text style={styles.text}>{(selectedLanguage)}</Text>
+            <View style={[styles.optionValue, styles.dropdownButton]}>
+                <Text style={[styles.text, { flex: 1, textAlign: "center" }]}>{(selectedLanguage)}</Text>
                 <Text style={styles.arrowDown}>{arrowDown()}</Text>
             </View>
         );
     };
 
-    const renderDropdownItem = (item, index, isSelected) => {
+    const renderLanguageItem = (item, index, isSelected) => {
         return (
             <View style={[
                 styles.dropdownItem,
@@ -56,12 +57,37 @@ export default function SettingsMainScreen({ navigation }) {
         );
     }
 
-    // todo now do the settings
+
+    // default: USD
+    const [currency, setCurrency] = useState({
+        "_code": "USD",
+        "_unicode-decimal": "36",
+        "_unicode-hex": "24",
+        "__text": "United States Dollar"
+    });
+
+    const renderCurrencyButton = (sel, isOpen) => {
+        return (
+            <View style={[styles.optionValue, styles.dropdownButton]}>
+                <Text style={[styles.text, { flex: 1, textAlign: "center" }]}>{currency.__text} ({getCurrencySymbol(currency._code)})</Text>
+                <Text style={styles.arrowDown}>{arrowDown()}</Text>
+            </View>
+        );
+    }
+    const renderCurrencyItem = (item, index, isSelected) => {
+        return (
+            <View style={[
+                styles.dropdownItem,
+                isSelected && { backgroundColor: theme.light.primaryPale }
+            ]}>
+                <Text style={[styles.text, { textAlign: "center" }]}>{item.__text} ({getCurrencySymbol(item._code)})</Text>
+            </View>
+        );
+    }
 
     return (
         <View style={styles.container}>
             <ScrollView style={styles.container}>
-
                 <View style={[theme.styles.section, styles.optionContainer]}>
                     <Text style={[styles.text, styles.label]}>Język</Text>
                     <SelectDropdown
@@ -69,14 +95,24 @@ export default function SettingsMainScreen({ navigation }) {
                         onSelect={(sel, index) => {
                             setSelectedLanguage(sel);
                         }}
-                        renderButton={renderDropdownButton}
-                        renderItem={renderDropdownItem}
+                        renderButton={renderLanguageButton}
+                        renderItem={renderLanguageItem}
                         defaultValue={selectedLanguage}
                     />
                 </View>
                 <View style={[theme.styles.section, styles.optionContainer]}>
                     <Text style={[styles.text, styles.label]}>Waluta</Text>
-                    <Text style={[styles.text, { textAlign: "center", textAlignVertical: "center", flex: 3 }]}>złoty</Text>
+                    <SelectDropdown
+                        data={currencies}
+                        onSelect={(sel) => {
+                            setCurrency(sel);
+                        }}
+                        renderButton={renderCurrencyButton}
+                        renderItem={renderCurrencyItem}
+                        defaultValue={currency}
+                        search={true}
+                        disableAutoScroll
+                    />
                 </View>
                 <View style={[theme.styles.section, styles.optionContainer]}>
                     <Text style={[styles.text, styles.label]}>Tryb ciemny</Text>
@@ -156,9 +192,7 @@ export default function SettingsMainScreen({ navigation }) {
 
 const styles = StyleSheet.create({
     arrowDown: {
-        position: "absolute",
         color: theme.light.text.black,
-        right: 5
     },
     button: {
         backgroundColor: theme.light.primaryHalf,
@@ -172,6 +206,14 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: theme.light.background,
+    },
+    dropdownButton: {
+        borderRadius: 10,
+        borderColor: theme.light.border,
+        borderWidth: 1,
+        padding: 5,
+        alignItems: "center",
+        flexDirection: "row"
     },
     dropdownItem: {
         width: '100%',
