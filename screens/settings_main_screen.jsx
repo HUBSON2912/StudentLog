@@ -58,8 +58,9 @@ export default function SettingsMainScreen({ navigation }) {
         );
     }
 
+    // todo delete the spanish version - you dont know this good enough
 
-    // default: USD
+    // default: PLN
     const [currency, setCurrencyLocal] = useState({});
     useEffect(() => {
         const fetchSavedSettings = async () => {

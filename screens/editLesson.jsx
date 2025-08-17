@@ -100,7 +100,6 @@ export default function EditLesson({ navigation, route }) {
             !subject ||
             !level ||
             !selectedDateTime_oneLesson ||
-            !topic ||
             !duration ||
             !price ||
             !status
@@ -222,7 +221,7 @@ export default function EditLesson({ navigation, route }) {
             setFetchedLessonData();
         }
     }, [lessonData, lessonID]);
-    
+
     return (
         <View style={styles.container}>
             <ScrollView style={styles.container}>
@@ -527,17 +526,17 @@ export default function EditLesson({ navigation, route }) {
                         mode="contained"
                         style={styles.button}
                         onPress={() => {
-                            if (mode == "one-lesson")
-                                handleSaveButton_oneLesson();
-                            else if (mode == "regulary")
+                            if (mode == "regulary")
                                 handleSaveButton_regulary();
+                            else
+                                handleSaveButton_oneLesson();
                         }}
                     >
                         <Text style={styles.buttonLabel}>Zapisz</Text>
                     </Button>
                 </View>
-            </ScrollView>
-        </View>
+            </ScrollView >
+        </View >
     );
 }
 

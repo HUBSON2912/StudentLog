@@ -11,7 +11,7 @@ import { getCurrency } from "../functions/settingsStorage";
 
 export function Student({ item }) {
 
-
+    // to get the correct currency and show it when the student is pressed
     const [curr, setCurr] = useState({});
     useEffect(() => {
         const fetchCurr = async () => {
