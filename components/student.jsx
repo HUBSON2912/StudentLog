@@ -1,4 +1,4 @@
-import { Alert, Image, View } from "react-native";
+import { Alert, Image, StyleSheet, View } from "react-native";
 import { theme } from "../theme";
 import { Text } from "react-native-paper";
 import { bullet, mail, phone } from "../functions/getUnicodeItems";
@@ -10,6 +10,7 @@ import { getCurrencySymbol } from "../functions/currency";
 import { getCurrency } from "../functions/settingsStorage";
 
 export function Student({ item }) {
+    
 
     // to get the correct currency and show it when the student is pressed
     const [curr, setCurr] = useState({});
@@ -101,12 +102,12 @@ export function Student({ item }) {
             onPress={onPress}
         >
             <View style={{ flex: 1, }}>
-                <Text style={theme.styles.h2}>{item.name} {item.surname}</Text>
-                <Text style={[theme.styles.description, { display: (printPhone ? "flex" : "none") }]}>{phoneNum}</Text>
-                <Text style={[theme.styles.description, { display: (printEmail ? "flex" : "none"), paddingLeft: 3 }]} numberOfLines={expand ? 10 : 1}>{email}</Text>
-                <Text style={[theme.styles.description, { display: (printRemotelyData ? "flex" : "none") }]} numberOfLines={expand ? 10 : 1}>{remotelyPlatformNick}</Text>
-                <Text style={[theme.styles.description, { display: (printHomeAdress ? "flex" : "none") }]} numberOfLines={expand ? 10 : 1}>{homeAdress}</Text>
-                <Text style={[theme.styles.description, { display: (expand ? "flex" : "none") }]}>{!item.money ? 0 : item.money} {
+                <Text style={styles.h2}>{item.name} {item.surname}</Text>
+                <Text style={[styles.description, { display: (printPhone ? "flex" : "none") }]}>{phoneNum}</Text>
+                <Text style={[styles.description, { display: (printEmail ? "flex" : "none"), paddingLeft: 3 }]} numberOfLines={expand ? 10 : 1}>{email}</Text>
+                <Text style={[styles.description, { display: (printRemotelyData ? "flex" : "none") }]} numberOfLines={expand ? 10 : 1}>{remotelyPlatformNick}</Text>
+                <Text style={[styles.description, { display: (printHomeAdress ? "flex" : "none") }]} numberOfLines={expand ? 10 : 1}>{homeAdress}</Text>
+                <Text style={[styles.description, { display: (expand ? "flex" : "none") }]}>{!item.money ? 0 : item.money} {
                     getCurrencySymbol(curr["_code"])
                 } {bullet()} {item.lessons_amount} lekcji opłaconych</Text>
             </View>
@@ -121,3 +122,15 @@ export function Student({ item }) {
         </Section>
     );
 }
+
+const styles = StyleSheet.create({
+    h2: {
+        fontSize: 20,
+        color: theme.text.default,
+        textAlignVertical: "center"
+    },
+    description: {
+        color: theme.text.gray,
+        fontSize: 16
+    }
+});

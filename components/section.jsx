@@ -1,4 +1,4 @@
-import { Animated, TouchableNativeFeedback, View } from "react-native";
+import { Animated, StyleSheet, TouchableNativeFeedback, View } from "react-native";
 import { theme } from "../theme";
 import { useState } from "react";
 
@@ -67,8 +67,8 @@ export default function Section({
             pressOut = handlePressOut;
             break;
         case "fade":
-            pressIn=handleFadePressIn;
-            pressOut=handleFadePressOut;
+            pressIn = handleFadePressIn;
+            pressOut = handleFadePressOut;
             break;
         case "fade-out":
             pressIn = handleFadeOut;
@@ -78,18 +78,18 @@ export default function Section({
             break;
     }
 
-    let click=0;
+    let click = 0;
 
 
     return (
-        <TouchableNativeFeedback style={[theme.styles.section, style]}
+        <TouchableNativeFeedback style={[styles.section, style]}
             onPressIn={onPressIn || pressIn}
             onPressOut={onPressOut || pressOut}
             onLongPress={onLongPress}
             onPress={onPress}
         >
             <Animated.View
-                style={[theme.styles.section, {
+                style={[styles.section, {
                     opacity: fadeAnim,
                     transform: (onPressBehaviour == "scale" ? [{ scale: scaleAnim }] : [])
                 }, style]}
@@ -99,3 +99,14 @@ export default function Section({
         </TouchableNativeFeedback>
     );
 }
+
+const styles = StyleSheet.create({
+    section: {
+        flex: 1,
+        backgroundColor: theme.backgroundSection,
+        marginVertical: 5,
+        borderRadius: 10,
+        padding: 15,
+        gap: 3
+    }
+})

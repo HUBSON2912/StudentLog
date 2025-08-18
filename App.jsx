@@ -13,18 +13,12 @@ import { useEffect, useState } from 'react';
 const Tabs = createBottomTabNavigator();
 
 export default function App() {
-    /** TODO
-     * get all saved data from AsyncStorage
-     * theme=theme.color  (theme.light change in theme.color)
-     */
 
     const [earnings, setEarnings] = useState(0);
-    // useEffect(()=>{
     const countEarnings = async () => {
         setEarnings(await getTotalEarning());
     }
     countEarnings();
-    // })
 
     return (
         <PaperProvider>
@@ -35,7 +29,7 @@ export default function App() {
                             StudentLog
                         </Text>
                     </View>
-                    
+
 
                     <Tabs.Navigator initialRouteName='Lekcje' screenOptions={{ animation: 'shift', headerShown: false }}>
                         <Tabs.Screen name="Uczniowie" component={StudentsScreen} options={{
@@ -64,7 +58,7 @@ export default function App() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: theme.light.background,
+        backgroundColor: theme.background,
         paddingHorizontal: 15,
         paddingTop: 20
     },
@@ -74,11 +68,11 @@ const styles = StyleSheet.create({
     },
     text: {
         fontSize: 18,
-        color: theme.light.text.black,
+        color: theme.text.black,
     },
     title: {
         fontSize: 36,
-        color: theme.light.text.black,
+        color: theme.text.black,
         fontWeight: "bold"
     },
 });

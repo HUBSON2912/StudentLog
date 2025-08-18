@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { dark, light } from "../theme";
 
 export async function getCurrency() {
     const currency = await AsyncStorage.getItem("currency");
@@ -21,4 +22,23 @@ export async function getCurrency() {
 
 export async function setCurrency(value) {
     await AsyncStorage.setItem("currency", JSON.stringify(value));
+}
+
+export async function getTheme() {
+    const darkModeOn = (await AsyncStorage.getItem("darkModeOn")) === "true" ? true : false;
+    if (darkModeOn) {
+        return dark;
+    } else {
+        return light;
+    }
+}
+
+export async function togleDarkMode(params) {
+    if (await AsyncStorage.getItem("darkModeOn") === "false") {
+        await AsyncStorage.setItem("darkModeOn", "true");
+    } 
+    else {
+        await AsyncStorage.setItem("darkModeOn", "false");
+    }
+
 }

@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
     },
     plusView: {
         position: 'absolute',
-        backgroundColor: theme.light.primary,
+        backgroundColor: theme.primary,
         width: 50,
         height: 50,
         bottom: 20,

@@ -6,10 +6,11 @@ import { arrowDown } from "../functions/getUnicodeItems";
 import SelectDropdown from "react-native-select-dropdown";
 import { currencies, getCurrencySymbol } from "../functions/currency";
 import { getCurrency, setCurrency } from "../functions/settingsStorage";
+import Section from "../components/section";
 
 export default function SettingsMainScreen({ navigation }) {
 
-    const languages = ["Polski", "English", "Espanol"];
+    const languages = ["Polski", "English"];
 
     const [selectedLanguage, setSelectedLanguage] = useState("Polski");
     const [isDarkMode, setDarkMode] = useState(false);
@@ -51,14 +52,13 @@ export default function SettingsMainScreen({ navigation }) {
         return (
             <View style={[
                 styles.dropdownItem,
-                isSelected && { backgroundColor: theme.light.primaryPale }
+                isSelected && { backgroundColor: theme.primaryPale },
+                !isSelected && { backgroundColor: theme.backgroundInput },
             ]}>
                 <Text style={styles.text}>{item}</Text>
             </View>
         );
     }
-
-    // todo delete the spanish version - you dont know this good enough
 
     // default: PLN
     const [currency, setCurrencyLocal] = useState({});
@@ -81,7 +81,8 @@ export default function SettingsMainScreen({ navigation }) {
         return (
             <View style={[
                 styles.dropdownItem,
-                isSelected && { backgroundColor: theme.light.primaryPale }
+                isSelected && { backgroundColor: theme.primaryPale },
+                !isSelected && { backgroundColor: theme.backgroundInput }
             ]}>
                 <Text style={[styles.text, { textAlign: "center" }]}>{item.__text} ({getCurrencySymbol(item._code)})</Text>
             </View>
@@ -91,7 +92,7 @@ export default function SettingsMainScreen({ navigation }) {
     return (
         <View style={styles.container}>
             <ScrollView style={styles.container}>
-                <View style={[theme.styles.section, styles.optionContainer]}>
+                <Section style={styles.optionContainer}>
                     <Text style={[styles.text, styles.label]}>Język</Text>
                     <SelectDropdown
                         data={languages}
@@ -102,8 +103,10 @@ export default function SettingsMainScreen({ navigation }) {
                         renderItem={renderLanguageItem}
                         defaultValue={selectedLanguage}
                     />
-                </View>
-                <View style={[theme.styles.section, styles.optionContainer]}>
+
+                </Section>
+
+                <Section style={styles.optionContainer}>
                     <Text style={[styles.text, styles.label]}>Waluta</Text>
                     <SelectDropdown
                         data={currencies}
@@ -114,36 +117,39 @@ export default function SettingsMainScreen({ navigation }) {
                         renderButton={renderCurrencyButton}
                         renderItem={renderCurrencyItem}
                         defaultValue={currency}
-                        search={true}
+                        dropdownStyle={{ backgroundColor: theme.backgroundInput }}
                         disableAutoScroll
+                        search={true}
+                        searchInputStyle={{ backgroundColor: theme.backgroundInput, borderBottomWidth: 3, borderBottomColor: theme.text.gray }}
+                        searchInputTxtColor={theme.text.default}
+                        searchPlaceHolder="Szukaj"
                     />
-                </View>
-                <View style={[theme.styles.section, styles.optionContainer]}>
+                </Section>
+                <Section style={styles.optionContainer}>
                     <Text style={[styles.text, styles.label]}>Tryb ciemny</Text>
                     <Switch
                         value={isDarkMode}
                         onValueChange={switchDarkMode}
-                        color={theme.light.primary}
-
+                        color={theme.primary}
                     />
-                </View>
-                <View style={[theme.styles.section, styles.optionContainer]}>
+                </Section>
+                <Section style={styles.optionContainer}>
                     <Text style={[styles.text, styles.label]}>Pokaż zarobki</Text>
                     <Switch
                         value={showMoney}
                         onValueChange={switchShowMoney}
-                        color={theme.light.primary}
+                        color={theme.primary}
 
                     />
-                </View>
-                <View style={[theme.styles.section, { alignItems: "center" }]}>
+                </Section>
+                <Section style={{ alignItems: "center" }}>
                     <View style={styles.optionContainer}>
 
                         <Text style={[styles.text, styles.label]}>Zastosuj cennik</Text>
                         <Switch
                             value={usePriceList}
                             onValueChange={switchUsagePriceList}
-                            color={theme.light.primary}
+                            color={theme.primary}
                         />
 
 
@@ -154,7 +160,7 @@ export default function SettingsMainScreen({ navigation }) {
                         <Switch
                             value={showMoney}
                             onValueChange={switchShowMoney}
-                            color={theme.light.primary}
+                            color={theme.primary}
 
                         />
                     </View>
@@ -170,7 +176,7 @@ export default function SettingsMainScreen({ navigation }) {
                             Edytuj cennik
                         </Text>
                     </Button>
-                </View>
+                </Section>
                 <Button
                     mode="contained"
                     style={styles.button}
@@ -196,24 +202,24 @@ export default function SettingsMainScreen({ navigation }) {
 
 const styles = StyleSheet.create({
     arrowDown: {
-        color: theme.light.text.black,
+        color: theme.text.default,
     },
     button: {
-        backgroundColor: theme.light.primaryHalf,
+        backgroundColor: theme.primaryHalf,
         marginVertical: 5
     },
     buttonLabel: {
-        color: theme.light.text.white,
+        color: theme.text.buttonLabel,
         fontWeight: "bold",
         letterSpacing: 1
     },
     container: {
         flex: 1,
-        backgroundColor: theme.light.background,
+        backgroundColor: theme.background,
     },
     dropdownButton: {
         borderRadius: 10,
-        borderColor: theme.light.border,
+        borderColor: theme.border,
         borderWidth: 1,
         padding: 5,
         alignItems: "center",
@@ -226,7 +232,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         paddingVertical: 8,
-        borderBottomColor: theme.light.text.gray,
+        borderBottomColor: theme.text.gray,
         borderBottomWidth: 1
     },
     label: {
@@ -242,7 +248,8 @@ const styles = StyleSheet.create({
         alignItems: "center"
     },
     text: {
-        color: theme.light.text.black,
-        textAlignVertical: "center"
+        color: theme.text.default,
+        textAlignVertical: "center",
+        fontSize: 16,
     }
 });

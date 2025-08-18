@@ -10,6 +10,7 @@ import { getCurrency } from "../functions/settingsStorage";
 import { getCurrencySymbol } from "../functions/currency";
 
 export default function LessonsList({ navigation }) {
+    
     const [earnings, setEarnings] = useState(0);
     const [message, setMessage] = useState("Brak danych do wyświetlenia");
     const [lessons, setLessons] = useState([]);
@@ -31,7 +32,7 @@ export default function LessonsList({ navigation }) {
     });
 
     return (
-        <View style={{ backgroundColor: theme.light.background, flex: 1 }}>
+        <View style={{ backgroundColor: theme.background, flex: 1 }}>
             <View style={{ marginVertical: 15 }}>
                 <Text style={[styles.text, { fontWeight: "500" }]}>
                     Zarobki: {earnings} {getCurrencySymbol(currency["_code"])}
@@ -45,7 +46,7 @@ export default function LessonsList({ navigation }) {
                 />
             }
             <Text style={[
-                theme.styles.description,
+                styles.description,
                 {
                     marginTop: 50,
                     fontSize: 22,
@@ -62,6 +63,10 @@ export default function LessonsList({ navigation }) {
 const styles = StyleSheet.create({
     text: {
         fontSize: 18,
-        color: theme.light.text.black,
+        color: theme.text.default,
+    },
+    description: {
+        color: theme.text.gray,
+        fontSize: 16
     }
 });

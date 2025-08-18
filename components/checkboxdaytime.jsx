@@ -26,14 +26,14 @@ export default function CheckboxDayTime({ dayIndex, onSelect }) {
                 <Checkbox
                     status={checked ? "checked" : "unchecked"}
                     onPress={handleCheck}
-                    color={theme.light.primary}
+                    color={theme.primary}
                 />
             </View>
             <TouchableOpacity
                 onPress={handleCheck}
                 style={{ flex: 1, alignItems: "center" }}
             >
-                <Text style={[theme.styles.text]}>
+                <Text style={styles.text}>
                     {getWeekDayName(dayIndex)}
                 </Text>
             </TouchableOpacity>
@@ -42,7 +42,7 @@ export default function CheckboxDayTime({ dayIndex, onSelect }) {
                 onPress={() => {
                     setPickerVisiability(true);
                 }}
-                textColor={theme.light.primaryHalf}
+                textColor={theme.primaryHalf}
             >
                 {time.getHours()}:{String(time.getMinutes()).padStart(2, '0')}
             </Button>
@@ -69,5 +69,10 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignContent: "center",
         alignItems: "center"
-    }
+    },
+    text: {
+        color: theme.text.default,
+        textAlignVertical: "center",
+        fontSize: 16,
+    },
 });

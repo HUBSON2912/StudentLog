@@ -11,6 +11,7 @@ import { getByIDLessons, insertIntoLessons, updateIDLessons } from "../functions
 import { getAllStudents, getByIDStudents } from "../functions/dbStudents";
 import { possibleStatus, StatusLabel } from "../components/statuslabel";
 import CheckboxDayTime from "../components/checkboxdaytime";
+import Section from "../components/section";
 
 
 export default function EditLesson({ navigation, route }) {
@@ -71,8 +72,8 @@ export default function EditLesson({ navigation, route }) {
     // functions for rendering
     const renderDropdownButtonChooseStudent = (sel, isOpen) => {
         return (
-            <View style={[styles.optionValue, { borderRadius: 5, paddingVertical: 5, justifyContent: "center", borderColor: theme.light.border, borderWidth: 1 }]}>
-                <Text style={theme.styles.text}>{student ? student.id + " " + student.name + " " + student.surname : "Wybierz ucznia"}</Text>
+            <View style={[styles.optionValue, { borderRadius: 5, paddingVertical: 5, justifyContent: "center", borderColor: theme.border, borderWidth: 1 }]}>
+                <Text style={styles.text}>{student ? student.name + " " + student.surname : "Wybierz ucznia"}</Text>
                 <Text style={styles.arrowDown}>{arrowDown()}</Text>
             </View>
         );
@@ -82,10 +83,10 @@ export default function EditLesson({ navigation, route }) {
         return (
             <View style={[
                 styles.dropdownItem,
-                { backgroundColor: (isSelected ? theme.light.primaryPale : "white") }
+                { backgroundColor: (isSelected ? theme.primaryPale : theme.backgroundInput) }
             ]}>
-                <Text style={[theme.styles.text, { fontSize: 10, position: "absolute", left: 2 }]}>{item.id}</Text>
-                <Text style={theme.styles.text}>{item.name} {item.surname}</Text>
+                <Text style={[styles.text, { fontSize: 10, position: "absolute", left: 2 }]}>{item.id}</Text>
+                <Text style={styles.text}>{item.name} {item.surname}</Text>
             </View>
         );
     }
@@ -228,12 +229,12 @@ export default function EditLesson({ navigation, route }) {
                 <KeyboardAvoidingView>
 
                     {/* student input */}
-                    <View style={[theme.styles.section, styles.optionContainer]}>
-                        <Text style={[theme.styles.text, styles.label]}>Uczeń</Text>
+                    <Section style={[styles.optionContainer]}>
+                        <Text style={[styles.text, styles.label]}>Uczeń</Text>
 
                         {
                             students.length == 0 &&
-                            <Text style={[styles.textInput, theme.styles.text, { textAlign: "center", backgroundColor: "white" }]}>Brak zapisanych uczniów.</Text>
+                            <Text style={[styles.textInput, styles.text, { textAlign: "center", backgroundColor: theme.backgroundSection }]}>Brak zapisanych uczniów.</Text>
                         }
 
                         {
@@ -249,11 +250,11 @@ export default function EditLesson({ navigation, route }) {
                                 defaultValue={defStudent}
                             />
                         }
-                    </View>
+                    </Section>
 
                     {/* subject input */}
-                    <View style={[theme.styles.section, styles.optionContainer]}>
-                        <Text style={[theme.styles.text, styles.label]}>Przedmiot</Text>
+                    <Section style={[styles.optionContainer]}>
+                        <Text style={[styles.text, styles.label]}>Przedmiot</Text>
 
                         {/* if there is price list you can use SelectDropdown */}
 
@@ -263,15 +264,15 @@ export default function EditLesson({ navigation, route }) {
                             placeholder="Przedmiot"
                             value={subject}
                             onChangeText={setSubject}
-                            activeOutlineColor={theme.light.primaryHalf}
-                            contentStyle={theme.styles.text}
+                            activeOutlineColor={theme.primaryHalf}
+                            contentStyle={styles.text}
                             textContentType="familyName"
                         />
-                    </View>
+                    </Section>
 
                     {/* level input */}
-                    <View style={[theme.styles.section, styles.optionContainer]}>
-                        <Text style={[theme.styles.text, styles.label]}>Poziom</Text>
+                    <Section style={[styles.optionContainer]}>
+                        <Text style={[styles.text, styles.label]}>Poziom</Text>
                         {/* if there is price list you can use SelectDropdown */}
                         <TextInput
                             mode="outlined"
@@ -279,30 +280,30 @@ export default function EditLesson({ navigation, route }) {
                             placeholder="Poziom"
                             value={level}
                             onChangeText={setLevel}
-                            activeOutlineColor={theme.light.primaryHalf}
-                            contentStyle={theme.styles.text}
+                            activeOutlineColor={theme.primaryHalf}
+                            contentStyle={styles.text}
                             keyboardType="default"
                         />
-                    </View>
+                    </Section>
 
                     {/* duration input */}
-                    <View style={[theme.styles.section, styles.optionContainer]}>
-                        <Text style={[theme.styles.text, styles.label]}>Czas</Text>
+                    <Section style={[styles.optionContainer]}>
+                        <Text style={[styles.text, styles.label]}>Czas</Text>
                         <TextInput
                             mode="outlined"
                             style={styles.textInput}
                             placeholder="Czas"
                             value={String(duration)}
                             onChangeText={val => setDuration(parseFloat(val))}
-                            activeOutlineColor={theme.light.primaryHalf}
-                            contentStyle={theme.styles.text}
+                            activeOutlineColor={theme.primaryHalf}
+                            contentStyle={styles.text}
                             keyboardType="number-pad"
                         />
-                    </View>
+                    </Section>
 
                     {/* price input */}
-                    <View style={[theme.styles.section, styles.optionContainer]}>
-                        <Text style={[theme.styles.text, styles.label]}>Cena</Text>
+                    <Section style={[styles.optionContainer]}>
+                        <Text style={[styles.text, styles.label]}>Cena</Text>
 
                         <TextInput
                             mode="outlined"
@@ -310,8 +311,8 @@ export default function EditLesson({ navigation, route }) {
                             placeholder="Cena"
                             value={price}
                             onChangeText={val => setPrice(val)}
-                            activeOutlineColor={theme.light.primaryHalf}
-                            contentStyle={theme.styles.text}
+                            activeOutlineColor={theme.primaryHalf}
+                            contentStyle={styles.text}
                             keyboardType="number-pad"
                         />
 
@@ -333,12 +334,12 @@ export default function EditLesson({ navigation, route }) {
                         >
                             <Image source={require("../assets/images/magic.png")} style={{ width: 32, height: 32 }} />
                         </Button>
-                    </View>
+                    </Section>
 
 
                     {/* mode: you can add one lesson or add lessons on every Monday, Tuesday... */}
-                    <View style={[theme.styles.section, styles.optionContainer]}>
-                        <Text style={[theme.styles.text, styles.label]}>Tryb dodawania</Text>
+                    <Section style={[styles.optionContainer]}>
+                        <Text style={[styles.text, styles.label]}>Tryb dodawania</Text>
 
                         <View style={{ flex: 4, flexDirection: "row", gap: 10 }}>
                             <RectangleRadioButton
@@ -352,21 +353,21 @@ export default function EditLesson({ navigation, route }) {
                                 isSelected={mode === "regulary"}
                             />
                         </View>
-                    </View>
+                    </Section>
 
                     {/* if you want to add one lesson */}
                     {mode == "one-lesson" &&
                         <>
                             {/* date and hour */}
-                            <View style={[theme.styles.section, styles.optionContainer]}>
-                                <Text style={[theme.styles.text, styles.label]}>Data i godzina</Text>
+                            <Section style={[styles.optionContainer]}>
+                                <Text style={[styles.text, styles.label]}>Data i godzina</Text>
 
                                 <Button
                                     mode="outlined"
                                     style={{ flex: 2 }}
                                     onPress={() => setDateVisibility_oneLesson(true)}
                                 >
-                                    <Text style={theme.styles.text}>{getDD_MM_YYYY_HH_MMDate(selectedDateTime_oneLesson)}</Text>
+                                    <Text style={styles.text}>{getDD_MM_YYYY_HH_MMDate(selectedDateTime_oneLesson)}</Text>
                                 </Button>
 
                                 <DatePicker
@@ -396,16 +397,16 @@ export default function EditLesson({ navigation, route }) {
                                         setTimeVisibility_oneLesson(false);
                                     }}
                                 />
-                            </View>
+                            </Section>
 
                             {/* status input */}
-                            <View style={[theme.styles.section, styles.optionContainer]}>
-                                <Text style={[theme.styles.text, styles.label]}>Status</Text>
+                            <Section style={[styles.optionContainer]}>
+                                <Text style={[styles.text, styles.label]}>Status</Text>
                                 <View style={[styles.textInput, styles.statusContainer]}>
                                     <SelectDropdown
                                         data={possibleStatus}
                                         defaultValue={status}
-                                        dropdownStyle={{ backgroundColor: "white", borderRadius: 10 }}
+                                        dropdownStyle={{ backgroundColor: theme.backgroundSection, borderRadius: 10 }}
                                         onSelect={(selected, index) => {
                                             setStatus(selected);
                                         }}
@@ -425,34 +426,34 @@ export default function EditLesson({ navigation, route }) {
                                         }}
                                     />
                                 </View>
-                            </View>
+                            </Section>
 
                             {/* topic input: aviable only for one lesson, every lesson in the range would be about different thing */}
-                            <View style={[theme.styles.section, styles.optionContainer]}>
-                                <Text style={[theme.styles.text, styles.label]}>Temat</Text>
+                            <Section style={[styles.optionContainer]}>
+                                <Text style={[styles.text, styles.label]}>Temat</Text>
                                 <TextInput
                                     mode="outlined"
                                     style={styles.textInput}
                                     placeholder="Temat"
                                     value={topic}
                                     onChangeText={setTopic}
-                                    activeOutlineColor={theme.light.primaryHalf}
-                                    contentStyle={theme.styles.text}
+                                    activeOutlineColor={theme.primaryHalf}
+                                    contentStyle={styles.text}
                                     keyboardType="default"
                                 />
-                            </View>
+                            </Section>
                         </>
                     }
                     {
                         mode === "regulary" &&
                         <>
-                            <View style={[theme.styles.section, styles.optionContainer]}>
+                            <Section style={[styles.optionContainer]}>
                                 <Button
                                     mode="text"
                                     style={{ flex: 2 }}
                                     onPress={() => setDateBeginVisibility_regulary(true)}
                                 >
-                                    <Text style={theme.styles.text}>Od: {getDD_MM_YYYYDate(selectedDateBegin_regulary)}</Text>
+                                    <Text style={styles.text}>Od: {getDD_MM_YYYYDate(selectedDateBegin_regulary)}</Text>
                                 </Button>
 
                                 <Button
@@ -460,7 +461,7 @@ export default function EditLesson({ navigation, route }) {
                                     style={{ flex: 2 }}
                                     onPress={() => setDateEndVisibility_regulary(true)}
                                 >
-                                    <Text style={theme.styles.text}>Do: {getDD_MM_YYYYDate(selectedDateEnd_regulary)}</Text>
+                                    <Text style={styles.text}>Do: {getDD_MM_YYYYDate(selectedDateEnd_regulary)}</Text>
                                 </Button>
 
                                 <DatePicker
@@ -490,9 +491,9 @@ export default function EditLesson({ navigation, route }) {
                                         setDateEndVisibility_regulary(false);
                                     }}
                                 />
-                            </View>
+                            </Section>
 
-                            <View style={[theme.styles.section, styles.optionContainer, { flexDirection: "column" }]}>
+                            <Section style={[styles.optionContainer, { flexDirection: "column" }]}>
                                 <CheckboxDayTime dayIndex={0} onSelect={handleSelectingDaysOfWeek} />
                                 <CheckboxDayTime dayIndex={1} onSelect={handleSelectingDaysOfWeek} />
                                 <CheckboxDayTime dayIndex={2} onSelect={handleSelectingDaysOfWeek} />
@@ -500,7 +501,7 @@ export default function EditLesson({ navigation, route }) {
                                 <CheckboxDayTime dayIndex={4} onSelect={handleSelectingDaysOfWeek} />
                                 <CheckboxDayTime dayIndex={5} onSelect={handleSelectingDaysOfWeek} />
                                 <CheckboxDayTime dayIndex={6} onSelect={handleSelectingDaysOfWeek} />
-                            </View>
+                            </Section>
 
 
                         </>
@@ -514,7 +515,7 @@ export default function EditLesson({ navigation, route }) {
                     {/* cancel button */}
                     <Button
                         mode="contained"
-                        style={[styles.button, { backgroundColor: theme.light.error }]}
+                        style={[styles.button, { backgroundColor: theme.error }]}
                         onPress={() => navigation.pop()}
                     >
                         <Text style={styles.buttonLabel}>Anuluj</Text>
@@ -543,16 +544,16 @@ export default function EditLesson({ navigation, route }) {
 const styles = StyleSheet.create({
     arrowDown: {
         position: "absolute",
-        color: theme.light.text.black,
+        color: theme.text.default,
         right: 10
     },
     button: {
-        backgroundColor: theme.light.primary,
+        backgroundColor: theme.primary,
         marginVertical: 5,
         flex: 1
     },
     buttonLabel: {
-        color: theme.light.text.white,
+        color: theme.text.buttonLabel,
         fontWeight: "bold",
         letterSpacing: 1
     },
@@ -564,7 +565,7 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        backgroundColor: theme.light.background,
+        backgroundColor: theme.background,
     },
     dropdownItem: {
         width: '100%',
@@ -574,11 +575,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         alignContent: "center",
         paddingVertical: 8,
-        borderBottomColor: theme.light.text.gray,
+        borderBottomColor: theme.text.gray,
         borderBottomWidth: 1
     },
     errorMessage: {
-        color: theme.light.error,
+        color: theme.error,
         fontSize: 18,
         textAlign: "center",
         margin: 5
@@ -602,17 +603,17 @@ const styles = StyleSheet.create({
     },
     statusContainer: {
         borderRadius: 10,
-        backgroundColor: "white",
+        backgroundColor: theme.backgroundSection,
         padding: 3,
     },
     text: {
-        color: theme.light.text.black,
+        color: theme.text.default,
         textAlignVertical: "center",
         fontSize: 16,
     },
     textInput: {
         flex: 4,
-        backgroundColor: theme.light.background,
+        backgroundColor: theme.background,
     },
 
 });

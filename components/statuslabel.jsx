@@ -11,16 +11,16 @@ export const possibleStatus = [
 export function StatusLabel(status, style = {}) {
     switch (status) {
         case 0:
-            return (<View style={[styles.statusLabel, { backgroundColor: theme.light.status.planned, borderRadius: 10 }, style]}>
-                <Text style={{ color: "black" }}>Zaplanowane</Text>
+            return (<View style={[styles.statusLabel, { backgroundColor: theme.status.planned, borderRadius: 10 }, style]}>
+                <Text style={{ color: theme.status.planned_text }}>Zaplanowane</Text>
             </View>);
         case 1:
-            return (<View style={[styles.statusLabel, { backgroundColor: theme.light.status.done, borderRadius: 10 }, style]}>
-                <Text style={{ color: theme.light.text.white }}>Wykonane</Text>
+            return (<View style={[styles.statusLabel, { backgroundColor: theme.status.done, borderRadius: 10 }, style]}>
+                <Text style={{ color: theme.status.done_text }}>Wykonane</Text>
             </View>);
         case 2:
-            return (<View style={[styles.statusLabel, { backgroundColor: theme.light.status.paid, borderRadius: 10 }, style]}>
-                <Text style={{ color: theme.light.text.white }}>Opłacone</Text>
+            return (<View style={[styles.statusLabel, { backgroundColor: theme.status.paid, borderRadius: 10 }, style]}>
+                <Text style={{ color: theme.status.paid_text }}>Opłacone</Text>
             </View>);
 
         default:

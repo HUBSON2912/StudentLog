@@ -11,6 +11,8 @@ export default function PriceList({ navigation }) {
      * delete price
      */
 
+
+    
     const prices = [
         {
             id: 0,
@@ -44,7 +46,7 @@ export default function PriceList({ navigation }) {
             <View style={styles.buttonPanel}>
                 <Button
                     mode="contained"
-                    style={[styles.button, { backgroundColor: theme.light.error, flex: 1 }]}
+                    style={[styles.button, { backgroundColor: theme.error, flex: 1 }]}
                     onPress={() => navigation.pop()}
                 >
                     <Text style={styles.buttonLabel}>
@@ -53,7 +55,7 @@ export default function PriceList({ navigation }) {
                 </Button>
                 <Button
                     mode="contained"
-                    style={[styles.button, { backgroundColor: theme.light.primary, flex: 1 }]}
+                    style={[styles.button, { backgroundColor: theme.primary, flex: 1 }]}
                     onPress={() => {
                         // TODO save in db
                         navigation.pop()
@@ -70,11 +72,11 @@ export default function PriceList({ navigation }) {
 
 const styles = StyleSheet.create({
     button: {
-        backgroundColor: theme.light.primaryHalf,
+        backgroundColor: theme.primaryHalf,
         marginVertical: 5
     },
     buttonLabel: {
-        color: theme.light.text.white,
+        color: theme.text.buttonLabel,
         fontWeight: "bold",
         letterSpacing: 1
     },
@@ -85,6 +87,6 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        backgroundColor: theme.light.background
+        backgroundColor: theme.background
     }
 });

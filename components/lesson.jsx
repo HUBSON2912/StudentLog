@@ -1,4 +1,4 @@
-import { Alert, View } from "react-native";
+import { Alert, StyleSheet, View } from "react-native";
 import { Text } from "react-native-paper";
 import { theme } from "../theme";
 import { StatusLabel } from "./statuslabel";
@@ -70,14 +70,26 @@ export function Lesson({ item }) {
             onLongPress={showAlert}
         >
             <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-                <Text style={theme.styles.h2}>{item.name} {item.surname}</Text>
-                <Text style={theme.styles.h2}>{item.price} {getCurrencySymbol(curr["_code"])}</Text>
+                <Text style={styles.h2}>{item.name} {item.surname}</Text>
+                <Text style={styles.h2}>{item.price} {getCurrencySymbol(curr["_code"])}</Text>
             </View>
-            <Text style={theme.styles.description}>{item.subject} {bullet()} {item.level}</Text>
-            {item.topic && <Text style={[theme.styles.description, { marginTop: -6 }]}>{item.topic}</Text>}
-            {!item.topic && <Text style={[theme.styles.description, { marginTop: -6, fontWeight: "bold", color: theme.light.text.error }]}>UZUPEŁNIJ TEMAT</Text>}
-            <Text style={theme.styles.description}>{getDD_Mon_YYYY_HH_MMDate(date)}</Text>
+            <Text style={styles.description}>{item.subject} {bullet()} {item.level}</Text>
+            {item.topic && <Text style={[styles.description, { marginTop: -6 }]}>{item.topic}</Text>}
+            {!item.topic && <Text style={[styles.description, { marginTop: -6, fontWeight: "bold", color: theme.text.error }]}>UZUPEŁNIJ TEMAT</Text>}
+            <Text style={styles.description}>{getDD_Mon_YYYY_HH_MMDate(date)}</Text>
             {StatusLabel(item.status)}
         </Section>
     );
 }
+
+const styles = StyleSheet.create({
+    h2: {
+        fontSize: 20,
+        color: theme.text.default,
+        textAlignVertical: "center"
+    },
+    description: {
+        color: theme.text.gray,
+        fontSize: 16
+    }
+});
