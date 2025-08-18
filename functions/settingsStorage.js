@@ -1,5 +1,4 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { dark, light } from "../theme";
 
 export async function getCurrency() {
     const currency = await AsyncStorage.getItem("currency");
@@ -24,21 +23,19 @@ export async function setCurrency(value) {
     await AsyncStorage.setItem("currency", JSON.stringify(value));
 }
 
-export async function getTheme() {
-    const darkModeOn = (await AsyncStorage.getItem("darkModeOn")) === "true" ? true : false;
-    if (darkModeOn) {
-        return dark;
-    } else {
-        return light;
-    }
+export async function getShowIncomes() {
+    const showIncomes = await AsyncStorage.getItem("showIncomes");
+    return showIncomes === "false" ? false : true;
 }
 
-export async function togleDarkMode(params) {
-    if (await AsyncStorage.getItem("darkModeOn") === "false") {
-        await AsyncStorage.setItem("darkModeOn", "true");
-    } 
-    else {
-        await AsyncStorage.setItem("darkModeOn", "false");
-    }
+export async function setShowIncomes(value) {
+    await AsyncStorage.setItem("showIncomes", value ? "true" : "false");
+}
 
+export async function getShowAmountOfStudents() {
+    return (await AsyncStorage.getItem("showAmountOfStudents") === "false") ? false : true;
+}
+
+export async function setShowAmountOfStudents(value) {
+    await AsyncStorage.setItem("showAmountOfStudents", value ? "true" : "false");
 }

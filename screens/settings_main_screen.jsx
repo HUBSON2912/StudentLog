@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { arrowDown } from "../functions/getUnicodeItems";
 import SelectDropdown from "react-native-select-dropdown";
 import { currencies, getCurrencySymbol } from "../functions/currency";
-import { getCurrency, setCurrency } from "../functions/settingsStorage";
+import { getCurrency, getShowAmountOfStudents, getShowIncomes, setCurrency, setShowAmountOfStudents, setShowIncomes } from "../functions/settingsStorage";
 import Section from "../components/section";
 
 export default function SettingsMainScreen({ navigation }) {
@@ -13,30 +13,32 @@ export default function SettingsMainScreen({ navigation }) {
     const languages = ["Polski", "English"];
 
     const [selectedLanguage, setSelectedLanguage] = useState("Polski");
-    const [isDarkMode, setDarkMode] = useState(false);
     const [showMoney, setShowMoney] = useState(false);
+    const [showAmountOfStudents, setShowAmountOfStudentsLocal] = useState(false);
     const [usePriceList, setUsePriceList] = useState(false);
 
     /** TODO:
-     * useEfect() for changing the language and for the darkmode and price list
+     * useEfect() for changing the language and price list
      * or show message like "You have to re-open your app"
      * export and import buttons
-     * saving data in AsyncStorage
+     * 
      * 
      */
 
 
-
-    const switchDarkMode = () => {
-        setDarkMode(!isDarkMode);
-    }
 
     const switchUsagePriceList = () => {
         setUsePriceList(!usePriceList);
     }
 
     const switchShowMoney = () => {
+        setShowIncomes(!showMoney);
         setShowMoney(!showMoney);
+    }
+
+    const switchShowAmountOfStudents = () => {
+        setShowAmountOfStudents(!showAmountOfStudents);
+        setShowAmountOfStudentsLocal(!showAmountOfStudents);
     }
 
     const renderLanguageButton = (sel, isOpen) => {
@@ -65,6 +67,8 @@ export default function SettingsMainScreen({ navigation }) {
     useEffect(() => {
         const fetchSavedSettings = async () => {
             setCurrencyLocal(await getCurrency());
+            setShowMoney(await getShowIncomes());
+            setShowAmountOfStudentsLocal(await getShowAmountOfStudents());
         };
         fetchSavedSettings();
     })
@@ -126,20 +130,19 @@ export default function SettingsMainScreen({ navigation }) {
                     />
                 </Section>
                 <Section style={styles.optionContainer}>
-                    <Text style={[styles.text, styles.label]}>Tryb ciemny</Text>
-                    <Switch
-                        value={isDarkMode}
-                        onValueChange={switchDarkMode}
-                        color={theme.primary}
-                    />
-                </Section>
-                <Section style={styles.optionContainer}>
                     <Text style={[styles.text, styles.label]}>Pokaż zarobki</Text>
                     <Switch
                         value={showMoney}
                         onValueChange={switchShowMoney}
                         color={theme.primary}
-
+                    />
+                </Section>
+                <Section style={styles.optionContainer}>
+                    <Text style={[styles.text, styles.label]}>Pokaż ilość uczniów</Text>
+                    <Switch
+                        value={showAmountOfStudents}
+                        onValueChange={switchShowAmountOfStudents}
+                        color={theme.primary}
                     />
                 </Section>
                 <Section style={{ alignItems: "center" }}>

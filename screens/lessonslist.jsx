@@ -6,11 +6,12 @@ import { deleteStudentsLessons, getAllLessons, getTotalEarning } from "../functi
 import { Text } from "react-native-paper";
 import { useEffect, useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
-import { getCurrency } from "../functions/settingsStorage";
+import { getCurrency, getShowIncomes } from "../functions/settingsStorage";
 import { getCurrencySymbol } from "../functions/currency";
 
 export default function LessonsList({ navigation }) {
-    
+
+    const [showMoney, setShowMoney] = useState(false);
     const [earnings, setEarnings] = useState(0);
     const [message, setMessage] = useState("Brak danych do wyświetlenia");
     const [lessons, setLessons] = useState([]);
@@ -25,15 +26,17 @@ export default function LessonsList({ navigation }) {
             else {
                 setMessage("Brak danych do wyświetlenia");
             }
+
             setEarnings(await getTotalEarning());
             setCurr(await getCurrency());
+            setShowMoney(await getShowIncomes());
         }
         fetchLessons();
     });
 
     return (
         <View style={{ backgroundColor: theme.background, flex: 1 }}>
-            <View style={{ marginVertical: 15 }}>
+            <View style={{ marginVertical: 15, display: showMoney?"flex":"none" }}>
                 <Text style={[styles.text, { fontWeight: "500" }]}>
                     Zarobki: {earnings} {getCurrencySymbol(currency["_code"])}
                 </Text>

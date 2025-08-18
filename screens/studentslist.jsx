@@ -6,13 +6,14 @@ import { getAllStudents } from "../functions/dbStudents";
 import { Text } from "react-native-paper";
 import { useEffect, useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
+import { getShowAmountOfStudents } from "../functions/settingsStorage";
 
 export default function StudentsListScreen({ navigation }) {
-    
-    
-    const [message, setMessage] = useState("Wczytywanie...");
-    
 
+
+    const [message, setMessage] = useState("Wczytywanie...");
+
+    const [showHowManyStudents, setHowManyStudents] = useState(true);
     const [students, setStudents] = useState([]);
     useFocusEffect(() => {
         const fetchStudents = async () => {
@@ -23,13 +24,15 @@ export default function StudentsListScreen({ navigation }) {
             else {
                 setMessage("");
             }
+
+            setHowManyStudents(await getShowAmountOfStudents());
         }
         fetchStudents();
     });
 
     return (
         <View style={{ backgroundColor: theme.background, flex: 1 }}>
-            <View style={{ marginVertical: 15 }}>
+            <View style={{ marginVertical: 15, display: showHowManyStudents?"flex":"none"}}>
                 <Text style={[styles.text, { fontWeight: "500" }]}>
                     Ilość uczniów: {students.length}
                 </Text>
