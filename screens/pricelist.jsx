@@ -2,6 +2,8 @@ import { FlatList, StyleSheet, View } from "react-native";
 import { theme } from "../theme";
 import { Button, Text } from "react-native-paper";
 import PriceLiseElement from "../components/price_list_element";
+import { useEffect, useState } from "react";
+import { getLanguage } from "../functions/settingsStorage";
 
 export default function PriceList({ navigation }) {
     /** todo
@@ -10,9 +12,15 @@ export default function PriceList({ navigation }) {
      * edit price
      * delete price
      */
+    const [dictionary, setDictionary] = useState({});
+    useEffect(() => {
+        const fetchDict = async () => {
+            setDictionary((await getLanguage()).file);
+        }
+        fetchDict();
+    })
 
 
-    
     const prices = [
         {
             id: 0,
@@ -46,23 +54,11 @@ export default function PriceList({ navigation }) {
             <View style={styles.buttonPanel}>
                 <Button
                     mode="contained"
-                    style={[styles.button, { backgroundColor: theme.error, flex: 1 }]}
+                    style={[styles.button, { backgroundColor: theme.primary, flex: 1 }]}
                     onPress={() => navigation.pop()}
                 >
                     <Text style={styles.buttonLabel}>
-                        Anuluj
-                    </Text>
-                </Button>
-                <Button
-                    mode="contained"
-                    style={[styles.button, { backgroundColor: theme.primary, flex: 1 }]}
-                    onPress={() => {
-                        // TODO save in db
-                        navigation.pop()
-                    }}
-                >
-                    <Text style={styles.buttonLabel}>
-                        Zapisz
+                        {dictionary.back}
                     </Text>
                 </Button>
             </View>

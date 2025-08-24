@@ -45,8 +45,8 @@ export function Student({ item }) {
     let remotelyPlatformNick = "";
     let printRemotelyData = false;
 
-    let homeAdress = "";
-    let printHomeAdress = false;
+    let homeaddress = "";
+    let printHomeaddress = false;
 
     //remotely or mixed
     if (item.form === 0 || item.form === 2) {
@@ -56,13 +56,13 @@ export function Student({ item }) {
 
     //home or mixed
     if (item.form === 1 || item.form === 2) {
-        printHomeAdress = true;
-        homeAdress = item.city + " " + bullet();
+        printHomeaddress = true;
+        homeaddress = item.city + " " + bullet();
         if (item.street != "" && item.street != null && item.street != undefined)
-            homeAdress += " " + item.street + " " + bullet();
-        homeAdress += " " + item.house_nr;
+            homeaddress += " " + item.street + " " + bullet();
+        homeaddress += " " + item.house_nr;
         if (item.flat_nr != "" && item.flat_nr != null && item.flat_nr != undefined)
-            homeAdress += "/" + item.flat_nr;
+            homeaddress += "/" + item.flat_nr;
     }
 
 
@@ -106,7 +106,7 @@ export function Student({ item }) {
                 <Text style={[styles.description, { display: (printPhone ? "flex" : "none") }]}>{phoneNum}</Text>
                 <Text style={[styles.description, { display: (printEmail ? "flex" : "none"), paddingLeft: 3 }]} numberOfLines={expand ? 10 : 1}>{email}</Text>
                 <Text style={[styles.description, { display: (printRemotelyData ? "flex" : "none") }]} numberOfLines={expand ? 10 : 1}>{remotelyPlatformNick}</Text>
-                <Text style={[styles.description, { display: (printHomeAdress ? "flex" : "none") }]} numberOfLines={expand ? 10 : 1}>{homeAdress}</Text>
+                <Text style={[styles.description, { display: (printHomeaddress ? "flex" : "none") }]} numberOfLines={expand ? 10 : 1}>{homeaddress}</Text>
                 <Text style={[styles.description, { display: (expand ? "flex" : "none") }]}>{!item.money ? 0 : item.money} {
                     getCurrencySymbol(curr["_code"])
                 } {bullet()} {item.lessons_amount} lekcji opłaconych</Text>

@@ -6,20 +6,23 @@ import { getAllStudents } from "../functions/dbStudents";
 import { Text } from "react-native-paper";
 import { useEffect, useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
-import { getShowAmountOfStudents } from "../functions/settingsStorage";
+import { getLanguage, getShowAmountOfStudents } from "../functions/settingsStorage";
 
 export default function StudentsListScreen({ navigation }) {
 
+    const [dictionary, setDictionary]=useState({});
 
-    const [message, setMessage] = useState("Wczytywanie...");
+    const [message, setMessage] = useState("...");
 
     const [showHowManyStudents, setHowManyStudents] = useState(true);
     const [students, setStudents] = useState([]);
     useFocusEffect(() => {
         const fetchStudents = async () => {
+            setDictionary((await getLanguage()).file);
+
             setStudents(await getAllStudents());
             if (students.length == 0) {
-                setMessage("Brak danych do wyświetlenia");
+                setMessage(dictionary.no_data);
             }
             else {
                 setMessage("");
@@ -34,7 +37,7 @@ export default function StudentsListScreen({ navigation }) {
         <View style={{ backgroundColor: theme.background, flex: 1 }}>
             <View style={{ marginVertical: 15, display: showHowManyStudents?"flex":"none"}}>
                 <Text style={[styles.text, { fontWeight: "500" }]}>
-                    Ilość uczniów: {students.length}
+                    {dictionary.amount_of_students}: {students.length}
                 </Text>
             </View>
 

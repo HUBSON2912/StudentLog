@@ -6,25 +6,29 @@ import { deleteStudentsLessons, getAllLessons, getTotalEarning } from "../functi
 import { Text } from "react-native-paper";
 import { useEffect, useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
-import { getCurrency, getShowIncomes } from "../functions/settingsStorage";
+import { getCurrency, getLanguage, getShowIncomes } from "../functions/settingsStorage";
 import { getCurrencySymbol } from "../functions/currency";
 
 export default function LessonsList({ navigation }) {
 
+    const [dictionary, setDictionary] = useState({});
+
     const [showMoney, setShowMoney] = useState(false);
     const [earnings, setEarnings] = useState(0);
-    const [message, setMessage] = useState("Brak danych do wyświetlenia");
+    const [message, setMessage] = useState("...");
     const [lessons, setLessons] = useState([]);
     const [currency, setCurr] = useState({});
 
     useFocusEffect(() => {
         const fetchLessons = async () => {
+            const file = (await getLanguage()).file;
+            setDictionary(file);
+
             setLessons(await getAllLessons());
-            if (lessons.length != 0) {
+            if (lessons.length == 0 ) {
+                setMessage(dictionary.no_data);
+            } else {
                 setMessage("");
-            }
-            else {
-                setMessage("Brak danych do wyświetlenia");
             }
 
             setEarnings(await getTotalEarning());
@@ -36,9 +40,9 @@ export default function LessonsList({ navigation }) {
 
     return (
         <View style={{ backgroundColor: theme.background, flex: 1 }}>
-            <View style={{ marginVertical: 15, display: showMoney?"flex":"none" }}>
+            <View style={{ marginVertical: 15, display: showMoney ? "flex" : "none" }}>
                 <Text style={[styles.text, { fontWeight: "500" }]}>
-                    Zarobki: {earnings} {getCurrencySymbol(currency["_code"])}
+                    {dictionary.incomes}: {earnings} {getCurrencySymbol(currency["_code"])}
                 </Text>
             </View>
             {

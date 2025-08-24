@@ -31,18 +31,18 @@ export default function App() {
                     </View>
 
 
-                    <Tabs.Navigator initialRouteName='Lekcje' screenOptions={{ animation: 'shift', headerShown: false }}>
-                        <Tabs.Screen name="Uczniowie" component={StudentsScreen} options={{
+                    <Tabs.Navigator initialRouteName='Lessons' screenOptions={{ animation: 'shift', headerShown: false }}>
+                        <Tabs.Screen name="Students" component={StudentsScreen} options={{
                             tabBarIcon: ({ focused, color, size }) => {
                                 return <Text style={{ fontSize: 22 }}>{account()}</Text>;
                             }
                         }} />
-                        <Tabs.Screen name="Lekcje" component={LessonsScreen} options={{
+                        <Tabs.Screen name="Lessons" component={LessonsScreen} options={{
                             tabBarIcon: ({ focused, color, size }) => {
                                 return <Text style={{ fontSize: 22 }}>{clipboard()}</Text>;
                             }
                         }} />
-                        <Tabs.Screen name="Ustawienia" component={SettingsScreen} options={{
+                        <Tabs.Screen name="Settings" component={SettingsScreen} options={{
                             tabBarIcon: ({ focused, color, size }) => {
                                 return <Text style={{ fontSize: 22 }}>{cog()}</Text>;
                             }

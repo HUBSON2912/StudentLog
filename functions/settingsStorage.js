@@ -29,7 +29,7 @@ export async function getShowIncomes() {
 }
 
 export async function setShowIncomes(value) {
-    await AsyncStorage.setItem("showIncomes", value ? "true" : "false");
+    AsyncStorage.setItem("showIncomes", value ? "true" : "false");
 }
 
 export async function getShowAmountOfStudents() {
@@ -37,5 +37,24 @@ export async function getShowAmountOfStudents() {
 }
 
 export async function setShowAmountOfStudents(value) {
-    await AsyncStorage.setItem("showAmountOfStudents", value ? "true" : "false");
+    AsyncStorage.setItem("showAmountOfStudents", value ? "true" : "false");
+}
+
+export async function getLanguage() {
+    const language = await AsyncStorage.getItem("language");
+    if (!language) {
+        const defLang = {
+            file: require("../lang/pl-pl.json"),
+            name: "Polski"
+        };
+
+        AsyncStorage.setItem("language", JSON.stringify(defLang));
+        return defLang;
+    }
+
+    return JSON.parse(language);
+}
+
+export async function setLanguage(value) {
+    AsyncStorage.setItem("language", JSON.stringify(value));
 }

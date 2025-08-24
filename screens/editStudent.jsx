@@ -6,6 +6,7 @@ import { arrowDown } from "../functions/getUnicodeItems";
 import SelectDropdown from "react-native-select-dropdown";
 import { dropDBStudent, getByIDStudents, insertIntoStudents, updateIDStudents } from "../functions/dbStudents";
 import Section from "../components/section";
+import { getLanguage } from "../functions/settingsStorage";
 
 const REMOTELY_FORM = 0;
 const STATIONARY_FORM = 1;
@@ -14,33 +15,38 @@ const MIXED_FORM = 2;
 export default function EditStudent({ navigation, route }) {
 
 
-    
+
     const { studentID } = route.params;
 
     const [studentData, setStudentData] = useState({});
 
     const [error, setError] = useState("");
 
+    const [dictionary, setDictionary] = useState({});
+    const [haveIsetTheDefFrom, setHaveISetTheDefForm]=useState(false);
     useEffect(() => {
         const fetchStudentData = async () => {
             if (studentID !== null) {
                 setStudentData(await getByIDStudents(studentID))
             }
+            getLanguage().then((val) => {
+                setDictionary(val.file);
+            })
         };
         fetchStudentData();
     });
 
     const possibleForms = [
-        { id: REMOTELY_FORM, title: "Zdalnie" },
-        { id: STATIONARY_FORM, title: "Stacjonarnie" },
-        { id: MIXED_FORM, title: "Mieszana" },
+        { id: REMOTELY_FORM, title: dictionary.remotely },
+        { id: STATIONARY_FORM, title: dictionary.stationary },
+        { id: MIXED_FORM, title: dictionary.mixed },
     ];
 
     const [name, setName] = useState("");
     const [surname, setSurname] = useState("");
     const [phoneNum, setPhoneNumber] = useState("");
     const [email, setEmail] = useState("");
-    const [form, setForm] = useState(possibleForms[0]);
+    const [form, setForm] = useState({});
     const [platform, setPlatform] = useState("");
     const [nick, setNick] = useState("");
     const [city, setCity] = useState("");
@@ -48,10 +54,15 @@ export default function EditStudent({ navigation, route }) {
     const [houseNr, setHouseNr] = useState("");
     const [flatNr, setFlatNr] = useState("");
 
+    if(Object.keys(form).length<1 && Object.keys(dictionary).length>0) {
+        setForm(possibleForms[0]);
+    }
+
+
     let [done, setDone] = useState(false);
 
     useEffect(() => {
-        if (!done && studentID !== null && studentData && Object.keys(studentData).length > 0) {
+        if (!done && studentID !== null && studentData && Object.keys(studentData).length > 0 && Object.keys(dictionary).length > 0) {
             setName(studentData.name || "");
             setSurname(studentData.surname || "");
             setPhoneNumber(studentData.phone || "");
@@ -63,6 +74,7 @@ export default function EditStudent({ navigation, route }) {
             setStreet(studentData.street || "");
             setHouseNr(studentData.house_nr || "");
             setFlatNr(studentData.flat_nr || "");
+
             setDone(true);
         }
     }, [studentData, studentID]);
@@ -103,7 +115,7 @@ export default function EditStudent({ navigation, route }) {
             !(phoneNum || email) ||
             !form
         ) {
-            setError("Uzupełnij wszystkie dane");
+            setError(dictionary.key_in_all_data);
             return;
         }
 
@@ -112,7 +124,7 @@ export default function EditStudent({ navigation, route }) {
                 !platform ||
                 !nick
             ) {
-                setError("Uzupełnij wszystkie dane");
+                setError(dictionary.key_in_all_data);
                 return;
             }
         }
@@ -123,7 +135,7 @@ export default function EditStudent({ navigation, route }) {
                 !houseNr
                 // you can skip street and flat number
             ) {
-                setError("Uzupełnij wszystkie dane");
+                setError(dictionary.key_in_all_data);
                 return;
             }
         }
@@ -156,11 +168,11 @@ export default function EditStudent({ navigation, route }) {
             <ScrollView style={styles.container}>
                 <KeyboardAvoidingView>
                     <Section style={styles.optionContainer}>
-                        <Text style={[styles.text, styles.label]}>Imię</Text>
+                        <Text style={[styles.text, styles.label]}>{dictionary.first_name}</Text>
                         <TextInput
                             mode="outlined"
                             style={styles.textInput}
-                            placeholder="Imię"
+                            placeholder={dictionary.first_name}
                             value={name}
                             onChangeText={setName}
                             activeOutlineColor={theme.primaryHalf}
@@ -169,11 +181,11 @@ export default function EditStudent({ navigation, route }) {
                         />
                     </Section>
                     <Section style={styles.optionContainer}>
-                        <Text style={[styles.text, styles.label]}>Nazwisko</Text>
+                        <Text style={[styles.text, styles.label]}>{dictionary.last_name}</Text>
                         <TextInput
                             mode="outlined"
                             style={styles.textInput}
-                            placeholder="Nazwisko"
+                            placeholder={dictionary.last_name}
                             value={surname}
                             onChangeText={setSurname}
                             activeOutlineColor={theme.primaryHalf}
@@ -182,11 +194,11 @@ export default function EditStudent({ navigation, route }) {
                         />
                     </Section>
                     <Section style={styles.optionContainer}>
-                        <Text style={[styles.text, styles.label]}>Numer telefonu</Text>
+                        <Text style={[styles.text, styles.label]}>{dictionary.phone_nr}</Text>
                         <TextInput
                             mode="outlined"
                             style={styles.textInput}
-                            placeholder="Numer telefonu"
+                            placeholder={dictionary.phone_nr}
                             value={phoneNum}
                             onChangeText={setPhoneNumber}
                             activeOutlineColor={theme.primaryHalf}
@@ -195,11 +207,11 @@ export default function EditStudent({ navigation, route }) {
                         />
                     </Section>
                     <Section style={styles.optionContainer}>
-                        <Text style={[styles.text, styles.label]}>Adres email</Text>
+                        <Text style={[styles.text, styles.label]}>{dictionary.email_address}</Text>
                         <TextInput
                             mode="outlined"
                             style={styles.textInput}
-                            placeholder="Adres email"
+                            placeholder={dictionary.email_address}
                             value={email}
                             onChangeText={setEmail}
                             activeOutlineColor={theme.primaryHalf}
@@ -209,7 +221,7 @@ export default function EditStudent({ navigation, route }) {
                         />
                     </Section>
                     <Section style={styles.optionContainer}>
-                        <Text style={[styles.text, styles.label]}>Forma</Text>
+                        <Text style={[styles.text, styles.label]}>{dictionary.form}</Text>
                         <SelectDropdown
                             data={possibleForms}
                             onSelect={(sel, index) => setForm(sel)}
@@ -224,11 +236,11 @@ export default function EditStudent({ navigation, route }) {
                     {form.id != STATIONARY_FORM &&   //if the form is setted as "stationary" then do not print the inputs for remotely teaching
                         <>
                             <Section style={styles.optionContainer}>
-                                <Text style={[styles.text, styles.label]}>Platforma</Text>
+                                <Text style={[styles.text, styles.label]}>{dictionary.platform}</Text>
                                 <TextInput
                                     mode="outlined"
                                     style={styles.textInput}
-                                    placeholder="Platforma"
+                                    placeholder={dictionary.platform}
                                     value={platform}
                                     onChangeText={setPlatform}
                                     activeOutlineColor={theme.primaryHalf}
@@ -236,11 +248,11 @@ export default function EditStudent({ navigation, route }) {
                                 />
                             </Section>
                             <Section style={styles.optionContainer}>
-                                <Text style={[styles.text, styles.label]}>Nazwa użytkownika</Text>
+                                <Text style={[styles.text, styles.label]}>{dictionary.nickname}</Text>
                                 <TextInput
                                     mode="outlined"
                                     style={styles.textInput}
-                                    placeholder="Nick"
+                                    placeholder={dictionary.nickname_placeholder}
                                     value={nick}
                                     onChangeText={setNick}
                                     activeOutlineColor={theme.primaryHalf}
@@ -251,14 +263,14 @@ export default function EditStudent({ navigation, route }) {
                         </>}
 
 
-                    {form.id != REMOTELY_FORM &&   // adress is printed if only form is NOT "remotely"
+                    {form.id != REMOTELY_FORM &&   // address is printed if only form is NOT "remotely"
                         <>
                             <Section style={styles.optionContainer}>
-                                <Text style={[styles.text, styles.label]}>Miejscowość</Text>
+                                <Text style={[styles.text, styles.label]}>{dictionary.city}</Text>
                                 <TextInput
                                     mode="outlined"
                                     style={styles.textInput}
-                                    placeholder="Miejscowość"
+                                    placeholder={dictionary.city}
                                     value={city}
                                     onChangeText={setCity}
                                     activeOutlineColor={theme.primaryHalf}
@@ -266,11 +278,11 @@ export default function EditStudent({ navigation, route }) {
                                 />
                             </Section>
                             <Section style={styles.optionContainer}>
-                                <Text style={[styles.text, styles.label]}>Ulica</Text>
+                                <Text style={[styles.text, styles.label]}>{dictionary.street}</Text>
                                 <TextInput
                                     mode="outlined"
                                     style={styles.textInput}
-                                    placeholder="Ulica"
+                                    placeholder={dictionary.street}
                                     value={street}
                                     onChangeText={setStreet}
                                     activeOutlineColor={theme.primaryHalf}
@@ -278,11 +290,11 @@ export default function EditStudent({ navigation, route }) {
                                 />
                             </Section>
                             <Section style={styles.optionContainer}>
-                                <Text style={[styles.text, styles.label]}>Numer domu</Text>
+                                <Text style={[styles.text, styles.label]}>{dictionary.house_nr}</Text>
                                 <TextInput
                                     mode="outlined"
                                     style={styles.textInput}
-                                    placeholder="Numer domu"
+                                    placeholder={dictionary.house_nr}
                                     value={houseNr}
                                     onChangeText={setHouseNr}
                                     activeOutlineColor={theme.primaryHalf}
@@ -290,11 +302,11 @@ export default function EditStudent({ navigation, route }) {
                                 />
                             </Section>
                             <Section style={styles.optionContainer}>
-                                <Text style={[styles.text, styles.label]}>Numer mieszkania</Text>
+                                <Text style={[styles.text, styles.label]}>{dictionary.flat_nr}</Text>
                                 <TextInput
                                     mode="outlined"
                                     style={styles.textInput}
-                                    placeholder="Numer mieszkania"
+                                    placeholder={dictionary.flat_nr}
                                     value={flatNr}
                                     onChangeText={setFlatNr}
                                     activeOutlineColor={theme.primaryHalf}
@@ -311,7 +323,7 @@ export default function EditStudent({ navigation, route }) {
                         style={[styles.button, { backgroundColor: theme.error }]}
                         onPress={() => navigation.pop()}
                     >
-                        <Text style={styles.buttonLabel}>Anuluj</Text>
+                        <Text style={styles.buttonLabel}>{dictionary.cancel}</Text>
                     </Button>
 
 
@@ -321,7 +333,7 @@ export default function EditStudent({ navigation, route }) {
                         style={styles.button}
                         onPress={handleSaveButton}
                     >
-                        <Text style={styles.buttonLabel}>Zapisz</Text>
+                        <Text style={styles.buttonLabel}>{dictionary.save}</Text>
                     </Button>
                 </View>
             </ScrollView>

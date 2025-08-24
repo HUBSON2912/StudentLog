@@ -8,10 +8,12 @@ import { getDD_Mon_YYYY_HH_MMDate } from "../functions/date";
 import { useNavigation } from "@react-navigation/native";
 import { deleteIDLessons } from "../functions/dbLessons";
 import { useEffect, useState } from "react";
-import { getCurrency } from "../functions/settingsStorage";
+import { getCurrency, getLanguage } from "../functions/settingsStorage";
 import { getCurrencySymbol } from "../functions/currency";
 
 export function Lesson({ item }) {
+
+    const [dictionary, setDictionary]=useState({});
 
     const navigation = useNavigation();
 
@@ -19,6 +21,7 @@ export function Lesson({ item }) {
     useEffect(() => {
         const fetchCurr = async () => {
             setCurr(await getCurrency());
+            setDictionary((await getLanguage()).file);
         }
         fetchCurr();
     });
@@ -29,12 +32,12 @@ export function Lesson({ item }) {
     }
 
     const handleDelete = () => {
-        Alert.alert("Potwierdzenie",
-            `Czy na pewno chcesz usunąć tę lekcję?\n\n
-            ID: ${item.id} \n
-            Uczeń: ${item.name} ${item.surname}\n
-            Przedmiot: ${item.subject} ${item.level}\n
-            Data: ${item.year}-${String(item.month).padStart(2, "0")}-${String(item.day).padStart(2, "0")} ${item.hour}:${String(item.minute).padStart(2, '0')}`,
+        Alert.alert(dictionary.confirmation,
+            `${dictionary.are_you_sure_that_you_want_to_delete}
+    ID: ${item.id}
+    ${dictionary.student}: ${item.name} ${item.surname}
+    ${dictionary.subject}: ${item.subject} ${item.level}
+    ${dictionary.date}: ${item.year}-${String(item.month).padStart(2, "0")}-${String(item.day).padStart(2, "0")} ${item.hour}:${String(item.minute).padStart(2, '0')}`,
             [
                 { text: "Tak", onPress: () => { deleteIDLessons(item.id) } },
                 { text: "Nie", onPress: () => { } }
@@ -44,11 +47,11 @@ export function Lesson({ item }) {
     };
 
     const showAlert = () => {
-        Alert.alert("Co zamierzasz zrobić", `Wybierz co zamierzasz zrobić z tym rekordem. \n\n
-            ID: ${item.id} \n
-            Uczeń: ${item.name} ${item.surname}\n
-            Przedmiot: ${item.subject} ${item.level}\n
-            Data: ${item.year}-${String(item.month).padStart(2, "0")}-${String(item.day).padStart(2, "0")} ${String(item.hour).padStart(2, "0")}:${String(item.minute).padStart(2, "0")}`,
+        Alert.alert(dictionary.what_do_you_want_to_do, `${dictionary.what_do_you_want_to_do_NOTE}
+    ID: ${item.id}
+    Uczeń: ${item.name} ${item.surname}
+    Przedmiot: ${item.subject} ${item.level}
+    Data: ${item.year}-${String(item.month).padStart(2, "0")}-${String(item.day).padStart(2, "0")} ${String(item.hour).padStart(2, "0")}:${String(item.minute).padStart(2, "0")}`,
             [
                 { text: "Anuluj", onPress: () => { }, style: "cancel" },
                 { text: "Edytuj", onPress: handleEditing },

@@ -5,21 +5,28 @@ import { useEffect, useState } from "react";
 import { arrowDown } from "../functions/getUnicodeItems";
 import SelectDropdown from "react-native-select-dropdown";
 import { currencies, getCurrencySymbol } from "../functions/currency";
-import { getCurrency, getShowAmountOfStudents, getShowIncomes, setCurrency, setShowAmountOfStudents, setShowIncomes } from "../functions/settingsStorage";
+import { getCurrency, getLanguage, getShowAmountOfStudents, getShowIncomes, setCurrency, setLanguage, setShowAmountOfStudents, setShowIncomes } from "../functions/settingsStorage";
 import Section from "../components/section";
 
 export default function SettingsMainScreen({ navigation }) {
 
-    const languages = ["Polski", "English"];
+    const languages = [
+        {
+            file: require("../lang/pl-pl.json"),
+            name: "Polski"
+        },
+        {
+            file: require("../lang/en-uk.json"),
+            name: "English"
+        }];
 
-    const [selectedLanguage, setSelectedLanguage] = useState("Polski");
+    const [selectedLanguage, setSelectedLanguage] = useState(languages[0]);
     const [showMoney, setShowMoney] = useState(false);
     const [showAmountOfStudents, setShowAmountOfStudentsLocal] = useState(false);
     const [usePriceList, setUsePriceList] = useState(false);
 
+    const [dictionary, setDictionary]=useState({});
     /** TODO:
-     * useEfect() for changing the language and price list
-     * or show message like "You have to re-open your app"
      * export and import buttons
      * 
      * 
@@ -44,7 +51,7 @@ export default function SettingsMainScreen({ navigation }) {
     const renderLanguageButton = (sel, isOpen) => {
         return (
             <View style={[styles.optionValue, styles.dropdownButton]}>
-                <Text style={[styles.text, { flex: 1, textAlign: "center" }]}>{(selectedLanguage)}</Text>
+                <Text style={[styles.text, { flex: 1, textAlign: "center" }]}>{(selectedLanguage.name)}</Text>
                 <Text style={styles.arrowDown}>{arrowDown()}</Text>
             </View>
         );
@@ -57,7 +64,7 @@ export default function SettingsMainScreen({ navigation }) {
                 isSelected && { backgroundColor: theme.primaryPale },
                 !isSelected && { backgroundColor: theme.backgroundInput },
             ]}>
-                <Text style={styles.text}>{item}</Text>
+                <Text style={styles.text}>{item.name}</Text>
             </View>
         );
     }
@@ -69,6 +76,9 @@ export default function SettingsMainScreen({ navigation }) {
             setCurrencyLocal(await getCurrency());
             setShowMoney(await getShowIncomes());
             setShowAmountOfStudentsLocal(await getShowAmountOfStudents());
+            setSelectedLanguage(await getLanguage());
+
+            setDictionary((await getLanguage()).file);
         };
         fetchSavedSettings();
     })
@@ -97,11 +107,12 @@ export default function SettingsMainScreen({ navigation }) {
         <View style={styles.container}>
             <ScrollView style={styles.container}>
                 <Section style={styles.optionContainer}>
-                    <Text style={[styles.text, styles.label]}>Język</Text>
+                    <Text style={[styles.text, styles.label]}>{dictionary.language}</Text>
                     <SelectDropdown
                         data={languages}
                         onSelect={(sel, index) => {
                             setSelectedLanguage(sel);
+                            setLanguage(sel);
                         }}
                         renderButton={renderLanguageButton}
                         renderItem={renderLanguageItem}
@@ -111,7 +122,7 @@ export default function SettingsMainScreen({ navigation }) {
                 </Section>
 
                 <Section style={styles.optionContainer}>
-                    <Text style={[styles.text, styles.label]}>Waluta</Text>
+                    <Text style={[styles.text, styles.label]}>{dictionary.currency}</Text>
                     <SelectDropdown
                         data={currencies}
                         onSelect={(sel) => {
@@ -130,7 +141,7 @@ export default function SettingsMainScreen({ navigation }) {
                     />
                 </Section>
                 <Section style={styles.optionContainer}>
-                    <Text style={[styles.text, styles.label]}>Pokaż zarobki</Text>
+                    <Text style={[styles.text, styles.label]}>{dictionary.show_incomes}</Text>
                     <Switch
                         value={showMoney}
                         onValueChange={switchShowMoney}
@@ -138,7 +149,7 @@ export default function SettingsMainScreen({ navigation }) {
                     />
                 </Section>
                 <Section style={styles.optionContainer}>
-                    <Text style={[styles.text, styles.label]}>Pokaż ilość uczniów</Text>
+                    <Text style={[styles.text, styles.label]}>{dictionary.show_amount_of_students}</Text>
                     <Switch
                         value={showAmountOfStudents}
                         onValueChange={switchShowAmountOfStudents}
@@ -148,7 +159,7 @@ export default function SettingsMainScreen({ navigation }) {
                 <Section style={{ alignItems: "center" }}>
                     <View style={styles.optionContainer}>
 
-                        <Text style={[styles.text, styles.label]}>Zastosuj cennik</Text>
+                        <Text style={[styles.text, styles.label]}>{dictionary.use_price_list}</Text>
                         <Switch
                             value={usePriceList}
                             onValueChange={switchUsagePriceList}
@@ -159,7 +170,7 @@ export default function SettingsMainScreen({ navigation }) {
                     </View>
                     <View style={[styles.optionContainer, { display: (usePriceList ? "flex" : "none") }]}>
                         {/* todo change into "discount for the first lesson [%] defaultly 100%" */}
-                        <Text style={[styles.text, styles.label]}>Pierwsza lekcja darmowa</Text>
+                        <Text style={[styles.text, styles.label]}>{dictionary.discount_for_the_first_lesson}</Text>
                         <Switch
                             value={showMoney}
                             onValueChange={switchShowMoney}
@@ -176,7 +187,7 @@ export default function SettingsMainScreen({ navigation }) {
                         onPress={() => { navigation.navigate("PriceList") }}
                     >
                         <Text style={styles.buttonLabel}>
-                            Edytuj cennik
+                            {dictionary.edit_price_list}
                         </Text>
                     </Button>
                 </Section>
@@ -186,7 +197,7 @@ export default function SettingsMainScreen({ navigation }) {
                     onPress={() => { /* TODO export */ }}
                 >
                     <Text style={styles.buttonLabel}>
-                        Eksportuj bazę danych
+                        {dictionary.export_database}
                     </Text>
                 </Button>
                 <Button
@@ -195,7 +206,7 @@ export default function SettingsMainScreen({ navigation }) {
                     onPress={() => { /* TODO import */ }}
                 >
                     <Text style={styles.buttonLabel}>
-                        Importuj bazę danych
+                        {dictionary.import_database}
                     </Text>
                 </Button>
             </ScrollView>
