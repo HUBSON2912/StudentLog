@@ -4,12 +4,15 @@ import { Lesson } from "../components/lesson";
 import { theme } from "../theme";
 import { deleteStudentsLessons, getAllLessons, getTotalEarning } from "../functions/dbLessons";
 import { Text } from "react-native-paper";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { getCurrency, getLanguage, getShowIncomes } from "../functions/settingsStorage";
 import { getCurrencySymbol } from "../functions/currency";
+import { DatabaseContext } from "../App";
 
 export default function LessonsList({ navigation }) {
+
+    const database=useContext(DatabaseContext);
 
     const [dictionary, setDictionary] = useState({});
 
@@ -24,14 +27,15 @@ export default function LessonsList({ navigation }) {
             const file = (await getLanguage()).file;
             setDictionary(file);
 
-            setLessons(await getAllLessons());
+            setLessons(database.lessons);
             if (lessons.length == 0 ) {
                 setMessage(dictionary.no_data);
             } else {
                 setMessage("");
             }
-
-            setEarnings(await getTotalEarning());
+            
+            const ear=await database.totalEarnings();
+            setEarnings(ear);
             setCurr(await getCurrency());
             setShowMoney(await getShowIncomes());
         }

@@ -1,7 +1,7 @@
 import { Image, KeyboardAvoidingView, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Button, Text, TextInput } from "react-native-paper";
 import { theme } from "../theme";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { arrowDown } from "../functions/getUnicodeItems";
 import SelectDropdown from "react-native-select-dropdown";
 import RectangleRadioButton from "../components/rectRadioButton";
@@ -14,10 +14,13 @@ import CheckboxDayTime from "../components/checkboxdaytime";
 import Section from "../components/section";
 import { getLanguage } from "../functions/settingsStorage";
 import Loading from "../components/loading";
+import { DatabaseContext } from "../App";
 
 
 export default function EditLesson({ navigation, route }) {
 
+    const database=useContext(DatabaseContext);
+    console.log(database);
     const { lessonID } = route.params;
 
     const [lessonData, setLessonData] = useState({});
@@ -134,10 +137,12 @@ export default function EditLesson({ navigation, route }) {
             status: status.id
         }
         if (!lessonID) {
-            insertIntoLessons(newLessonData);
+            database.insert.lesson(newLessonData);
+            // insertIntoLessons(newLessonData);
         }
         else {
-            updateIDLessons(lessonID, newLessonData);
+            // updateIDLessons(lessonID, newLessonData);
+            database.update.lesson(lessonID, newLessonData);
         }
         navigation.pop();
     }

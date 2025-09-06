@@ -7,51 +7,166 @@ import { account, clipboard, cog } from './functions/getUnicodeItems';
 import LessonsScreen from './screens/lessons';
 import StudentsScreen from './screens/students';
 import SettingsScreen from './screens/settings';
-import { dropDBLessons, getTotalEarning } from './functions/dbLessons';
-import { useEffect, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
+import { deleteIDLessons, dropDBLessons, getAllLessons, insertIntoLessons, updateIDLessons } from './functions/dbLessons';
+import { getAllStudents, insertIntoStudents } from './functions/dbStudents';
 
 const Tabs = createBottomTabNavigator();
+export const DatabaseContext = createContext(undefined);
+
+
+function groupBy(items, selector) {
+    let map = new Map();
+    for (let i = 0; i < items.length; i++) {
+        let sel = selector(items[i]);
+        if (map.get(sel) === undefined) {
+            map.set(sel, []);
+        }
+        let arr = map.get(sel);
+        arr.push(items[i]);
+        map.set(sel, arr);
+    }
+    let arr = [...map].map((item) => { return { key: item[0], value: item[1] } });
+    return arr;
+}
+
 
 export default function App() {
 
-    const [earnings, setEarnings] = useState(0);
-    const countEarnings = async () => {
-        setEarnings(await getTotalEarning());
+    // const [earnings, setEarnings] = useState(0);
+    // const countEarnings = async () => {
+    //     setEarnings(await getTotalEarning());
+    // }
+    // countEarnings();
+
+    const [lessons, setLessons] = useState([]);
+    const [students, setStudents] = useState([]);
+    const [priceList, setPriceList] = useState([]);
+
+    const totalEarnings = () => {
+        let earn = 0;
+        for (let i = 0; i < lessons.length; i++) {
+            if (lessons[i].status == 2) {
+                earn += lessons[i].price;
+            }
+        }
+        return earn;
     }
-    countEarnings();
+
+    const insertLessons = async (newLesson) => {
+        const insertId = await insertIntoLessons(newLesson);
+        const buf = lessons;
+        newLesson.id = insertId;
+        const student = students.filter((x) => x.id == newLesson.student_id)[0];
+        newLesson.name = student.name;
+        newLesson.surname = student.surname;
+        buf.push(newLesson);
+        setLessons(buf);
+    };
+    const insertStudents = async (newStudent) => {
+        const insertId = await insertIntoStudents(newStudent);
+        const buf = students;
+        newStudent.id = insertId;
+        buf.push(newStudent);
+        setStudents(buf);
+    };
+
+    const updateLesson = async (id, data) => {
+        const buf = lessons;
+        const student = students.filter((x) => x.id == data.student_id)[0];
+        data.name = student.name;
+        data.surname = student.surname;
+        data.id=id;
+        for (let i = 0; i < buf.length; i++) {
+            if (buf[i].id == id) {
+                buf[i] = data;
+                break;
+            }
+        }
+        setLessons(buf);
+        updateIDLessons(id, data);
+    }
+
+    const deleteLesson = (id) => {
+        let i = 0;
+        const buf = lessons;
+        buf = buf.filter((x) => x.id != id);
+        setLessons(buf);
+        deleteIDLessons(id);
+    }
+
+    const dropLessons = () => {
+        setLessons([]);
+        dropDBLessons();
+    }
+
+    const earningsPerStudents = () => {
+        return groupBy(lessons, (item) => item.student_id);
+    }
+
+
+    useEffect(() => {
+        const fetchDB = async () => {
+            setStudents(await getAllStudents());
+            setLessons(await getAllLessons());
+        }
+        fetchDB();
+    }, []);
+
+    const database = {
+        lessons: lessons,
+        students: students,
+        drop: {
+            lessons: dropLessons,
+        },
+        delete: {
+            lesson: deleteLesson,
+        },
+        update: {
+            lesson: updateLesson,
+        },
+        insert: {
+            lesson: insertLessons,
+            student: insertStudents
+        },
+        totalEarnings: totalEarnings,
+        earningsPerStudents: earningsPerStudents
+    };
 
     return (
-        <PaperProvider>
-            <NavigationContainer>
-                <SafeAreaView style={styles.container}>
-                    <View>
-                        <Text style={styles.title}>
-                            StudentLog
-                        </Text>
-                    </View>
+        <DatabaseContext.Provider value={database}>
+            <PaperProvider>
+                <NavigationContainer>
+                    <SafeAreaView style={styles.container}>
+                        <View>
+                            <Text style={styles.title}>
+                                StudentLog
+                            </Text>
+                        </View>
 
 
-                    <Tabs.Navigator initialRouteName='Lessons' screenOptions={{ animation: 'shift', headerShown: false }}>
-                        <Tabs.Screen name="Students" component={StudentsScreen} options={{
-                            tabBarIcon: ({ focused, color, size }) => {
-                                return <Text style={{ fontSize: 22 }}>{account()}</Text>;
-                            }
-                        }} />
-                        <Tabs.Screen name="Lessons" component={LessonsScreen} options={{
-                            tabBarIcon: ({ focused, color, size }) => {
-                                return <Text style={{ fontSize: 22 }}>{clipboard()}</Text>;
-                            }
-                        }} />
-                        <Tabs.Screen name="Settings" component={SettingsScreen} options={{
-                            tabBarIcon: ({ focused, color, size }) => {
-                                return <Text style={{ fontSize: 22 }}>{cog()}</Text>;
-                            }
-                        }} />
-                    </Tabs.Navigator>
+                        <Tabs.Navigator initialRouteName='Lessons' screenOptions={{ animation: 'shift', headerShown: false }}>
+                            <Tabs.Screen name="Students" component={StudentsScreen} options={{
+                                tabBarIcon: ({ focused, color, size }) => {
+                                    return <Text style={{ fontSize: 22 }}>{account()}</Text>;
+                                }
+                            }} />
+                            <Tabs.Screen name="Lessons" component={LessonsScreen} options={{
+                                tabBarIcon: ({ focused, color, size }) => {
+                                    return <Text style={{ fontSize: 22 }}>{clipboard()}</Text>;
+                                }
+                            }} />
+                            <Tabs.Screen name="Settings" component={SettingsScreen} options={{
+                                tabBarIcon: ({ focused, color, size }) => {
+                                    return <Text style={{ fontSize: 22 }}>{cog()}</Text>;
+                                }
+                            }} />
+                        </Tabs.Navigator>
 
-                </SafeAreaView>
-            </NavigationContainer>
-        </PaperProvider>
+                    </SafeAreaView>
+                </NavigationContainer>
+            </PaperProvider>
+        </DatabaseContext.Provider>
     );
 }
 

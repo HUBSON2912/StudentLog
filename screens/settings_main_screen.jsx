@@ -1,7 +1,7 @@
 import { ScrollView, StyleSheet, View } from "react-native";
 import { Button, Switch, Text } from "react-native-paper";
 import { theme } from "../theme";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { arrowDown } from "../functions/getUnicodeItems";
 import SelectDropdown from "react-native-select-dropdown";
 import { currencies, getCurrencySymbol } from "../functions/currency";

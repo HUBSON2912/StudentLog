@@ -5,114 +5,107 @@ SQLite.enablePromise(true);
 export const lessons = "lessons";
 export const students = "students";
 
-export function insertIntoLessons(lesson) {
-    SQLite.openDatabase({ name: 'studentlog.db', location: 'default' })
-        .then(db => {
-            return db.executeSql(
-                `CREATE TABLE IF NOT EXISTS ${lessons} (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    student_id INTEGER,
-                    subject TEXT,
-                    level TEXT,
-                    year INTEGER,
-                    month INTEGER,
-                    day INTEGER,
-                    hour INTEGER,
-                    minute INTEGER,
-                    topic TEXT,
-                    duration INTEGER,
-                    price INTEGER,
-                    status INTEGER
-                );`).then(() => db);
-        })
-        .then(db => {
-            return db.executeSql(
-                `INSERT INTO ${lessons} 
-                    (student_id, subject, level, year, month, day, hour, minute, topic, duration, price, status)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-                [
-                    lesson.student_id,
-                    lesson.subject,
-                    lesson.level,
-                    lesson.year,
-                    lesson.month,
-                    lesson.day,
-                    lesson.hour,
-                    lesson.minute,
-                    lesson.topic,
-                    lesson.duration,
-                    lesson.price,
-                    lesson.status
-                ]
-            );
-        })
-        .then(() => {
-            console.log('Lesson inserted successfully');
-        })
-        .catch(error => {
-            console.error('Error inserting lesson:', error);
-        });
+export async function insertIntoLessons(lesson) {
+    console.log(lesson);
+    try {
+
+        const db = await SQLite.openDatabase({ name: 'studentlog.db', location: 'default' });
+        await db.executeSql(
+            `CREATE TABLE IF NOT EXISTS ${lessons} (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            student_id INTEGER,
+            subject TEXT,
+            level TEXT,
+            year INTEGER,
+            month INTEGER,
+            day INTEGER,
+            hour INTEGER,
+            minute INTEGER,
+            topic TEXT,
+            duration INTEGER,
+            price INTEGER,
+            status INTEGER
+        );`);
+
+        const insertRes = await db.executeSql(`INSERT INTO ${lessons} 
+                            (student_id, subject, level, year, month, day, hour, minute, topic, duration, price, status)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [
+                lesson.student_id,
+                lesson.subject,
+                lesson.level,
+                lesson.year,
+                lesson.month,
+                lesson.day,
+                lesson.hour,
+                lesson.minute,
+                lesson.topic,
+                lesson.duration,
+                lesson.price,
+                lesson.status
+            ]
+        );
+        return insertRes[0].insertId;
+    }
+    catch (error) {
+        console.error('Error inserting lesson:', error);
+    }
 }
 
-export function updateIDLessons(id, data) {
-    SQLite.openDatabase({ name: 'studentlog.db', location: 'default' })
-        .then(db => {
-            return db.executeSql(
-                `CREATE TABLE IF NOT EXISTS ${lessons} (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    student_id INTEGER,
-                    subject TEXT,
-                    level TEXT,
-                    year INTEGER,
-                    month INTEGER,
-                    day INTEGER,
-                    hour INTEGER,
-                    minute INTEGER,
-                    topic TEXT,
-                    duration INTEGER,
-                    price INTEGER,
-                    status INTEGER
-                );`).then(() => db);
-        })
-        .then(db => {
-            return db.executeSql(
-                `UPDATE ${lessons} SET 
-                    student_id = ?,
-                    subject = ?,
-                    level = ?,
-                    year = ?,
-                    month = ?,
-                    day = ?,
-                    hour = ?,
-                    minute = ?,
-                    topic = ?,
-                    duration = ?,
-                    price = ?,
-                    status = ?
-                 WHERE id = ?`,
-                [
-                    data.student_id,
-                    data.subject,
-                    data.level,
-                    data.year,
-                    data.month,
-                    data.day,
-                    data.hour,
-                    data.minute,
-                    data.topic,
-                    data.duration,
-                    data.price,
-                    data.status,
-                    id
-                ]
-            );
-        })
-        .then(() => {
-            console.log('Lesson updated successfully');
-        })
-        .catch(error => {
-            console.error('Error while updating lesson:', error);
-        });
+export async function updateIDLessons(id, data) {
+    try {
+
+        const db = await SQLite.openDatabase({ name: 'studentlog.db', location: 'default' })
+        await db.executeSql(
+            `CREATE TABLE IF NOT EXISTS ${lessons} (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            student_id INTEGER,
+            subject TEXT,
+            level TEXT,
+            year INTEGER,
+            month INTEGER,
+            day INTEGER,
+            hour INTEGER,
+            minute INTEGER,
+            topic TEXT,
+            duration INTEGER,
+            price INTEGER,
+            status INTEGER
+            );`);
+        return await db.executeSql(
+            `UPDATE ${lessons} SET 
+            student_id = ?,
+            subject = ?,
+            level = ?,
+            year = ?,
+            month = ?,
+            day = ?,
+            hour = ?,
+            minute = ?,
+            topic = ?,
+            duration = ?,
+            price = ?,
+            status = ?
+            WHERE id = ?`,
+            [
+                data.student_id,
+                data.subject,
+                data.level,
+                data.year,
+                data.month,
+                data.day,
+                data.hour,
+                data.minute,
+                data.topic,
+                data.duration,
+                data.price,
+                data.status,
+                id
+            ]
+        );
+    } catch (error) {
+        console.error(error);
+    }
 }
 
 export async function getAllLessons() {
