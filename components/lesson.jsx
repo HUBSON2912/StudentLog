@@ -7,12 +7,15 @@ import Section from "./section";
 import { getDD_Mon_YYYY_HH_MMDate } from "../functions/date";
 import { useNavigation } from "@react-navigation/native";
 import { deleteIDLessons } from "../functions/dbLessons";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { getCurrency, getLanguage } from "../functions/settingsStorage";
 import { getCurrencySymbol } from "../functions/currency";
+import { DatabaseContext } from "../App";
 
 export function Lesson({ item }) {
 
+    const database=useContext(DatabaseContext);
+    
     const [dictionary, setDictionary]=useState({});
 
     const navigation = useNavigation();
@@ -39,7 +42,7 @@ export function Lesson({ item }) {
     ${dictionary.subject}: ${item.subject} ${item.level}
     ${dictionary.date}: ${item.year}-${String(item.month).padStart(2, "0")}-${String(item.day).padStart(2, "0")} ${item.hour}:${String(item.minute).padStart(2, '0')}`,
             [
-                { text: "Tak", onPress: () => { deleteIDLessons(item.id) } },
+                { text: "Tak", onPress: () => { database.delete.lesson(item.id) } },  // verify
                 { text: "Nie", onPress: () => { } }
             ],
             { cancelable: true }

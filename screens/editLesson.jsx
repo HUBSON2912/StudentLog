@@ -19,7 +19,7 @@ import { DatabaseContext } from "../App";
 
 export default function EditLesson({ navigation, route }) {
 
-    const database=useContext(DatabaseContext);
+    const database = useContext(DatabaseContext);
     console.log(database);
     const { lessonID } = route.params;
 
@@ -43,10 +43,10 @@ export default function EditLesson({ navigation, route }) {
     useEffect(() => {
         const fetchData = async () => {
             if (lessonID !== null) {
-                setLessonData(await getByIDLessons(lessonID));
+                setLessonData(database.getByID.lesson(lessonID));
             }
 
-            setStudents(await getAllStudents());
+            setStudents(database.students);
 
             const file = (await getLanguage()).file;
             setDictionary(file);
@@ -207,7 +207,8 @@ export default function EditLesson({ navigation, route }) {
         }
 
         for (let i = 0; i < newLessonsArray.length; i++) {
-            insertIntoLessons(newLessonsArray[i]);
+            database.insert.lesson(newLessonsArray[i])
+            // insertIntoLessons(newLessonsArray[i]);
         }
 
         navigation.pop();
@@ -219,7 +220,7 @@ export default function EditLesson({ navigation, route }) {
     let [haveISetTheData, setAreDataSet] = useState(false);
     useEffect(() => {
         const setFetchedLessonData = async () => {
-            const stud = await getByIDStudents(lessonData.student_id);
+            const stud = database.getByID.student(lessonData.student_id);
             setDefStudent(stud);
             setStudent(stud);
             setSubject(lessonData.subject);
@@ -242,7 +243,7 @@ export default function EditLesson({ navigation, route }) {
         <>
             {
                 !everyhingFetched &&
-                <Loading/>
+                <Loading />
             }
             {
                 everyhingFetched &&
@@ -361,22 +362,25 @@ export default function EditLesson({ navigation, route }) {
 
 
                             {/* mode: you can add one lesson or add lessons on every Monday, Tuesday... */}
-                            <Section style={[styles.optionContainer]}>
-                                <Text style={[styles.text, styles.label]}>{dictionary.adding_mode}</Text>
+                            {
+                                !lessonID &&
+                                <Section style={[styles.optionContainer]}>
+                                    <Text style={[styles.text, styles.label]}>{dictionary.adding_mode}</Text>
 
-                                <View style={{ flex: 4, flexDirection: "row", gap: 10 }}>
-                                    <RectangleRadioButton
-                                        text={dictionary.one_lesson}
-                                        onSelect={() => setMode("one-lesson")}
-                                        isSelected={mode === "one-lesson"}
-                                    />
-                                    <RectangleRadioButton
-                                        text={dictionary.regulary}
-                                        onSelect={() => setMode("regulary")}
-                                        isSelected={mode === "regulary"}
-                                    />
-                                </View>
-                            </Section>
+                                    <View style={{ flex: 4, flexDirection: "row", gap: 10 }}>
+                                        <RectangleRadioButton
+                                            text={dictionary.one_lesson}
+                                            onSelect={() => setMode("one-lesson")}
+                                            isSelected={mode === "one-lesson"}
+                                        />
+                                        <RectangleRadioButton
+                                            text={dictionary.regulary}
+                                            onSelect={() => setMode("regulary")}
+                                            isSelected={mode === "regulary"}
+                                        />
+                                    </View>
+                                </Section>
+                            }
 
                             {/* if you want to add one lesson */}
                             {mode == "one-lesson" &&

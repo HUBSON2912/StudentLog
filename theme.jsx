@@ -12,7 +12,8 @@ export const theme = {
     secondary: "#4b8f62",
     status: {
         done: "#ffc400",
-        paid: "#4b8f62",
+        // paid: "#4b8f62",
+        paid: "#08b02a",
         planned: "#f2f0f3",
     },
     text: {

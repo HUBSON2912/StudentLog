@@ -87,9 +87,24 @@ export default function App() {
         updateIDLessons(id, data);
     }
 
+    const getLessonByID=(id)=>{
+        const buf=database.lessons.filter((x)=>x.id==id);
+        if(buf.length==0) {
+            return null;
+        }
+        return buf[0];
+    }
+
+    const getStudentByID=(id)=>{
+        const buf=database.students.filter((x)=>x.id==id);
+        if(buf.length==0) {
+            return null;
+        }
+        return buf[0];
+    }
+
     const deleteLesson = (id) => {
-        let i = 0;
-        const buf = lessons;
+        let buf = lessons;
         buf = buf.filter((x) => x.id != id);
         setLessons(buf);
         deleteIDLessons(id);
@@ -121,6 +136,10 @@ export default function App() {
         },
         delete: {
             lesson: deleteLesson,
+        },
+        getByID: {
+            lesson: getLessonByID,
+            student: getStudentByID
         },
         update: {
             lesson: updateLesson,
