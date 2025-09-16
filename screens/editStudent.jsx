@@ -1,12 +1,13 @@
 import { KeyboardAvoidingView, ScrollView, StyleSheet, View } from "react-native";
 import { Button, Text, TextInput } from "react-native-paper";
 import { theme } from "../theme";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { arrowDown } from "../functions/getUnicodeItems";
 import SelectDropdown from "react-native-select-dropdown";
 import { dropDBStudent, getByIDStudents, insertIntoStudents, updateIDStudents } from "../functions/dbStudents";
 import Section from "../components/section";
 import { getLanguage } from "../functions/settingsStorage";
+import { DatabaseContext } from "../App";
 
 const REMOTELY_FORM = 0;
 const STATIONARY_FORM = 1;
@@ -14,7 +15,7 @@ const MIXED_FORM = 2;
 
 export default function EditStudent({ navigation, route }) {
 
-
+    const database = useContext(DatabaseContext);
 
     const { studentID } = route.params;
 
@@ -23,11 +24,11 @@ export default function EditStudent({ navigation, route }) {
     const [error, setError] = useState("");
 
     const [dictionary, setDictionary] = useState({});
-    const [haveIsetTheDefFrom, setHaveISetTheDefForm]=useState(false);
+    const [haveIsetTheDefFrom, setHaveISetTheDefForm] = useState(false);
     useEffect(() => {
         const fetchStudentData = async () => {
             if (studentID !== null) {
-                setStudentData(await getByIDStudents(studentID))
+                setStudentData(database.getByID.student);
             }
             getLanguage().then((val) => {
                 setDictionary(val.file);
@@ -54,7 +55,7 @@ export default function EditStudent({ navigation, route }) {
     const [houseNr, setHouseNr] = useState("");
     const [flatNr, setFlatNr] = useState("");
 
-    if(Object.keys(form).length<1 && Object.keys(dictionary).length>0) {
+    if (Object.keys(form).length < 1 && Object.keys(dictionary).length > 0) {
         setForm(possibleForms[0]);
     }
 
@@ -151,14 +152,18 @@ export default function EditStudent({ navigation, route }) {
             city: city,
             street: street,
             house_nr: houseNr,
-            flat_nr: flatNr
+            flat_nr: flatNr,
+            money: !studentData.money ? 0 : studentData.money,
+            lessons_amount: !studentData.lessons_amount ? 0 : studentData.lessons_amount
         };
 
         if (!studentID) {
-            insertIntoStudents(newStudentData);
+            // insertIntoStudents(newStudentData);
+            database.insert.student(newStudentData);
         }
         else {
-            updateIDStudents(studentID, newStudentData);
+            // updateIDStudents(studentID, newStudentData);
+            database.update.student(studentID, newStudentData);
         }
         navigation.pop();
     }

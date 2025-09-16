@@ -9,7 +9,7 @@ import StudentsScreen from './screens/students';
 import SettingsScreen from './screens/settings';
 import { createContext, useEffect, useState } from 'react';
 import { deleteIDLessons, dropDBLessons, getAllLessons, insertIntoLessons, updateIDLessons } from './functions/dbLessons';
-import { getAllStudents, insertIntoStudents } from './functions/dbStudents';
+import { deleteIDStudent, dropDBStudent, getAllStudents, insertIntoStudents, updateIDStudents } from './functions/dbStudents';
 
 const Tabs = createBottomTabNavigator();
 export const DatabaseContext = createContext(undefined);
@@ -52,17 +52,6 @@ export default function App() {
         }
         return earn;
     }
-
-    const insertLessons = async (newLesson) => {
-        const insertId = await insertIntoLessons(newLesson);
-        const buf = lessons;
-        newLesson.id = insertId;
-        const student = students.filter((x) => x.id == newLesson.student_id)[0];
-        newLesson.name = student.name;
-        newLesson.surname = student.surname;
-        buf.push(newLesson);
-        setLessons(buf);
-    };
     const insertStudents = async (newStudent) => {
         const insertId = await insertIntoStudents(newStudent);
         const buf = students;
@@ -71,12 +60,12 @@ export default function App() {
         setStudents(buf);
     };
 
-    const updateLesson = async (id, data) => {
+    const updateLesson = (id, data) => {
         const buf = lessons;
-        const student = students.filter((x) => x.id == data.student_id)[0];
-        data.name = student.name;
-        data.surname = student.surname;
-        data.id=id;
+        const studentInThisLesson = students.filter((x) => x.id == data.student_id)[0];
+        data.name = studentInThisLesson.name;
+        data.surname = studentInThisLesson.surname;
+        data.id = id;
         for (let i = 0; i < buf.length; i++) {
             if (buf[i].id == id) {
                 buf[i] = data;
@@ -87,17 +76,43 @@ export default function App() {
         updateIDLessons(id, data);
     }
 
-    const getLessonByID=(id)=>{
-        const buf=database.lessons.filter((x)=>x.id==id);
-        if(buf.length==0) {
+    const updateStudent = (id, data) => {
+        const buf = students;
+        for (let i = 0; i < buf.length; i++) {
+            if (buf.id == id) {
+                buf[i] = data;
+                break;
+            }
+        }
+        setStudents(buf);
+        updateIDStudents(id, data);
+    }
+
+    const insertLessons = async (newLesson) => {
+        const insertId = await insertIntoLessons(newLesson);
+        const buf = lessons;
+        newLesson.id = insertId;
+        let student = students.filter((x) => x.id == newLesson.student_id)[0];
+        newLesson.name = student.name;
+        newLesson.surname = student.surname;
+        student.money = student.money + (newLesson.status == 2 ? newLesson.price : 0);
+        student.lessons_amount = student.lessons_amount + (newLesson.status == 2 ? 1 : 0);
+        updateStudent(student.id, student);
+        buf.push(newLesson);
+        setLessons(buf);
+    };
+
+    const getLessonByID = (id) => {
+        const buf = database.lessons.filter((x) => x.id == id);
+        if (buf.length == 0) {
             return null;
         }
         return buf[0];
     }
 
-    const getStudentByID=(id)=>{
-        const buf=database.students.filter((x)=>x.id==id);
-        if(buf.length==0) {
+    const getStudentByID = (id) => {
+        const buf = database.students.filter((x) => x.id == id);
+        if (buf.length == 0) {
             return null;
         }
         return buf[0];
@@ -110,9 +125,25 @@ export default function App() {
         deleteIDLessons(id);
     }
 
+    const deleteStudent = (id) => {
+        let buf = students;
+        buf = buf.filter((x) => x.id != id);
+        setStudents(buf);
+        buf = lessons;
+        buf = buf.filter((x) => x.student_id != id);
+        setLessons(buf);
+        deleteStudentsLessons(id);
+        deleteIDStudent(id);
+    }
+
     const dropLessons = () => {
         setLessons([]);
         dropDBLessons();
+    }
+
+    const dropStudents = () => {
+        setStudents([]);
+        dropDBStudent();
     }
 
     const earningsPerStudents = () => {
@@ -133,9 +164,11 @@ export default function App() {
         students: students,
         drop: {
             lessons: dropLessons,
+            students: dropStudents
         },
         delete: {
             lesson: deleteLesson,
+            student: deleteStudent
         },
         getByID: {
             lesson: getLessonByID,
@@ -143,6 +176,7 @@ export default function App() {
         },
         update: {
             lesson: updateLesson,
+            student: updateStudent
         },
         insert: {
             lesson: insertLessons,

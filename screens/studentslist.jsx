@@ -4,38 +4,40 @@ import { theme } from "../theme";
 import { Student } from "../components/student";
 import { getAllStudents } from "../functions/dbStudents";
 import { Text } from "react-native-paper";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { getLanguage, getShowAmountOfStudents } from "../functions/settingsStorage";
+import { DatabaseContext } from "../App";
 
 export default function StudentsListScreen({ navigation }) {
 
-    const [dictionary, setDictionary]=useState({});
+    const database = useContext(DatabaseContext);
 
-    const [message, setMessage] = useState("...");
+    const [dictionary, setDictionary] = useState({});
 
-    const [showHowManyStudents, setHowManyStudents] = useState(true);
-    const [students, setStudents] = useState([]);
+    const [message, setMessage] = useState(null);
+
+    const [showHowManyStudents, setShowHowManyStudents] = useState(false);
+    const [students, setStudents] = useState(database.students);
+
+    console.log(students);
+
     useFocusEffect(() => {
         const fetchStudents = async () => {
             setDictionary((await getLanguage()).file);
 
-            setStudents(await getAllStudents());
             if (students.length == 0) {
                 setMessage(dictionary.no_data);
             }
-            else {
-                setMessage("");
-            }
 
-            setHowManyStudents(await getShowAmountOfStudents());
+            setShowHowManyStudents(await getShowAmountOfStudents());
         }
         fetchStudents();
     });
 
     return (
         <View style={{ backgroundColor: theme.background, flex: 1 }}>
-            <View style={{ marginVertical: 15, display: showHowManyStudents?"flex":"none"}}>
+            <View style={{ marginVertical: 15, display: showHowManyStudents ? "flex" : "none" }}>
                 <Text style={[styles.text, { fontWeight: "500" }]}>
                     {dictionary.amount_of_students}: {students.length}
                 </Text>

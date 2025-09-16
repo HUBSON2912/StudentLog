@@ -9,52 +9,46 @@ const students = "students";
 const lessons = "lessons";
 const priceList = "price_list";
 
-export function insertIntoStudents(student) {
-    SQLite.openDatabase({ name: 'studentlog.db', location: 'default' })
-        .then(db => {
-            return db.executeSql(
-                `CREATE TABLE IF NOT EXISTS students (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    name TEXT,
-                    surname TEXT,
-                    phone TEXT,
-                    email TEXT,
-                    form INTEGER,
-                    platform TEXT,
-                    nick TEXT,
-                    city TEXT,
-                    street TEXT,
-                    house_nr TEXT,
-                    flat_nr TEXT
-                );`
-            ).then(() => db);
-        })
-        .then(db => {
-            return db.executeSql(
-                `INSERT INTO students 
-                    (name, surname, phone, email, form, platform, nick, city, street, house_nr, flat_nr)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-                [
-                    student.name,
-                    student.surname,
-                    student.phone,
-                    student.email,
-                    student.form,
-                    student.platform,
-                    student.nick,
-                    student.city,
-                    student.street,
-                    student.house_nr,
-                    student.flat_nr
-                ]
-            );
-        })
-        .then(() => {
-            console.log('Student inserted successfully');
-        })
-        .catch(error => {
-            console.error('Error inserting student:', error);
-        });
+export async function insertIntoStudents(student) {
+    try {
+        const db = await SQLite.openDatabase({ name: 'studentlog.db', location: 'default' })
+        db.executeSql(
+            `CREATE TABLE IF NOT EXISTS students (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT,
+        surname TEXT,
+        phone TEXT,
+        email TEXT,
+        form INTEGER,
+        platform TEXT,
+        nick TEXT,
+        city TEXT,
+        street TEXT,
+        house_nr TEXT,
+        flat_nr TEXT
+        );`);
+        const insertRes = await db.executeSql(
+            `INSERT INTO students 
+        (name, surname, phone, email, form, platform, nick, city, street, house_nr, flat_nr)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [
+                student.name,
+                student.surname,
+                student.phone,
+                student.email,
+                student.form,
+                student.platform,
+                student.nick,
+                student.city,
+                student.street,
+                student.house_nr,
+                student.flat_nr
+            ]
+        );
+        return insertRes[0].insertId;
+    } catch(error) {
+        console.log(error);
+    }
 }
 
 export function updateIDStudents(id, data) {

@@ -5,12 +5,14 @@ import { bullet, mail, phone } from "../functions/getUnicodeItems";
 import { useNavigation } from "@react-navigation/native";
 import { deleteIDStudent } from "../functions/dbStudents";
 import Section from "./section";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { getCurrencySymbol } from "../functions/currency";
 import { getCurrency } from "../functions/settingsStorage";
+import { DatabaseContext } from "../App";
 
 export function Student({ item }) {
     
+    const database=useContext(DatabaseContext);
 
     // to get the correct currency and show it when the student is pressed
     const [curr, setCurr] = useState({});
@@ -74,12 +76,14 @@ export function Student({ item }) {
         Alert.alert("Potwierdzenie",
             `Czy na pewno chcesz usunąć tego ucznia? Spowoduje to usunięcie wszystkich lekcji przypisanych do tego ucznia. \n\nID: ${item.id} \nImię: ${item.name} \nNazwisko: ${item.surname}`,
             [
-                { text: "Tak", onPress: () => { deleteIDStudent(item.id) } },
+                { text: "Tak", onPress: () => { database.delete.student(item.id) } },
                 { text: "Nie", onPress: () => { } }
             ],
             { cancelable: true }
         )
     };
+
+    console.log(item);
 
     const [expand, setExpand] = useState(false);
     const onPress = () => {
