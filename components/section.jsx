@@ -74,6 +74,8 @@ export default function Section({
             pressIn = handleFadeOut;
             pressOut = () => { };
             break;
+        case "none": 
+            break;
         default:
             break;
     }

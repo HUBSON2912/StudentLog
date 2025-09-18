@@ -6,7 +6,6 @@ export const lessons = "lessons";
 export const students = "students";
 
 export async function insertIntoLessons(lesson) {
-    console.log(lesson);
     try {
 
         const db = await SQLite.openDatabase({ name: 'studentlog.db', location: 'default' });

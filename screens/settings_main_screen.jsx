@@ -1,12 +1,13 @@
 import { ScrollView, StyleSheet, View } from "react-native";
-import { Button, Switch, Text } from "react-native-paper";
+import { Button, Switch, Text, TextInput } from "react-native-paper";
 import { theme } from "../theme";
 import { useContext, useEffect, useState } from "react";
 import { arrowDown } from "../functions/getUnicodeItems";
 import SelectDropdown from "react-native-select-dropdown";
 import { currencies, getCurrencySymbol } from "../functions/currency";
-import { getCurrency, getLanguage, getShowAmountOfStudents, getShowIncomes, setCurrency, setLanguage, setShowAmountOfStudents, setShowIncomes } from "../functions/settingsStorage";
+import { getCurrency, getDiscountForTheFirstLesson, getLanguage, getShowAmountOfStudents, getShowIncomes, getUsePriceList, setCurrency, setDiscountForTheFirstLesson, setLanguage, setShowAmountOfStudents, setShowIncomes, setUsePriceList } from "../functions/settingsStorage";
 import Section from "../components/section";
+import Loading from "../components/loading";
 
 export default function SettingsMainScreen({ navigation }) {
 
@@ -23,9 +24,10 @@ export default function SettingsMainScreen({ navigation }) {
     const [selectedLanguage, setSelectedLanguage] = useState(languages[0]);
     const [showMoney, setShowMoney] = useState(false);
     const [showAmountOfStudents, setShowAmountOfStudentsLocal] = useState(false);
-    const [usePriceList, setUsePriceList] = useState(false);
+    const [usePriceList, setUsePriceListLocal] = useState(false);
+    const [discount, setDiscount] = useState("100");
 
-    const [dictionary, setDictionary]=useState({});
+    const [dictionary, setDictionary] = useState({});
     /** TODO:
      * export and import buttons
      * 
@@ -36,6 +38,7 @@ export default function SettingsMainScreen({ navigation }) {
 
     const switchUsagePriceList = () => {
         setUsePriceList(!usePriceList);
+        setUsePriceListLocal(!usePriceList);
     }
 
     const switchShowMoney = () => {
@@ -71,17 +74,23 @@ export default function SettingsMainScreen({ navigation }) {
 
     // default: PLN
     const [currency, setCurrencyLocal] = useState({});
+
+    const [allDataFetched, setIfAllDataFetched] = useState(false);
+
     useEffect(() => {
         const fetchSavedSettings = async () => {
             setCurrencyLocal(await getCurrency());
             setShowMoney(await getShowIncomes());
             setShowAmountOfStudentsLocal(await getShowAmountOfStudents());
             setSelectedLanguage(await getLanguage());
-
+            setDiscount(String(await getDiscountForTheFirstLesson()));
+            setUsePriceListLocal(await getUsePriceList());
             setDictionary((await getLanguage()).file);
+
+            setIfAllDataFetched(true);
         };
         fetchSavedSettings();
-    })
+    }, []);
 
     const renderCurrencyButton = (sel, isOpen) => {
         return (
@@ -104,113 +113,130 @@ export default function SettingsMainScreen({ navigation }) {
     }
 
     return (
-        <View style={styles.container}>
-            <ScrollView style={styles.container}>
-                <Section style={styles.optionContainer}>
-                    <Text style={[styles.text, styles.label]}>{dictionary.language}</Text>
-                    <SelectDropdown
-                        data={languages}
-                        onSelect={(sel, index) => {
-                            setSelectedLanguage(sel);
-                            setLanguage(sel);
-                        }}
-                        renderButton={renderLanguageButton}
-                        renderItem={renderLanguageItem}
-                        defaultValue={selectedLanguage}
-                    />
+        <>
+            {!allDataFetched &&
+                <View style={{ justifyContent: "center", flex: 1 }}>
+                    <Loading />
+                </View>
+            }
+            {
+                allDataFetched &&
+                <View style={styles.container}>
+                    <ScrollView style={styles.container}>
 
-                </Section>
+                        <Section onPressBehaviour={"none"} style={styles.optionContainer}>
+                            <Text style={[styles.text, styles.label]}>{dictionary.language}</Text>
+                            <SelectDropdown
+                                data={languages}
+                                onSelect={(sel, index) => {
+                                    setSelectedLanguage(sel);
+                                    setLanguage(sel);
+                                }}
+                                renderButton={renderLanguageButton}
+                                renderItem={renderLanguageItem}
+                                defaultValue={selectedLanguage}
+                            />
 
-                <Section style={styles.optionContainer}>
-                    <Text style={[styles.text, styles.label]}>{dictionary.currency}</Text>
-                    <SelectDropdown
-                        data={currencies}
-                        onSelect={(sel) => {
-                            setCurrencyLocal(sel);
-                            setCurrency(sel);
-                        }}
-                        renderButton={renderCurrencyButton}
-                        renderItem={renderCurrencyItem}
-                        defaultValue={currency}
-                        dropdownStyle={{ backgroundColor: theme.backgroundInput }}
-                        disableAutoScroll
-                        search={true}
-                        searchInputStyle={{ backgroundColor: theme.backgroundInput, borderBottomWidth: 3, borderBottomColor: theme.text.gray }}
-                        searchInputTxtColor={theme.text.default}
-                        searchPlaceHolder="Szukaj"
-                    />
-                </Section>
-                <Section style={styles.optionContainer}>
-                    <Text style={[styles.text, styles.label]}>{dictionary.show_incomes}</Text>
-                    <Switch
-                        value={showMoney}
-                        onValueChange={switchShowMoney}
-                        color={theme.primary}
-                    />
-                </Section>
-                <Section style={styles.optionContainer}>
-                    <Text style={[styles.text, styles.label]}>{dictionary.show_amount_of_students}</Text>
-                    <Switch
-                        value={showAmountOfStudents}
-                        onValueChange={switchShowAmountOfStudents}
-                        color={theme.primary}
-                    />
-                </Section>
-                <Section style={{ alignItems: "center" }}>
-                    <View style={styles.optionContainer}>
+                        </Section>
 
-                        <Text style={[styles.text, styles.label]}>{dictionary.use_price_list}</Text>
-                        <Switch
-                            value={usePriceList}
-                            onValueChange={switchUsagePriceList}
-                            color={theme.primary}
-                        />
+                        <Section onPressBehaviour={"none"} style={styles.optionContainer}>
+                            <Text style={[styles.text, styles.label]}>{dictionary.currency}</Text>
+                            <SelectDropdown
+                                data={currencies}
+                                onSelect={(sel) => {
+                                    setCurrencyLocal(sel);
+                                    setCurrency(sel);
+                                }}
+                                renderButton={renderCurrencyButton}
+                                renderItem={renderCurrencyItem}
+                                defaultValue={currency}
+                                dropdownStyle={{ backgroundColor: theme.backgroundInput }}
+                                disableAutoScroll
+                                search={true}
+                                searchInputStyle={{ backgroundColor: theme.backgroundInput, borderBottomWidth: 3, borderBottomColor: theme.text.gray }}
+                                searchInputTxtColor={theme.text.default}
+                                searchPlaceHolder="Szukaj"
+                            />
+                        </Section>
+                        <Section onPressBehaviour={"none"} style={styles.optionContainer}>
+                            <Text style={[styles.text, styles.label]}>{dictionary.show_incomes}</Text>
+                            <Switch
+                                value={showMoney}
+                                onValueChange={switchShowMoney}
+                                color={theme.primary}
+                            />
+                        </Section>
+                        <Section onPressBehaviour={"none"} style={styles.optionContainer}>
+                            <Text style={[styles.text, styles.label]}>{dictionary.show_amount_of_students}</Text>
+                            <Switch
+                                value={showAmountOfStudents}
+                                onValueChange={switchShowAmountOfStudents}
+                                color={theme.primary}
+                            />
+                        </Section>
+                        <Section onPressBehaviour={"none"} style={{ alignItems: "center" }}>
+                            <View style={styles.optionContainer}>
+
+                                <Text style={[styles.text, styles.label]}>{dictionary.use_price_list}</Text>
+                                <Switch
+                                    value={usePriceList}
+                                    onValueChange={switchUsagePriceList}
+                                    color={theme.primary}
+                                />
 
 
-                    </View>
-                    <View style={[styles.optionContainer, { display: (usePriceList ? "flex" : "none") }]}>
-                        {/* todo change into "discount for the first lesson [%] defaultly 100%" */}
-                        <Text style={[styles.text, styles.label]}>{dictionary.discount_for_the_first_lesson}</Text>
-                        <Switch
-                            value={showMoney}
-                            onValueChange={switchShowMoney}
-                            color={theme.primary}
-
-                        />
-                    </View>
-                    <Button
-                        mode="contained"
-                        style={[
-                            styles.button,
-                            { display: (usePriceList ? "flex" : "none") }
-                        ]}
-                        onPress={() => { navigation.navigate("PriceList") }}
-                    >
-                        <Text style={styles.buttonLabel}>
-                            {dictionary.edit_price_list}
-                        </Text>
-                    </Button>
-                </Section>
-                <Button
-                    mode="contained"
-                    style={styles.button}
-                    onPress={() => { /* TODO export */ }}
-                >
-                    <Text style={styles.buttonLabel}>
-                        {dictionary.export_database}
-                    </Text>
-                </Button>
-                <Button
-                    mode="contained"
-                    style={styles.button}
-                    onPress={() => { /* TODO import */ }}
-                >
-                    <Text style={styles.buttonLabel}>
-                        {dictionary.import_database}
-                    </Text>
-                </Button>
-            </ScrollView>
-        </View>
+                            </View>
+                            <View style={[styles.optionContainer, { display: (usePriceList ? "flex" : "none") }]}>
+                                <Text style={[styles.text, styles.label]}>{dictionary.discount_for_the_first_lesson} [%]</Text>
+                                <TextInput
+                                    mode="outlined"
+                                    style={styles.textInput}
+                                    placeholder={"100%"}
+                                    value={discount}
+                                    onChangeText={(val) => {
+                                        setDiscount(val);
+                                        setDiscountForTheFirstLesson(parseInt(val));
+                                    }}
+                                    activeOutlineColor={theme.primaryHalf}
+                                    contentStyle={styles.text}
+                                    keyboardType="number-pad"
+                                />
+                            </View>
+                            <Button
+                                mode="contained"
+                                style={[
+                                    styles.button,
+                                    { display: (usePriceList ? "flex" : "none") }
+                                ]}
+                                onPress={() => { navigation.navigate("PriceList") }}
+                            >
+                                <Text style={styles.buttonLabel}>
+                                    {dictionary.edit_price_list}
+                                </Text>
+                            </Button>
+                        </Section>
+                        <Button
+                            mode="contained"
+                            style={styles.button}
+                            onPress={() => { /* TODO export */ }}
+                        >
+                            <Text style={styles.buttonLabel}>
+                                {dictionary.export_database}
+                            </Text>
+                        </Button>
+                        <Button
+                            mode="contained"
+                            style={styles.button}
+                            onPress={() => { /* TODO import */ }}
+                        >
+                            <Text style={styles.buttonLabel}>
+                                {dictionary.import_database}
+                            </Text>
+                        </Button>
+                    </ScrollView>
+                </View>
+            }
+        </>
     );
 }
 
@@ -265,5 +291,8 @@ const styles = StyleSheet.create({
         color: theme.text.default,
         textAlignVertical: "center",
         fontSize: 16,
-    }
+    },
+    textInput: {
+        backgroundColor: theme.background,
+    },
 });

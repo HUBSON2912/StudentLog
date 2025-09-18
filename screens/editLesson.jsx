@@ -20,7 +20,6 @@ import { DatabaseContext } from "../App";
 export default function EditLesson({ navigation, route }) {
 
     const database = useContext(DatabaseContext);
-    console.log(database);
     const { lessonID } = route.params;
 
     const [lessonData, setLessonData] = useState({});

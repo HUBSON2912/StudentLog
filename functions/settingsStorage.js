@@ -58,3 +58,21 @@ export async function getLanguage() {
 export async function setLanguage(value) {
     AsyncStorage.setItem("language", JSON.stringify(value));
 }
+
+export async function setDiscountForTheFirstLesson(value) {
+    AsyncStorage.setItem("discount", String(value));
+}
+
+export async function getDiscountForTheFirstLesson() {
+    const sett = await AsyncStorage.getItem("discount");
+    return sett == null ? 100 : sett;  // default discount = 100 %
+}
+
+export async function setUsePriceList(value) {
+    AsyncStorage.setItem("use-price-list", String(value));
+}
+
+export async function getUsePriceList() {
+    const sett = await AsyncStorage.getItem("use-price-list");
+    return sett == "true" ? true : false;
+}

@@ -83,8 +83,6 @@ export function Student({ item }) {
         )
     };
 
-    console.log(item);
-
     const [expand, setExpand] = useState(false);
     const onPress = () => {
         setExpand(!expand);

@@ -20,8 +20,6 @@ export default function StudentsListScreen({ navigation }) {
     const [showHowManyStudents, setShowHowManyStudents] = useState(false);
     const [students, setStudents] = useState(database.students);
 
-    console.log(students);
-
     useFocusEffect(() => {
         const fetchStudents = async () => {
             setDictionary((await getLanguage()).file);
