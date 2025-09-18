@@ -2,17 +2,17 @@ import { FlatList, StyleSheet, View } from "react-native";
 import { theme } from "../theme";
 import { Button, Text } from "react-native-paper";
 import PriceLiseElement from "../components/price_list_element";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { getLanguage } from "../functions/settingsStorage";
+import { DatabaseContext } from "../App";
+import { PlusComponent } from "../components/pluscomponent";
 
 export default function PriceList({ navigation }) {
-    /** todo
-     * create WHOLE db table for it
-     * save prices
-     * edit price
-     * delete price
-     */
+
+    const database = useContext(DatabaseContext);
+
     const [dictionary, setDictionary] = useState({});
+
     useEffect(() => {
         const fetchDict = async () => {
             setDictionary((await getLanguage()).file);
@@ -21,47 +21,30 @@ export default function PriceList({ navigation }) {
     })
 
 
-    const prices = [
-        {
-            id: 0,
-            subject: "Matematyka",
-            level: "szkoła podstawowa",
-            price: 50
-        },
-        {
-            id: 1,
-            subject: "Matematyka",
-            level: "szkoła średnia PP",
-            price: 160
-        },
-        {
-            id: 2,
-            subject: "Fizyka",
-            level: "szkoła średnia PR",
-            price: 70
-        }
-    ]
+    const prices = database.priceList;
 
     return (
         <View style={styles.container}>
-            <FlatList
-                data={prices}
-                renderItem={({ item }) => {
-                    return <PriceLiseElement item={item} />
-                }}
-            />
-
-            <View style={styles.buttonPanel}>
-                <Button
-                    mode="contained"
-                    style={[styles.button, { backgroundColor: theme.primary, flex: 1 }]}
-                    onPress={() => navigation.pop()}
-                >
-                    <Text style={styles.buttonLabel}>
-                        {dictionary.back}
+            {
+                prices.length != 0 &&
+                <FlatList
+                    data={prices}
+                    renderItem={({ item }) => {
+                        return <PriceLiseElement item={item} />
+                    }}
+                />
+            }
+            {
+                prices.length == 0 &&
+                <View style={{ flex: 1, alignItems: "center" }}>
+                    <Text style={styles.description}>
+                        Brak danych {/* todo dictionary.nodata */}
                     </Text>
-                </Button>
-            </View>
+                </View>
+
+            }
+
+            <PlusComponent onPress={()=>navigation.navigate("PriceListEdit")} />
         </View>
     );
 }
@@ -84,5 +67,10 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: theme.background
+    },
+    description: {
+        color: theme.text.gray,
+        fontSize: 22,
+        marginTop: 50
     }
 });

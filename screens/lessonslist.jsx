@@ -38,7 +38,7 @@ export default function LessonsList({ navigation }) {
             const ear = await database.totalEarnings();
             setEarnings(ear);
             setCurr(await getCurrency());
-            setShowMoney(await getShowIncomes());
+            setShowMoney(await getShowIncomes());  //fix
         }
         fetchLessons();
     });
@@ -63,10 +63,9 @@ export default function LessonsList({ navigation }) {
                     styles.description,
                     {
                         marginTop: 50,
-                        fontSize: 22,
                         textAlign: "center",
                     }]}>
-                    Brak danych
+                    Brak danych  {/* todo change into dicrionary.nodata */}
                 </Text>
             }
             <PlusComponent onPress={() => navigation.navigate("EditLesson", { lessonID: null })} />
@@ -81,6 +80,6 @@ const styles = StyleSheet.create({
     },
     description: {
         color: theme.text.gray,
-        fontSize: 16
+        fontSize: 22
     }
 });

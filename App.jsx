@@ -10,6 +10,7 @@ import SettingsScreen from './screens/settings';
 import { createContext, useEffect, useState } from 'react';
 import { deleteIDLessons, dropDBLessons, getAllLessons, insertIntoLessons, updateIDLessons } from './functions/dbLessons';
 import { deleteIDStudent, dropDBStudent, getAllStudents, insertIntoStudents, updateIDStudents } from './functions/dbStudents';
+import { deleteIDPriceList, dropDBPriceList, getAllPriceList, insertIntoPriceList, updateIDPriceList } from './functions/dbPriceList';
 
 const Tabs = createBottomTabNavigator();
 export const DatabaseContext = createContext(undefined);
@@ -33,12 +34,6 @@ function groupBy(items, selector) {
 
 export default function App() {
 
-    // const [earnings, setEarnings] = useState(0);
-    // const countEarnings = async () => {
-    //     setEarnings(await getTotalEarning());
-    // }
-    // countEarnings();
-
     const [lessons, setLessons] = useState([]);
     const [students, setStudents] = useState([]);
     const [priceList, setPriceList] = useState([]);
@@ -60,6 +55,14 @@ export default function App() {
         setStudents(buf);
     };
 
+    const insertPriceList = async (newElement) => {
+        const insertId = await insertIntoPriceList(newElement);
+        const buf = priceList;
+        newElement.id = insertId;
+        buf.push(newElement);
+        setPriceList(buf);
+    }
+
     const updateLesson = (id, data) => {
         const buf = lessons;
         const studentInThisLesson = students.filter((x) => x.id == data.student_id)[0];
@@ -79,13 +82,27 @@ export default function App() {
     const updateStudent = (id, data) => {
         const buf = students;
         for (let i = 0; i < buf.length; i++) {
-            if (buf.id == id) {
+            if (buf[i].id == id) {
                 buf[i] = data;
+                buf[i].id = id;
                 break;
             }
         }
         setStudents(buf);
         updateIDStudents(id, data);
+    }
+
+    const updatePriceList = (id, data) => {
+        const buf = priceList;
+        for (let i = 0; i < buf.length; i++) {
+            if (buf[i].id == id) {
+                buf[i] = data;
+                buf[i].id = id;
+                break;
+            }
+        }
+        setPriceList(buf);
+        updateIDPriceList(id, data);
     }
 
     const insertLessons = async (newLesson) => {
@@ -118,6 +135,14 @@ export default function App() {
         return buf[0];
     }
 
+    const getPriceListByID = (id) => {
+        const buf = database.priceList.filter((x) => x.id == id);
+        if (buf.length == 0) {
+            return null;
+        }
+        return buf[0];
+    }
+
     const deleteLesson = (id) => {
         let buf = lessons;
         buf = buf.filter((x) => x.id != id);
@@ -136,6 +161,13 @@ export default function App() {
         deleteIDStudent(id);
     }
 
+    const deletePriceList = (id) => {
+        let buf = priceList;
+        buf = buf.filter((x) => x.id != id);
+        setPriceList(buf);
+        deleteIDPriceList(id);
+    }
+
     const dropLessons = () => {
         setLessons([]);
         dropDBLessons();
@@ -146,6 +178,12 @@ export default function App() {
         dropDBStudent();
     }
 
+    const dropPriceList = () => {
+        setPriceList([]);
+        dropDBPriceList();
+    }
+
+
     const earningsPerStudents = () => {
         return groupBy(lessons, (item) => item.student_id);
     }
@@ -155,6 +193,7 @@ export default function App() {
         const fetchDB = async () => {
             setStudents(await getAllStudents());
             setLessons(await getAllLessons());
+            setPriceList(await getAllPriceList());
         }
         fetchDB();
     }, []);
@@ -162,25 +201,31 @@ export default function App() {
     const database = {
         lessons: lessons,
         students: students,
+        priceList: priceList,
         drop: {
             lessons: dropLessons,
-            students: dropStudents
+            students: dropStudents,
+            priceList: dropPriceList
         },
         delete: {
             lesson: deleteLesson,
-            student: deleteStudent
+            student: deleteStudent,
+            priceList: deletePriceList
         },
         getByID: {
             lesson: getLessonByID,
-            student: getStudentByID
+            student: getStudentByID,
+            priceList: getPriceListByID
         },
         update: {
             lesson: updateLesson,
-            student: updateStudent
+            student: updateStudent,
+            priceList: updatePriceList
         },
         insert: {
             lesson: insertLessons,
-            student: insertStudents
+            student: insertStudents,
+            priceList: insertPriceList
         },
         totalEarnings: totalEarnings,
         earningsPerStudents: earningsPerStudents
