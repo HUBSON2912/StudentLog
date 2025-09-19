@@ -20,7 +20,6 @@ export default function PriceList({ navigation }) {
         fetchDict();
     })
 
-
     const prices = database.priceList;
 
     return (
@@ -44,7 +43,7 @@ export default function PriceList({ navigation }) {
 
             }
 
-            <PlusComponent onPress={()=>navigation.navigate("PriceListEdit")} />
+            <PlusComponent onPress={() => navigation.navigate("PriceListEdit", {})} />
         </View>
     );
 }

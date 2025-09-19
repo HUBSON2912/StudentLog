@@ -12,17 +12,20 @@ const MIXED_FORM = 2;
 export default function EditPriceList({ navigation, route }) {
     // fix: dictionary.[...] not just fixed text
     const database = useContext(DatabaseContext);
+    const { priceListElement } = route.params;
+    
+    console.log("stop");
 
-    const [subject, setSubject] = useState("");
-    const [level, setLevel] = useState("");
-    const [price, setPrice] = useState("");
+    const [subject, setSubject] = useState(priceListElement ? priceListElement.subject : "");
+    const [level, setLevel] = useState(priceListElement ? priceListElement.level : "");
+    const [price, setPrice] = useState(priceListElement ? String(priceListElement.price) : "");
     const [error, setError] = useState("");
 
     const handleSaveButton = () => {
         const isDuplicate = database.priceList.filter((x) => x.subject == subject && x.level == level);
         if (!subject || !level || !price)
             setError("Uzupełnij wszystkie dane");
-        else if (isDuplicate.length != 0) {
+        else if (isDuplicate.length != 0 && !priceListElement) {
             setError("Już istnieje taki wpis");
         }
         else {
@@ -31,7 +34,14 @@ export default function EditPriceList({ navigation, route }) {
                 level: level,
                 price: parseInt(price)
             }
-            database.insert.priceList(newData);
+            
+            if (!priceListElement) {
+                database.insert.priceList(newData);
+            }
+            else {
+                database.update.priceList(priceListElement.id, newData);
+            }
+
             navigation.pop();
         }
     }

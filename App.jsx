@@ -188,6 +188,14 @@ export default function App() {
         return groupBy(lessons, (item) => item.student_id);
     }
 
+    const getSubjectsInPriceList = (level = null) => {
+        const res = priceList.filter((x) => !level || x.level == level).map((x) => x.subject);
+        return [...new Set(res)];
+    }
+    const getLevelsInPriceList = (subject = null) => {
+        const res = priceList.filter(x => !subject || x.subject == subject).map((x) => x.level);
+        return [...new Set(res)];
+    }
 
     useEffect(() => {
         const fetchDB = async () => {
@@ -197,6 +205,7 @@ export default function App() {
         }
         fetchDB();
     }, []);
+
 
     const database = {
         lessons: lessons,
@@ -228,7 +237,9 @@ export default function App() {
             priceList: insertPriceList
         },
         totalEarnings: totalEarnings,
-        earningsPerStudents: earningsPerStudents
+        earningsPerStudents: earningsPerStudents,
+        getSubjects: getSubjectsInPriceList,
+        getLevels: getLevelsInPriceList
     };
 
     return (

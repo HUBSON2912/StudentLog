@@ -46,7 +46,7 @@ export async function updateIDPriceList(id, data) {
             `UPDATE ${priceList} SET 
             subject = ?,
             level = ?,
-            price = ?,
+            price = ?
             WHERE id = ?`,
             [
                 data.subject,
