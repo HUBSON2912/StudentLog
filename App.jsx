@@ -46,7 +46,7 @@ export default function App() {
             }
         }
         return earn;
-    }
+    };
     const insertStudents = async (newStudent) => {
         const insertId = await insertIntoStudents(newStudent);
         const buf = students;
@@ -61,7 +61,7 @@ export default function App() {
         newElement.id = insertId;
         buf.push(newElement);
         setPriceList(buf);
-    }
+    };
 
     const updateLesson = (id, data) => {
         const buf = lessons;
@@ -77,7 +77,7 @@ export default function App() {
         }
         setLessons(buf);
         updateIDLessons(id, data);
-    }
+    };
 
     const updateStudent = (id, data) => {
         const buf = students;
@@ -90,7 +90,7 @@ export default function App() {
         }
         setStudents(buf);
         updateIDStudents(id, data);
-    }
+    };
 
     const updatePriceList = (id, data) => {
         const buf = priceList;
@@ -103,7 +103,7 @@ export default function App() {
         }
         setPriceList(buf);
         updateIDPriceList(id, data);
-    }
+    };
 
     const insertLessons = async (newLesson) => {
         const insertId = await insertIntoLessons(newLesson);
@@ -125,7 +125,7 @@ export default function App() {
             return null;
         }
         return buf[0];
-    }
+    };
 
     const getStudentByID = (id) => {
         const buf = database.students.filter((x) => x.id == id);
@@ -133,7 +133,7 @@ export default function App() {
             return null;
         }
         return buf[0];
-    }
+    };
 
     const getPriceListByID = (id) => {
         const buf = database.priceList.filter((x) => x.id == id);
@@ -141,14 +141,14 @@ export default function App() {
             return null;
         }
         return buf[0];
-    }
+    };
 
     const deleteLesson = (id) => {
         let buf = lessons;
         buf = buf.filter((x) => x.id != id);
         setLessons(buf);
         deleteIDLessons(id);
-    }
+    };
 
     const deleteStudent = (id) => {
         let buf = students;
@@ -159,43 +159,48 @@ export default function App() {
         setLessons(buf);
         deleteStudentsLessons(id);
         deleteIDStudent(id);
-    }
+    };
 
     const deletePriceList = (id) => {
         let buf = priceList;
         buf = buf.filter((x) => x.id != id);
         setPriceList(buf);
         deleteIDPriceList(id);
-    }
+    };
 
     const dropLessons = () => {
         setLessons([]);
         dropDBLessons();
-    }
+    };
 
     const dropStudents = () => {
         setStudents([]);
         dropDBStudent();
-    }
+    };
 
     const dropPriceList = () => {
         setPriceList([]);
         dropDBPriceList();
-    }
+    };
 
 
     const earningsPerStudents = () => {
         return groupBy(lessons, (item) => item.student_id);
-    }
+    };
 
-    const getSubjectsInPriceList = (level = null) => {
-        const res = priceList.filter((x) => !level || x.level == level).map((x) => x.subject);
+    const getSubjectsInPriceList = () => {
+        const res = priceList.map((x) => x.subject);
         return [...new Set(res)];
-    }
+    };
     const getLevelsInPriceList = (subject = null) => {
         const res = priceList.filter(x => !subject || x.subject == subject).map((x) => x.level);
         return [...new Set(res)];
-    }
+    };
+
+    const getPriceByParams = (subject, level) => {
+        const res=priceList.filter(x=>x.subject==subject && x.level==level);
+        return res[0].price;
+    };
 
     useEffect(() => {
         const fetchDB = async () => {
@@ -239,7 +244,8 @@ export default function App() {
         totalEarnings: totalEarnings,
         earningsPerStudents: earningsPerStudents,
         getSubjects: getSubjectsInPriceList,
-        getLevels: getLevelsInPriceList
+        getLevels: getLevelsInPriceList,
+        getPriceByParams: getPriceByParams
     };
 
     return (

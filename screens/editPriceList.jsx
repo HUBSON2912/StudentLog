@@ -13,7 +13,7 @@ export default function EditPriceList({ navigation, route }) {
     // fix: dictionary.[...] not just fixed text
     const database = useContext(DatabaseContext);
     const { priceListElement } = route.params;
-    
+
     console.log("stop");
 
     const [subject, setSubject] = useState(priceListElement ? priceListElement.subject : "");
@@ -34,7 +34,7 @@ export default function EditPriceList({ navigation, route }) {
                 level: level,
                 price: parseInt(price)
             }
-            
+
             if (!priceListElement) {
                 database.insert.priceList(newData);
             }
@@ -50,7 +50,7 @@ export default function EditPriceList({ navigation, route }) {
         <View style={styles.container}>
             <ScrollView style={styles.container}>
                 <KeyboardAvoidingView>
-                    <Section style={styles.optionContainer}>
+                    <Section onPressBehaviour="none" style={styles.optionContainer}>
                         <Text style={[styles.text, styles.label]}>Przedmiot</Text>
                         <TextInput
                             mode="outlined"
@@ -62,7 +62,7 @@ export default function EditPriceList({ navigation, route }) {
                             contentStyle={styles.text}
                         />
                     </Section>
-                    <Section style={styles.optionContainer}>
+                    <Section onPressBehaviour="none" style={styles.optionContainer}>
                         <Text style={[styles.text, styles.label]}>Poziom</Text>
                         <TextInput
                             mode="outlined"
@@ -74,7 +74,7 @@ export default function EditPriceList({ navigation, route }) {
                             contentStyle={styles.text}
                         />
                     </Section>
-                    <Section style={styles.optionContainer}>
+                    <Section onPressBehaviour="none" style={styles.optionContainer}>
                         <Text style={[styles.text, styles.label]}>Cena</Text>
                         <TextInput
                             mode="outlined"

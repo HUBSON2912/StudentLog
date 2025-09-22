@@ -42,7 +42,7 @@ export function Lesson({ item }) {
     ${dictionary.subject}: ${item.subject} ${item.level}
     ${dictionary.date}: ${item.year}-${String(item.month).padStart(2, "0")}-${String(item.day).padStart(2, "0")} ${item.hour}:${String(item.minute).padStart(2, '0')}`,
             [
-                { text: "Tak", onPress: () => { database.delete.lesson(item.id) } },  // verify
+                { text: "Tak", onPress: () => { database.delete.lesson(item.id) } },
                 { text: "Nie", onPress: () => { } }
             ],
             { cancelable: true }
@@ -96,6 +96,7 @@ const styles = StyleSheet.create({
     },
     description: {
         color: theme.text.gray,
-        fontSize: 16
+        fontSize: 16,
+        paddingBottom: 2
     }
 });

@@ -1,4 +1,4 @@
-import { Image, KeyboardAvoidingView, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Image, KeyboardAvoidingView, ScrollView, StyleSheet, View } from "react-native";
 import { Button, Text, TextInput } from "react-native-paper";
 import { theme } from "../theme";
 import { useContext, useEffect, useState } from "react";
@@ -6,13 +6,11 @@ import { arrowDown } from "../functions/getUnicodeItems";
 import SelectDropdown from "react-native-select-dropdown";
 import RectangleRadioButton from "../components/rectRadioButton";
 import DatePicker from "react-native-date-picker";
-import { getDD_MM_YYYY_HH_MMDate, getDD_MM_YYYYDate, getWeekDayName, ISOToDate } from "../functions/date";
-import { getByIDLessons, insertIntoLessons, updateIDLessons } from "../functions/dbLessons";
-import { getAllStudents, getByIDStudents } from "../functions/dbStudents";
+import { getDD_MM_YYYY_HH_MMDate, getDD_MM_YYYYDate } from "../functions/date";
 import { possibleStatus, StatusLabel } from "../components/statuslabel";
 import CheckboxDayTime from "../components/checkboxdaytime";
 import Section from "../components/section";
-import { getLanguage } from "../functions/settingsStorage";
+import { getLanguage, getUsePriceList } from "../functions/settingsStorage";
 import Loading from "../components/loading";
 import { DatabaseContext } from "../App";
 
@@ -26,21 +24,25 @@ export default function EditLesson({ navigation, route }) {
     const [students, setStudents] = useState([]);
     const [defStudent, setDefStudent] = useState(null);
 
+    const [priceListIsActive, setPriceListIsActive] = useState(false);
+    const [possibleSubjects, setPossibleSubjects] = useState([]);
+    const [possibleLevels, setPossibleLevels] = useState([]);
+
     // creating states for data that are given in the form
     const [student, setStudent] = useState(null);
     const [subject, setSubject] = useState("");
     const [level, setLevel] = useState("");
     const [topic, setTopic] = useState("");
-    const [duration, setDuration] = useState(1);
+    const [duration, setDuration] = useState("1");
     const [price, setPrice] = useState(0);
     const [status, setStatus] = useState(possibleStatus[0]);
-
 
     const [dictionary, setDictionary] = useState({});
 
     const [everyhingFetched, setEverythingFetched] = useState(false);
     useEffect(() => {
         const fetchData = async () => {
+            setPriceListIsActive(await getUsePriceList());
             if (lessonID !== null) {
                 setLessonData(database.getByID.lesson(lessonID));
             }
@@ -54,8 +56,12 @@ export default function EditLesson({ navigation, route }) {
         fetchData();
     }, [])
 
-    const [error, setError] = useState("");
+    useEffect(() => {
+        setPossibleSubjects(database.getSubjects());
+        setPossibleLevels(database.getLevels(subject));
+    }, [subject])
 
+    const [error, setError] = useState("");
 
 
     // stuff for picking date
@@ -103,6 +109,34 @@ export default function EditLesson({ navigation, route }) {
         );
     }
 
+    const renderDropdownButtonSubjects = (sel, isOpen) => {
+        return (
+            <View style={[styles.optionValue, { borderRadius: 5, paddingVertical: 5, justifyContent: "center", borderColor: theme.border, borderWidth: 1 }]}>
+                <Text style={styles.text}>{subject ? subject : "Wybierz przedmiot"}</Text>
+                <Text style={styles.arrowDown}>{arrowDown()}</Text>
+            </View>
+        );
+    };
+
+    const renderDropdownItemSimpleText = (item, index, isSelected) => {
+        return (
+            <View style={[
+                styles.dropdownItem,
+                { backgroundColor: (isSelected ? theme.primaryPale : theme.backgroundInput) }
+            ]}>
+                <Text style={styles.text}>{item}</Text>
+            </View>
+        );
+    }
+
+    const renderDropdownButtonLevels = (sel, isOpen) => {
+        return (
+            <View style={[styles.optionValue, { borderRadius: 5, paddingVertical: 5, justifyContent: "center", borderColor: theme.border, borderWidth: 1 }]}>
+                <Text style={styles.text}>{level ? level : "Wybierz poziom"}</Text>
+                <Text style={styles.arrowDown}>{arrowDown()}</Text>
+            </View>
+        );
+    };
 
     // handling events
     const handleSaveButton_oneLesson = () => {
@@ -252,7 +286,7 @@ export default function EditLesson({ navigation, route }) {
                         <KeyboardAvoidingView>
 
                             {/* student input */}
-                            <Section style={[styles.optionContainer]}>
+                            <Section onPressBehaviour="none" style={[styles.optionContainer]}>
                                 <Text style={[styles.text, styles.label]}>{dictionary.student}</Text>
 
                                 {
@@ -276,48 +310,76 @@ export default function EditLesson({ navigation, route }) {
                             </Section>
 
                             {/* subject input */}
-                            <Section style={[styles.optionContainer]}>
+                            <Section onPressBehaviour="none" style={[styles.optionContainer]}>
                                 <Text style={[styles.text, styles.label]}>{dictionary.subject}</Text>
-
+                                {/* check if works the other features, adding, updating, in different modes */}
                                 {/* if there is price list you can use SelectDropdown */}
-
-                                <TextInput
-                                    mode="outlined"
-                                    style={styles.textInput}
-                                    placeholder={dictionary.subject}
-                                    value={subject}
-                                    onChangeText={setSubject}
-                                    activeOutlineColor={theme.primaryHalf}
-                                    contentStyle={styles.text}
-                                    textContentType="familyName"
-                                />
+                                {
+                                    !priceListIsActive &&
+                                    <TextInput
+                                        mode="outlined"
+                                        style={styles.textInput}
+                                        placeholder={dictionary.subject}
+                                        value={subject}
+                                        onChangeText={setSubject}
+                                        activeOutlineColor={theme.primaryHalf}
+                                        contentStyle={styles.text}
+                                        textContentType="familyName"
+                                    />
+                                }
+                                {
+                                    priceListIsActive &&
+                                    <SelectDropdown
+                                        data={possibleSubjects}
+                                        onSelect={(sel) => {
+                                            setSubject(sel);
+                                            setLevel("");  // every time I change the subject I reset the level to avoid pair that is not specified in the pricelist
+                                        }}
+                                        renderButton={renderDropdownButtonSubjects}
+                                        renderItem={renderDropdownItemSimpleText}
+                                    />
+                                }
                             </Section>
 
                             {/* level input */}
-                            <Section style={[styles.optionContainer]}>
+                            <Section onPressBehaviour="none" style={[styles.optionContainer]}>
                                 <Text style={[styles.text, styles.label]}>{dictionary.level}</Text>
                                 {/* if there is price list you can use SelectDropdown */}
-                                <TextInput
-                                    mode="outlined"
-                                    style={styles.textInput}
-                                    placeholder={dictionary.level}
-                                    value={level}
-                                    onChangeText={setLevel}
-                                    activeOutlineColor={theme.primaryHalf}
-                                    contentStyle={styles.text}
-                                    keyboardType="default"
-                                />
+                                {
+                                    !priceListIsActive &&
+                                    <TextInput
+                                        mode="outlined"
+                                        style={styles.textInput}
+                                        placeholder={dictionary.level}
+                                        value={level}
+                                        onChangeText={setLevel}
+                                        activeOutlineColor={theme.primaryHalf}
+                                        contentStyle={styles.text}
+                                        keyboardType="default"
+                                    />
+                                }
+                                {
+                                    priceListIsActive &&
+                                    <SelectDropdown
+                                        data={possibleLevels}
+                                        onSelect={(sel) => {
+                                            setLevel(sel);
+                                        }}
+                                        renderButton={renderDropdownButtonLevels}
+                                        renderItem={renderDropdownItemSimpleText}
+                                    />
+                                }
                             </Section>
 
                             {/* duration input */}
-                            <Section style={[styles.optionContainer]}>
+                            <Section onPressBehaviour="none" style={[styles.optionContainer]}>
                                 <Text style={[styles.text, styles.label]}>{dictionary.duration}</Text>
                                 <TextInput
                                     mode="outlined"
                                     style={styles.textInput}
                                     placeholder={dictionary.duration}
-                                    value={String(duration)}
-                                    onChangeText={val => setDuration(val ? parseFloat(val) : 1)}
+                                    value={duration}
+                                    onChangeText={val => setDuration(val)}
                                     activeOutlineColor={theme.primaryHalf}
                                     contentStyle={styles.text}
                                     keyboardType="number-pad"
@@ -325,7 +387,7 @@ export default function EditLesson({ navigation, route }) {
                             </Section>
 
                             {/* price input */}
-                            <Section style={[styles.optionContainer]}>
+                            <Section onPressBehaviour="none" style={[styles.optionContainer]}>
                                 <Text style={[styles.text, styles.label]}>{dictionary.price}</Text>
 
                                 <TextInput
@@ -347,12 +409,15 @@ export default function EditLesson({ navigation, route }) {
                                         justifyContent: "center",
                                         alignContent: "center",
                                         top: 18,
-                                        right: 7
+                                        right: 7,
+                                        display: (priceListIsActive && subject && level && duration ? "flex" : "none")
                                         // todo display: if i didnt specified subject, level, time or I turned off the price list then NONE
                                     }}
 
                                     onPress={() => {
-                                        /* todo automatic price*/
+                                        let prc = database.getPriceByParams(subject, level);
+                                        prc = Math.floor(prc * parseFloat(duration));
+                                        setPrice(String(prc));
                                     }}
                                 >
                                     <Image source={require("../assets/images/magic.png")} style={{ width: 32, height: 32 }} />
@@ -363,7 +428,7 @@ export default function EditLesson({ navigation, route }) {
                             {/* mode: you can add one lesson or add lessons on every Monday, Tuesday... */}
                             {
                                 !lessonID &&
-                                <Section style={[styles.optionContainer]}>
+                                <Section onPressBehaviour="none" style={[styles.optionContainer]}>
                                     <Text style={[styles.text, styles.label]}>{dictionary.adding_mode}</Text>
 
                                     <View style={{ flex: 4, flexDirection: "row", gap: 10 }}>
@@ -385,7 +450,7 @@ export default function EditLesson({ navigation, route }) {
                             {mode == "one-lesson" &&
                                 <>
                                     {/* date and hour */}
-                                    <Section style={[styles.optionContainer]}>
+                                    <Section onPressBehaviour="none" style={[styles.optionContainer]}>
                                         <Text style={[styles.text, styles.label]}>{dictionary.date_and_hour}</Text>
 
                                         <Button
@@ -426,7 +491,7 @@ export default function EditLesson({ navigation, route }) {
                                     </Section>
 
                                     {/* status input */}
-                                    <Section style={[styles.optionContainer]}>
+                                    <Section onPressBehaviour="none" style={[styles.optionContainer]}>
                                         <Text style={[styles.text, styles.label]}>{dictionary.status}</Text>
                                         <View style={[styles.textInput, styles.statusContainer]}>
                                             <SelectDropdown
@@ -455,7 +520,7 @@ export default function EditLesson({ navigation, route }) {
                                     </Section>
 
                                     {/* topic input: aviable only for one lesson, every lesson in the range would be about different thing */}
-                                    <Section style={[styles.optionContainer]}>
+                                    <Section onPressBehaviour="none" style={[styles.optionContainer]}>
                                         <Text style={[styles.text, styles.label]}>{dictionary.topic}</Text>
                                         <TextInput
                                             mode="outlined"
@@ -473,7 +538,7 @@ export default function EditLesson({ navigation, route }) {
                             {
                                 mode === "regulary" &&
                                 <>
-                                    <Section style={[styles.optionContainer]}>
+                                    <Section onPressBehaviour="none" style={[styles.optionContainer]}>
                                         <Button
                                             mode="text"
                                             onPress={() => setDateBeginVisibility_regulary(true)}
@@ -517,7 +582,7 @@ export default function EditLesson({ navigation, route }) {
                                         />
                                     </Section>
 
-                                    <Section style={[styles.optionContainer, { flexDirection: "column" }]}>
+                                    <Section onPressBehaviour="none" style={[styles.optionContainer, { flexDirection: "column" }]}>
                                         <CheckboxDayTime dayIndex={0} onSelect={handleSelectingDaysOfWeek} />
                                         <CheckboxDayTime dayIndex={1} onSelect={handleSelectingDaysOfWeek} />
                                         <CheckboxDayTime dayIndex={2} onSelect={handleSelectingDaysOfWeek} />

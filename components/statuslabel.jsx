@@ -9,6 +9,7 @@ export const possibleStatus = [
 ]
 
 export function StatusLabel(status, style = {}) {
+    // todo add a border with a small padding
     switch (status) {
         case 0:
             return (<View style={[styles.statusLabel, { backgroundColor: theme.status.planned, borderRadius: 10 }, style]}>

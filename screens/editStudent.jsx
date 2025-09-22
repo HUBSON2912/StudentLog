@@ -172,7 +172,7 @@ export default function EditStudent({ navigation, route }) {
         <View style={styles.container}>
             <ScrollView style={styles.container}>
                 <KeyboardAvoidingView>
-                    <Section style={styles.optionContainer}>
+                    <Section onPressBehaviour="none" style={styles.optionContainer}>
                         <Text style={[styles.text, styles.label]}>{dictionary.first_name}</Text>
                         <TextInput
                             mode="outlined"
@@ -185,7 +185,7 @@ export default function EditStudent({ navigation, route }) {
                             textContentType="name"
                         />
                     </Section>
-                    <Section style={styles.optionContainer}>
+                    <Section onPressBehaviour="none" style={styles.optionContainer}>
                         <Text style={[styles.text, styles.label]}>{dictionary.last_name}</Text>
                         <TextInput
                             mode="outlined"
@@ -198,7 +198,7 @@ export default function EditStudent({ navigation, route }) {
                             textContentType="familyName"
                         />
                     </Section>
-                    <Section style={styles.optionContainer}>
+                    <Section onPressBehaviour="none" style={styles.optionContainer}>
                         <Text style={[styles.text, styles.label]}>{dictionary.phone_nr}</Text>
                         <TextInput
                             mode="outlined"
@@ -211,7 +211,7 @@ export default function EditStudent({ navigation, route }) {
                             keyboardType="number-pad"
                         />
                     </Section>
-                    <Section style={styles.optionContainer}>
+                    <Section onPressBehaviour="none" style={styles.optionContainer}>
                         <Text style={[styles.text, styles.label]}>{dictionary.email_address}</Text>
                         <TextInput
                             mode="outlined"
@@ -225,7 +225,7 @@ export default function EditStudent({ navigation, route }) {
                             textContentType="emailAddress"
                         />
                     </Section>
-                    <Section style={styles.optionContainer}>
+                    <Section onPressBehaviour="none" style={styles.optionContainer}>
                         <Text style={[styles.text, styles.label]}>{dictionary.form}</Text>
                         <SelectDropdown
                             data={possibleForms}
@@ -240,7 +240,7 @@ export default function EditStudent({ navigation, route }) {
 
                     {form.id != STATIONARY_FORM &&   //if the form is setted as "stationary" then do not print the inputs for remotely teaching
                         <>
-                            <Section style={styles.optionContainer}>
+                            <Section onPressBehaviour="none" style={styles.optionContainer}>
                                 <Text style={[styles.text, styles.label]}>{dictionary.platform}</Text>
                                 <TextInput
                                     mode="outlined"
@@ -252,7 +252,7 @@ export default function EditStudent({ navigation, route }) {
                                     contentStyle={styles.text}
                                 />
                             </Section>
-                            <Section style={styles.optionContainer}>
+                            <Section onPressBehaviour="none" style={styles.optionContainer}>
                                 <Text style={[styles.text, styles.label]}>{dictionary.nickname}</Text>
                                 <TextInput
                                     mode="outlined"
@@ -270,7 +270,7 @@ export default function EditStudent({ navigation, route }) {
 
                     {form.id != REMOTELY_FORM &&   // address is printed if only form is NOT "remotely"
                         <>
-                            <Section style={styles.optionContainer}>
+                            <Section onPressBehaviour="none" style={styles.optionContainer}>
                                 <Text style={[styles.text, styles.label]}>{dictionary.city}</Text>
                                 <TextInput
                                     mode="outlined"
@@ -282,7 +282,7 @@ export default function EditStudent({ navigation, route }) {
                                     contentStyle={styles.text}
                                 />
                             </Section>
-                            <Section style={styles.optionContainer}>
+                            <Section onPressBehaviour="none" style={styles.optionContainer}>
                                 <Text style={[styles.text, styles.label]}>{dictionary.street}</Text>
                                 <TextInput
                                     mode="outlined"
@@ -294,7 +294,7 @@ export default function EditStudent({ navigation, route }) {
                                     contentStyle={styles.text}
                                 />
                             </Section>
-                            <Section style={styles.optionContainer}>
+                            <Section onPressBehaviour="none" style={styles.optionContainer}>
                                 <Text style={[styles.text, styles.label]}>{dictionary.house_nr}</Text>
                                 <TextInput
                                     mode="outlined"
@@ -306,7 +306,7 @@ export default function EditStudent({ navigation, route }) {
                                     contentStyle={styles.text}
                                 />
                             </Section>
-                            <Section style={styles.optionContainer}>
+                            <Section onPressBehaviour="none" style={styles.optionContainer}>
                                 <Text style={[styles.text, styles.label]}>{dictionary.flat_nr}</Text>
                                 <TextInput
                                     mode="outlined"
