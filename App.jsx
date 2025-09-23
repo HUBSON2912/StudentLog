@@ -202,6 +202,11 @@ export default function App() {
         return res[0].price;
     };
 
+    const howManyLessonsForStudent=(studId)=>{
+        const res=lessons.filter(x=>x.student_id==studId);
+        return res.length;
+    };
+
     useEffect(() => {
         const fetchDB = async () => {
             setStudents(await getAllStudents());
@@ -245,7 +250,8 @@ export default function App() {
         earningsPerStudents: earningsPerStudents,
         getSubjects: getSubjectsInPriceList,
         getLevels: getLevelsInPriceList,
-        getPriceByParams: getPriceByParams
+        getPriceByParams: getPriceByParams,
+        howManyLessonsForStudent: howManyLessonsForStudent
     };
 
     return (

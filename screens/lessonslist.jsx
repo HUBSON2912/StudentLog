@@ -23,7 +23,7 @@ export default function LessonsList({ navigation }) {
     const [currency, setCurr] = useState({});
 
 
-    useFocusEffect(() => {
+    useEffect(() => {
         const fetchLessons = async () => {
             setLessons(database.lessons);
             const file = (await getLanguage()).file;

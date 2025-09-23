@@ -10,7 +10,7 @@ import { getDD_MM_YYYY_HH_MMDate, getDD_MM_YYYYDate } from "../functions/date";
 import { possibleStatus, StatusLabel } from "../components/statuslabel";
 import CheckboxDayTime from "../components/checkboxdaytime";
 import Section from "../components/section";
-import { getLanguage, getUsePriceList } from "../functions/settingsStorage";
+import { getDiscountForTheFirstLesson, getLanguage, getUsePriceList } from "../functions/settingsStorage";
 import Loading from "../components/loading";
 import { DatabaseContext } from "../App";
 
@@ -25,6 +25,7 @@ export default function EditLesson({ navigation, route }) {
     const [defStudent, setDefStudent] = useState(null);
 
     const [priceListIsActive, setPriceListIsActive] = useState(false);
+    const [discount, setDiscount] = useState(100);
     const [possibleSubjects, setPossibleSubjects] = useState([]);
     const [possibleLevels, setPossibleLevels] = useState([]);
 
@@ -43,6 +44,7 @@ export default function EditLesson({ navigation, route }) {
     useEffect(() => {
         const fetchData = async () => {
             setPriceListIsActive(await getUsePriceList());
+            setDiscount(await getDiscountForTheFirstLesson());
             if (lessonID !== null) {
                 setLessonData(database.getByID.lesson(lessonID));
             }
@@ -155,6 +157,7 @@ export default function EditLesson({ navigation, route }) {
             return;
         }
 
+
         const newLessonData = {
             student_id: student.id,
             subject: subject,
@@ -168,6 +171,9 @@ export default function EditLesson({ navigation, route }) {
             duration: parseFloat(duration),
             price: parseInt(price),
             status: status.id
+        }
+        if (database.howManyLessonsForStudent(student.id) == 0) {
+            newLessonData.price *= 1 - discount / 100;
         }
         if (!lessonID) {
             database.insert.lesson(newLessonData);
@@ -227,7 +233,7 @@ export default function EditLesson({ navigation, route }) {
                     duration: parseFloat(duration),
                     price: parseInt(price),
                     status: 0   // planned
-                }
+                };
                 newLessonsArray.push(newLessonData);
             }
 
@@ -239,12 +245,19 @@ export default function EditLesson({ navigation, route }) {
             }
         }
 
-        for (let i = 0; i < newLessonsArray.length; i++) {
-            database.insert.lesson(newLessonsArray[i])
-            // insertIntoLessons(newLessonsArray[i]);
+
+        if (database.howManyLessonsForStudent(student.id) == 0 && newLessonsArray.length != 0) {
+            newLessonsArray[0].price *= 1.0 - discount / 100;
         }
 
+        for (let i = 0; i < newLessonsArray.length; i++) {
+            database.insert.lesson(newLessonsArray[i]);
+            // insertIntoLessons(newLessonsArray[i]);
+
+
+        }
         navigation.pop();
+
 
     }
 
@@ -410,13 +423,13 @@ export default function EditLesson({ navigation, route }) {
                                         alignContent: "center",
                                         top: 18,
                                         right: 7,
-                                        display: (priceListIsActive && subject && level && duration ? "flex" : "none")
-                                        // todo display: if i didnt specified subject, level, time or I turned off the price list then NONE
+                                        display: (priceListIsActive && subject && level && duration && student ? "flex" : "none")
                                     }}
 
                                     onPress={() => {
                                         let prc = database.getPriceByParams(subject, level);
-                                        prc = Math.floor(prc * parseFloat(duration));
+                                        prc = prc * parseFloat(duration);
+                                        prc = Math.floor(prc);
                                         setPrice(String(prc));
                                     }}
                                 >
