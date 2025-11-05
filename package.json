@@ -1,6 +1,6 @@
 {
   "name": "StudentLog",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "private": true,
   "scripts": {
     "android": "npx react-native run-android; npx react-native start",
