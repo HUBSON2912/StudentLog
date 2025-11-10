@@ -4,7 +4,7 @@ import { themeDark, themeLight } from "./theme";
 import EditStudentScreen from "./screens/students/EditStudent";
 import { possibleTableNames } from "./constants/const";
 import { createContext, useState, useEffect } from "react";
-import { createTableS, getAllS, insertS } from "./database/students";
+import { createTableS, deleteS, getAllS, insertS } from "./database/students";
 import StudentsListScreen from "./screens/students/StudentsList";
 
 export const DatabaseContext = createContext(null);
@@ -63,7 +63,7 @@ export default function App() {
                     break;
             }
         } catch (error) {
-            console.log(`Error while creating table '${name}': ${JSON.stringify(error)}`);
+            console.log(`Error while getting all from '${name}': ${JSON.stringify(error)}`);
             return error;
         }
     };
@@ -85,15 +85,57 @@ export default function App() {
                     break;
             }
         } catch (error) {
-            console.log(`Error while creating table '${name}': ${JSON.stringify(error)}`);
+            console.log(`Error while inserting into table '${name}': ${JSON.stringify(error)}`);
             return error;
         }
     };
 
+    const remove = async (name, id) => {
+        try {
+            if (!(possibleTableNames.includes(name))) {
+                throw new Error(`Unknow table name: '${name}'`);
+            }
+
+            switch (name) {
+                case "students":
+                    deleteS(id);
+                    setStudents(students.filter(s => s.id != id));
+                    break;
+
+                default:
+                    break;
+            }
+        } catch (error) {
+            console.log(`Error while inserting into table '${name}': ${JSON.stringify(error)}`);
+            return error;
+        }
+    };
+
+    const get = (name, id) => {
+        try {
+            if (!(possibleTableNames.includes(name))) {
+                throw new Error(`Unknow table name: '${name}'`);
+            }
+
+            switch (name) {
+                case "students":
+                    return students.filter(x => x.id == id)[0];
+
+                default:
+                    break;
+            }
+        } catch (error) {
+            console.log(`Error while geting by ID from table '${name}': ${JSON.stringify(error)}`);
+            return error;
+        }
+    }
+
     const database = {
         students: students,
         insert: insert,
-        getAll: getAll
+        getAll: getAll,
+        get: get,
+        remove: remove
     }
 
     useEffect(() => {

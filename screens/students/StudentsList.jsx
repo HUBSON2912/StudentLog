@@ -1,10 +1,11 @@
 import { useContext, useState } from "react";
-import { Button, Card, Dialog, Icon, Text, useTheme } from "react-native-paper";
+import { Avatar, Button, Card, Dialog, Icon, Text, useTheme } from "react-native-paper";
 import { DatabaseContext } from "../../App";
 import { FlatList, StyleSheet, View } from "react-native";
 import { possibleForms, remotelyForm, stationaryForm } from "../../constants/const";
+import { FloatingIconButton } from "../../components/floatingIconButton";
 
-function StudentTile({ student }) {
+function StudentTile({ student, deleteAction = (id) => { }, editAction = (id) => { } }) {
     const theme = useTheme();
     const styles = StyleSheet.create({
         dataContainer: {
@@ -17,8 +18,6 @@ function StudentTile({ student }) {
             fontSize: 18
         },
     });
-
-    const [isDeleteDialogVisiable, setDeleteDialogVisiable] = useState(false);
 
     return (
         <>
@@ -57,45 +56,55 @@ function StudentTile({ student }) {
                     }
                 </Card.Content>
                 <Card.Actions>
-                    <Button textColor={theme.colors.error} onPress={() => setDeleteDialogVisiable(true)}>Usuń</Button>
+                    <Button textColor={theme.colors.error} onPress={() => { deleteAction(student.id) }}>Usuń</Button>
                     <Button>Edytuj</Button>
                 </Card.Actions>
             </Card>
-
-            {/* fix wrong place for dialog */}
-            <Dialog visible={isDeleteDialogVisiable} theme={theme}>
-                <Dialog.Title>Tytuł</Dialog.Title>
-                <Dialog.Actions>
-                    <Button onPress={() => setDeleteDialogVisiable(false)}>Anuluj</Button>
-                </Dialog.Actions>
-            </Dialog>
         </>
     );
 }
-/**
- const newStudent = {
-            form: form,
-            platform: platform,
-            nick: nick,
-            city: city,
-            address: address
-        };
- */
 
 export default function StudentsListScreen() {
     const theme = useTheme();
     const db = useContext(DatabaseContext);
 
     const students = db.students;
+    const [selectedStudent, setSelectedStudent] = useState(null);
+    const [isDeleteDialogVisiable, setDeleteDialogVisiable] = useState(false);
 
     return (
         <View style={{ flex: 1 }}>
             {
+                students.length == 0 &&
+                <Text variant="displaySmall" style={{flex:1, textAlign: "center", marginVertical: 50}}>Brak uczniów</Text>
+            }
+
+            {
+                students.length != 0 &&
                 <FlatList
                     data={students}
-                    renderItem={({ item }) => <StudentTile student={item} />}
+                    renderItem={({ item }) =>
+                        <StudentTile student={item}
+                            deleteAction={(id) => {
+                                setSelectedStudent(db.get("students", id));
+                                setDeleteDialogVisiable(true);
+                            }} />
+                    }
                 />
             }
+            <FloatingIconButton icon={"plus"} onPress={()=>{console.log("aaa")}} right={0} bottom={20}/>
+
+            {/* delete dialog */}
+            <Dialog visible={isDeleteDialogVisiable} theme={theme} dismissable={true} dismissableBackButton={true} onDismiss={() => setDeleteDialogVisiable(false)}>
+                <Dialog.Title>Czy na pewno chcesz usunąć ucznia?</Dialog.Title>
+                <Dialog.Actions>
+                    <Button onPress={() => setDeleteDialogVisiable(false)}>Anuluj</Button>
+                    <Button onPress={() => {
+                        db.remove("students", selectedStudent.id);
+                        setDeleteDialogVisiable(false)
+                    }}>Potwierdź</Button>
+                </Dialog.Actions>
+            </Dialog>
         </View>
     );
 }

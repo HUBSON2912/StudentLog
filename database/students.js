@@ -18,7 +18,7 @@ export async function createTableS() {
              city TEXT,
              address TEXT
              );`
-            );
+        );
     } catch (error) {
         // console.error(`Cannot create the students table: ${JSON.stringify(error)}`);
         return error;
@@ -68,6 +68,18 @@ export async function getAllS() {
         return results;
     } catch (error) {
         // console.error(`Error while selecting all students: ${JSON.stringify(error)}`);
+        return error;
+    }
+}
+
+export async function deleteS(id) {
+    try {
+        const db = await SQLite.openDatabase({ name: 'studentlog.db', location: 'default' })
+
+        const del = await db.executeSql(
+            `DELETE FROM students WHERE id=${id}`
+        );
+    } catch (error) {
         return error;
     }
 }
