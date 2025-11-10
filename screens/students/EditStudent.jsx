@@ -1,35 +1,15 @@
-import { KeyboardAvoidingView, ScrollView, StyleSheet, View } from "react-native";
+import { KeyboardAvoidingView, ScrollView, StatusBar, StyleSheet, View } from "react-native";
 import { Button, Text, TextInput, useTheme } from "react-native-paper";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ToggleChipGroup } from "../../components/toggleChipGroup";
 import { AutocompleteTextInput } from '../../components/autocompleteTextInput';
 import { possibleForms, suggestedPlatforms } from "../../constants/const";
 import { DatabaseContext } from "../../App";
 
-export default function EditStudentScreen() {
+export default function EditStudentScreen({ navigation, route }) {
     const theme = useTheme();
     const db = useContext(DatabaseContext);
-
-    const styles = StyleSheet.create({
-        chipContainer: {
-            flex: 1,
-            gap: 5,
-            alignItems: "center"
-        },
-        row: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: 10,
-            marginBottom: 10
-        },
-        label: {
-            width: 100,
-            fontSize: 16,
-        },
-        input: {
-            flex: 1
-        },
-    });
+    const { studentID } = route.params ?? { studentID: null };
 
     const [name, setName] = useState("");
     const [surname, setSurname] = useState("");
@@ -41,9 +21,29 @@ export default function EditStudentScreen() {
     const [city, setCity] = useState("");
     const [address, setAddress] = useState("");
 
+    
+    useEffect(() => {
+        if (!studentID) {
+            return;
+        }
+
+        navigation.setOptions({title: `Edytuj ucznia (${studentID})`})
+
+        const studentData = db.get("students", studentID);
+        setName(studentData.name);
+        setSurname(studentData.surname);
+        setPhoneNumber(studentData.phone);
+        setEmail(studentData.email);
+        setForm(studentData.form);
+        setPlatform(studentData.platform);
+        setNick(studentData.nick);
+        setCity(studentData.city);
+        setAddress(studentData.address);
+    }, [])
+
     const [loading, setLoading] = useState(false);
 
-    const handleSave = async () => {
+    const handleSaveInsert = async () => {
         setLoading(true);
         const newStudent = {
             name: name,
@@ -56,14 +56,36 @@ export default function EditStudentScreen() {
             city: city,
             address: address
         };
-        console.log(newStudent);
         await db.insert("students", newStudent);
         setLoading(false);
+        navigation.pop();
+    };
+
+    const handleSaveUpdate = async () => {
+        setLoading(true);
+        const newStudent = {
+            name: name,
+            surname: surname,
+            phone: phoneNumber,
+            email: email,
+            form: form,
+            platform: platform,
+            nick: nick,
+            city: city,
+            address: address
+        };
+        await db.update("students", newStudent, studentID);
+        setLoading(false);
+        navigation.pop();
     };
 
     return (
-        <KeyboardAvoidingView behavior="padding">
-            <ScrollView nestedScrollEnabled={true} keyboardShouldPersistTaps="handled">
+        <KeyboardAvoidingView behavior="padding" keyboardVerticalOffset={StatusBar.currentHeight+5}>
+            <ScrollView 
+                nestedScrollEnabled={true} 
+                keyboardShouldPersistTaps="handled" 
+                contentContainerStyle={{ paddingHorizontal: 20 }}
+            >
                 <View style={styles.row}>
                     <Text style={styles.label} pointerEvents="none">Imię:</Text>
                     <TextInput
@@ -176,7 +198,7 @@ export default function EditStudentScreen() {
                 <Button
                     mode="contained"
                     icon={"content-save"}
-                    onPress={handleSave}
+                    onPress={studentID ? handleSaveUpdate : handleSaveInsert}
                     loading={loading}
                     disabled={false}
                     buttonColor={loading ? theme.colors.primaryDisabled : theme.colors.primary}
@@ -188,3 +210,24 @@ export default function EditStudentScreen() {
         </KeyboardAvoidingView>
     );
 }
+
+const styles = StyleSheet.create({
+    chipContainer: {
+        flex: 1,
+        gap: 5,
+        alignItems: "center"
+    },
+    row: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 10,
+        marginBottom: 10
+    },
+    label: {
+        width: 100,
+        fontSize: 16,
+    },
+    input: {
+        flex: 1
+    },
+});

@@ -4,8 +4,10 @@ import { themeDark, themeLight } from "./theme";
 import EditStudentScreen from "./screens/students/EditStudent";
 import { possibleTableNames } from "./constants/const";
 import { createContext, useState, useEffect } from "react";
-import { createTableS, deleteS, getAllS, insertS } from "./database/students";
+import { createTableS, deleteS, getAllS, insertS, updateS } from "./database/students";
 import StudentsListScreen from "./screens/students/StudentsList";
+import { NavigationContainer } from "@react-navigation/native";
+import StudetnsScreen from "./screens/Students";
 
 export const DatabaseContext = createContext(null);
 
@@ -17,7 +19,7 @@ export default function App() {
         container: {
             backgroundColor: theme.colors.background,
             flex: 1,
-            paddingHorizontal: 20,
+            // paddingHorizontal: 20,
             gap: 10,
             paddingTop: Platform.OS == "android" ? StatusBar.currentHeight : 0
         }
@@ -85,7 +87,7 @@ export default function App() {
                     break;
             }
         } catch (error) {
-            console.log(`Error while inserting into table '${name}': ${JSON.stringify(error)}`);
+            console.log(`Error while inserting ${JSON.stringify(value)} into table '${name}': ${JSON.stringify(error)}`);
             return error;
         }
     };
@@ -106,7 +108,7 @@ export default function App() {
                     break;
             }
         } catch (error) {
-            console.log(`Error while inserting into table '${name}': ${JSON.stringify(error)}`);
+            console.log(`Error while removing id: ${id} table '${name}': ${JSON.stringify(error)}`);
             return error;
         }
     };
@@ -125,17 +127,48 @@ export default function App() {
                     break;
             }
         } catch (error) {
-            console.log(`Error while geting by ID from table '${name}': ${JSON.stringify(error)}`);
+            console.log(`Error while geting by ID: ${id} from table '${name}': ${JSON.stringify(error)}`);
             return error;
         }
     }
+
+    const update = (name, value, id) => {
+        try {
+            if (!(possibleTableNames.includes(name))) {
+                throw new Error(`Unknow table name: '${name}'`);
+            }
+
+            switch (name) {
+                case "students":
+                    updateS(value, id);
+                    let buff = [...students];
+                    for (let i = 0; i < buff.length; i++) {
+                        if (buff[i].id == id) {
+                            buff[i] = value;
+                            buff[i].id = id;
+                            break;
+                        }
+                    }
+                    setStudents(buff);
+                    break;
+
+                default:
+                    break;
+            }
+        } catch (error) {
+            console.log(`Error while updateing '${name}' with value: ${JSON.stringify(value)} and id: ${id}: ${JSON.stringify(error)}`);
+            return error;
+        }
+    }
+
 
     const database = {
         students: students,
         insert: insert,
         getAll: getAll,
         get: get,
-        remove: remove
+        remove: remove,
+        update: update
     }
 
     useEffect(() => {
@@ -145,12 +178,14 @@ export default function App() {
     }, []);
 
     return (
-        <DatabaseContext value={database}>
-            <PaperProvider theme={theme}>
-                <SafeAreaView style={styles.container}>
-                    <StudentsListScreen />
-                </SafeAreaView>
-            </PaperProvider>
-        </DatabaseContext>
+        <NavigationContainer theme={theme}>
+            <DatabaseContext value={database}>
+                <PaperProvider theme={theme}>
+                    <SafeAreaView style={styles.container}>
+                        <StudetnsScreen />
+                    </SafeAreaView>
+                </PaperProvider>
+            </DatabaseContext>
+        </NavigationContainer>
     );
 }

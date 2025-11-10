@@ -1,11 +1,12 @@
 import { useContext, useState } from "react";
-import { Avatar, Button, Card, Dialog, Icon, Text, useTheme } from "react-native-paper";
+import { Avatar, Button, Card, Dialog, Icon, IconButton, Text, useTheme } from "react-native-paper";
 import { DatabaseContext } from "../../App";
 import { FlatList, StyleSheet, View } from "react-native";
 import { possibleForms, remotelyForm, stationaryForm } from "../../constants/const";
 import { FloatingIconButton } from "../../components/floatingIconButton";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
-function StudentTile({ student, deleteAction = (id) => { }, editAction = (id) => { } }) {
+function StudentTile({ student, deleteAction = (id) => { }, editAction = (id) => { }, detailsAction = (id) => { } }) {
     const theme = useTheme();
     const styles = StyleSheet.create({
         dataContainer: {
@@ -56,53 +57,157 @@ function StudentTile({ student, deleteAction = (id) => { }, editAction = (id) =>
                     }
                 </Card.Content>
                 <Card.Actions>
-                    <Button textColor={theme.colors.error} onPress={() => { deleteAction(student.id) }}>Usuń</Button>
-                    <Button>Edytuj</Button>
+                    <IconButton icon={"delete"} iconColor={theme.colors.error} onPress={() => { deleteAction(student.id) }} />
+                    <IconButton icon={"account-details"} mode="outlined" onPress={() => { detailsAction(student.id) }} />
+                    <IconButton icon={"text-box-edit"} mode="outlined" onPress={() => editAction(student.id)} />
                 </Card.Actions>
             </Card>
         </>
     );
 }
 
-export default function StudentsListScreen() {
+export default function StudentsListScreen({ navigation }) {
     const theme = useTheme();
     const db = useContext(DatabaseContext);
-
-    const students = db.students;
+    
     const [selectedStudent, setSelectedStudent] = useState(null);
     const [isDeleteDialogVisiable, setDeleteDialogVisiable] = useState(false);
+    const [isDetailsDialogVisiable, setDetailsDialogVisiable] = useState(false);
+
+    const handleDelete = () => {
+        db.remove("students", selectedStudent.id);
+        setDeleteDialogVisiable(false);
+    };
+
+    const dismissDialog = () => {
+        setDeleteDialogVisiable(false);
+        setDetailsDialogVisiable(false);
+    };
 
     return (
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1, paddingHorizontal: 20 }}>
             {
-                students.length == 0 &&
-                <Text variant="displaySmall" style={{flex:1, textAlign: "center", marginVertical: 50}}>Brak uczniów</Text>
+                db.students.length == 0 &&
+                <Text variant="displaySmall" style={{ flex: 1, textAlign: "center", marginVertical: 50 }}>Brak uczniów</Text>
             }
 
             {
-                students.length != 0 &&
+                db.students.length != 0 &&
                 <FlatList
-                    data={students}
+                    data={db.students}
                     renderItem={({ item }) =>
                         <StudentTile student={item}
                             deleteAction={(id) => {
                                 setSelectedStudent(db.get("students", id));
                                 setDeleteDialogVisiable(true);
-                            }} />
+                            }}
+                            detailsAction={(id) => {
+                                setSelectedStudent(db.get("students", id));
+                                setDetailsDialogVisiable(true);
+                            }}
+                            editAction={(id) => {
+                                navigation.navigate("EditStudent", { studentID: id });
+                            }}
+                        />
                     }
                 />
             }
-            <FloatingIconButton icon={"plus"} onPress={()=>{console.log("aaa")}} right={0} bottom={20}/>
+
+            <FloatingIconButton
+                icon={"plus"}
+                onPress={() => navigation.navigate("EditStudent")}
+                right={20}
+                bottom={20}
+            />
 
             {/* delete dialog */}
-            <Dialog visible={isDeleteDialogVisiable} theme={theme} dismissable={true} dismissableBackButton={true} onDismiss={() => setDeleteDialogVisiable(false)}>
+            <Dialog visible={isDeleteDialogVisiable}
+                theme={theme}
+                dismissable={true}
+                dismissableBackButton={true}
+                onDismiss={dismissDialog}
+            >
                 <Dialog.Title>Czy na pewno chcesz usunąć ucznia?</Dialog.Title>
                 <Dialog.Actions>
-                    <Button onPress={() => setDeleteDialogVisiable(false)}>Anuluj</Button>
-                    <Button onPress={() => {
-                        db.remove("students", selectedStudent.id);
-                        setDeleteDialogVisiable(false)
-                    }}>Potwierdź</Button>
+                    <Button onPress={dismissDialog}>Anuluj</Button>
+                    <Button onPress={handleDelete}>Potwierdź</Button>
+                </Dialog.Actions>
+            </Dialog>
+
+            {/* details action */}
+            <Dialog visible={isDetailsDialogVisiable}
+                theme={theme}
+                dismissable={true}
+                dismissableBackButton={true}
+                onDismiss={dismissDialog}
+            >
+                <Dialog.Title>Szczegóły</Dialog.Title>
+                {
+                    selectedStudent &&
+                    <Dialog.Content>
+                        <View style={{ flexDirection: "row", gap: 5 }}>
+                            <Text variant="bodyMedium">ID:</Text>
+                            <Text variant="bodyMedium">{selectedStudent.id}</Text>
+                        </View>
+                        <View style={{ flexDirection: "row", gap: 5 }}>
+                            <Text variant="bodyMedium">Imię:</Text>
+                            <Text variant="bodyMedium">{selectedStudent.name}</Text>
+                        </View>
+                        <View style={{ flexDirection: "row", gap: 5 }}>
+                            <Text variant="bodyMedium">Nazwisko:</Text>
+                            <Text variant="bodyMedium">{selectedStudent.surname}</Text>
+                        </View>
+                        <View style={{ flexDirection: "row", gap: 5 }}>
+                            <Text variant="bodyMedium">Telefon:</Text>
+                            <Text variant="bodyMedium">{selectedStudent.phone}</Text>
+                        </View>
+                        <View style={{ flexDirection: "row", gap: 5 }}>
+                            <Text variant="bodyMedium">Email:</Text>
+                            <Text variant="bodyMedium">{selectedStudent.email}</Text>
+                        </View>
+                        <View style={{ flexDirection: "row", gap: 5 }}>
+                            <Text variant="bodyMedium">Forma: </Text>
+                            <Text variant="bodyMedium">{possibleForms[selectedStudent.form].label}</Text>
+                        </View>
+                        {
+                            remotelyForm.includes(selectedStudent.form) &&
+                            <>
+                                <View style={{ flexDirection: "row", gap: 5 }}>
+                                    <Text variant="bodyMedium">Platforma:</Text>
+                                    <Text variant="bodyMedium">{selectedStudent.platform}</Text>
+                                </View>
+                                <View style={{ flexDirection: "row", gap: 5 }}>
+                                    <Text variant="bodyMedium">Nick:</Text>
+                                    <Text variant="bodyMedium">{selectedStudent.nick}</Text>
+                                </View>
+                            </>
+                        }
+                        {
+                            stationaryForm.includes(selectedStudent.form) &&
+                            <>
+                                <View style={{ flexDirection: "row", gap: 5 }}>
+                                    <Text variant="bodyMedium">Miejscowość:</Text>
+                                    <Text variant="bodyMedium">{selectedStudent.city}</Text>
+                                </View>
+                                <View style={{ flexDirection: "row", gap: 5 }}>
+                                    <Text variant="bodyMedium">Adres:</Text>
+                                    <Text variant="bodyMedium">{selectedStudent.address}</Text>
+                                </View>
+                            </>
+                        }
+                        <View style={{ flexDirection: "row", gap: 5, marginTop: 10 }}>
+                            <Text variant="bodyMedium">Ilość zajęć Z/W/O:</Text>
+                            <Text variant="bodyMedium">1/2/3</Text>
+                            {/* todo kiedy już będą lekcje */}
+                        </View>
+                        <View style={{ flexDirection: "row", gap: 5 }}>
+                            <Text variant="bodyMedium">Zarobki:</Text>
+                            <Text variant="bodyMedium">150 + 50</Text>
+                        </View>
+                    </Dialog.Content>
+                }
+                <Dialog.Actions>
+                    <Button onPress={dismissDialog}>Cofnij</Button>
                 </Dialog.Actions>
             </Dialog>
         </View>
