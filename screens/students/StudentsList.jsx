@@ -200,9 +200,15 @@ export default function StudentsListScreen({ navigation }) {
                             <Text variant="bodyMedium">1/2/3</Text>
                             {/* todo kiedy już będą lekcje */}
                         </View>
+                        <View style={{ flexDirection: "row", gap: 5, marginTop: 10 }}>
+                            <Text variant="bodyMedium">Całkowity czas zajęć:</Text>
+                            <Text variant="bodyMedium">1h</Text>
+                            {/* todo kiedy już będą lekcje */}
+                        </View>
                         <View style={{ flexDirection: "row", gap: 5 }}>
                             <Text variant="bodyMedium">Zarobki:</Text>
                             <Text variant="bodyMedium">150 + 50</Text>
+                            {/* todo kiedy już będą lekcje */}
                         </View>
                     </Dialog.Content>
                 }

@@ -53,12 +53,19 @@ export const themeLight = {
         "surfaceContainer": "#EDEDF4",
         "surfaceContainerHigh": "#E7E8EE",
         "surfaceContainerHighest": "#E2E2E9",
-        "statusPlanned": "#999999",
-        "statusPaid": "#67B533",
-        "statusDone": "#EAAB00",
-        "onStatusPlanned": "#111111",
-        "onStatusPaid": "#DDDDDD",
-        "onStatusDone": "#DDDDDD"
+
+        "statusPlanned": "#E0E0E0",
+        "statusPaid": "#7be137",
+        "statusDone": "#fddb1c",
+        "onStatusPlanned": "#131313",
+        "onStatusPaid": "#131313",
+        "onStatusDone": "#131313",
+        "statusPlannedSelected": "#EEEEEE",
+        "statusPaidSelected": "#9AE866",
+        "statusDoneSelected": "#fde34e",
+        "onStatusPlannedSelected": "#131313",
+        "onStatusPaidSelected": "#131313",
+        "onStatusDoneSelected": "#131313"
     }
 }
 
@@ -117,11 +124,18 @@ export const themeDark = {
         "surfaceContainer": "#211F24",
         "surfaceContainerHigh": "#2C292F",
         "surfaceContainerHighest": "#36343A",
-        "statusPlanned": "#999999",
-        "statusPaid": "#67B533",
-        "statusDone": "#EAAB00",
-        "onStatusPlanned": "#111111",
-        "onStatusPaid": "#DDDDDD",
-        "onStatusDone": "#DDDDDD"
+
+        "statusPlanned": "#BBBBBB",
+        "statusPaid": "#7fcd4c",
+        "statusDone": "#fcd74f",
+        "onStatusPlanned": "#131313",
+        "onStatusPaid": "#131313",
+        "onStatusDone": "#131313",
+        "statusPlannedSelected": "#a0a0a0",
+        "statusPaidSelected": "#67b533",
+        "statusDoneSelected": "#fccb1d",
+        "onStatusPlannedSelected": "#131313",
+        "onStatusPaidSelected": "#131313",
+        "onStatusDoneSelected": "#131313"
     }
 }

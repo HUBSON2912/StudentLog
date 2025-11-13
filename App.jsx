@@ -1,12 +1,12 @@
 import { Platform, SafeAreaView, StatusBar, StyleSheet, useColorScheme } from "react-native";
 import { PaperProvider, } from "react-native-paper";
 import { themeDark, themeLight } from "./theme";
-import EditStudentScreen from "./screens/students/EditStudent";
 import { possibleTableNames } from "./constants/const";
 import { createContext, useState, useEffect } from "react";
 import { createTableS, deleteS, getAllS, insertS, updateS } from "./database/students";
-import StudentsListScreen from "./screens/students/StudentsList";
 import { NavigationContainer } from "@react-navigation/native";
+import EditLesson from "./screens/lessons/EditLesson";
+import { createTableL, deleteL, getAllL, insertL, updateL } from "./database/lessons";
 import StudetnsScreen from "./screens/Students";
 
 export const DatabaseContext = createContext(null);
@@ -26,10 +26,9 @@ export default function App() {
     });
 
 
-
     // Database Context functions definition
-
     const [students, setStudents] = useState([]);
+    const [lessons, setLessons] = useState([]);
 
     const createTable = async (name) => {
         try {
@@ -41,7 +40,9 @@ export default function App() {
                 case "students":
                     createTableS();
                     break;
-
+                case "lessons":
+                    createTableL();
+                    break;
                 default:
                     break;
             }
@@ -60,7 +61,8 @@ export default function App() {
             switch (name) {
                 case "students":
                     return await getAllS();
-
+                case "lessons":
+                    return await getAllL();
                 default:
                     break;
             }
@@ -75,14 +77,18 @@ export default function App() {
             if (!(possibleTableNames.includes(name))) {
                 throw new Error(`Unknow table name: '${name}'`);
             }
-
+            let id;
             switch (name) {
                 case "students":
-                    const id = await insertS(value);
+                    id = await insertS(value);
                     value.id = id;
-                    students.push(value);
+                    setStudents([...students, value]);
                     break;
-
+                case "lessons":
+                    id = await insertL(value);
+                    value.id = id;
+                    setLessons([...lessons, value]);
+                    break;
                 default:
                     break;
             }
@@ -103,6 +109,10 @@ export default function App() {
                     deleteS(id);
                     setStudents(students.filter(s => s.id != id));
                     break;
+                case "lessons":
+                    deleteL(id);
+                    setLessons(lessons.filter(l => l.id != id));
+                    break;
 
                 default:
                     break;
@@ -122,6 +132,8 @@ export default function App() {
             switch (name) {
                 case "students":
                     return students.filter(x => x.id == id)[0];
+                case "lessons":
+                    return lessons.filter(x => x.id == id)[0];
 
                 default:
                     break;
@@ -138,10 +150,12 @@ export default function App() {
                 throw new Error(`Unknow table name: '${name}'`);
             }
 
+            let buff;
+
             switch (name) {
                 case "students":
                     updateS(value, id);
-                    let buff = [...students];
+                    buff = [...students];
                     for (let i = 0; i < buff.length; i++) {
                         if (buff[i].id == id) {
                             buff[i] = value;
@@ -150,6 +164,18 @@ export default function App() {
                         }
                     }
                     setStudents(buff);
+                    break;
+                case "lessons":
+                    updateL(value, id);
+                    buff = [...lessons];
+                    for (let i = 0; i < buff.length; i++) {
+                        if (buff[i].id == id) {
+                            buff[i] = value;
+                            buff[i].id = id;
+                            break;
+                        }
+                    }
+                    setLessons(buff);
                     break;
 
                 default:
@@ -164,6 +190,7 @@ export default function App() {
 
     const database = {
         students: students,
+        lessons: lessons,
         insert: insert,
         getAll: getAll,
         get: get,
@@ -175,6 +202,9 @@ export default function App() {
         createTable(possibleTableNames[0])
             .then(() => getAll(possibleTableNames[0]))
             .then(setStudents);
+        createTable(possibleTableNames[1])
+            .then(() => getAll(possibleTableNames[1]))
+            .then(setLessons);
     }, []);
 
     return (
@@ -182,7 +212,7 @@ export default function App() {
             <DatabaseContext value={database}>
                 <PaperProvider theme={theme}>
                     <SafeAreaView style={styles.container}>
-                        <StudetnsScreen />
+                        <EditLesson />
                     </SafeAreaView>
                 </PaperProvider>
             </DatabaseContext>

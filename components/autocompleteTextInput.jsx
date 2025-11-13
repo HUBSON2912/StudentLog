@@ -3,11 +3,11 @@ import { FlatList, Keyboard, ScrollView, StyleSheet, TouchableWithoutFeedback, V
 import { Menu, Text, TextInput, useTheme } from "react-native-paper";
 
 export function AutocompleteTextInput({
-    suggestions = [],
+    suggestions,
+    renderSuggestion,
     label = "",
     value = "",
     onChangeText = (val) => { },
-    renderSuggestion = ({ item, index }) => { },
     containerStyle = {},
     textInputStyle = {},
     textInputMode = "outlined" }) {

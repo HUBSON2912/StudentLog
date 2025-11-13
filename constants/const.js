@@ -14,3 +14,8 @@ export const remotelyForm=[0,2];
 
 // form id where it's necessary to use stationary form data (address) 
 export const stationaryForm=[1,2];
+
+export const possibleLessonsAddMode=[
+    {value: 0, icon: "numeric-1-circle", label: "Jedna lekcja"},
+    {value: 1, icon: "calendar", label: "Regularnie"}
+];

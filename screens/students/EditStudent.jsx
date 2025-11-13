@@ -200,7 +200,7 @@ export default function EditStudentScreen({ navigation, route }) {
                     icon={"content-save"}
                     onPress={studentID ? handleSaveUpdate : handleSaveInsert}
                     loading={loading}
-                    disabled={false}
+                    disabled={loading}
                     buttonColor={loading ? theme.colors.primaryDisabled : theme.colors.primary}
                     textColor={loading ? theme.colors.onPrimaryDisabled : theme.colors.onPrimary}
                 >
