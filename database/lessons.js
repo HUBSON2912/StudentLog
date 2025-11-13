@@ -91,14 +91,14 @@ export async function updateL(lesson, id) {
         const res = await db.executeSql(
             `UPDATE lessons
             SET student_id=${lesson.student_id},
-                subject=${lesson.subject},
-                level=${lesson.level},
+                subject="${lesson.subject}",
+                level="${lesson.level}",
                 duration=${lesson.duration},
                 price=${lesson.price},
-                date=${lesson.date},
-                hour=${lesson.hour},
+                date="${lesson.date}",
+                hour="${lesson.hour}",
                 status=${lesson.status},
-                topic=${lesson.topic}
+                topic="${lesson.topic}"
             WHERE id=${id}`
         );
     } catch (error) {

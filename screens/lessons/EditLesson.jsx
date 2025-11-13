@@ -1,7 +1,7 @@
-import { KeyboardAvoidingView, ScrollView, StatusBar, StyleSheet, View } from "react-native";
+import { KeyboardAvoidingView, ScrollView, StatusBar, StyleSheet, useColorScheme, View } from "react-native";
 import { AnimatedFAB, Button, Icon, SegmentedButtons, Text, TextInput, useTheme } from "react-native-paper";
 import { ToggleChipGroup } from "../../components/toggleChipGroup";
-import { possibleLessonsAddMode } from "../../constants/const";
+import { possibleLessonsAddMode, possibleStatuses } from "../../constants/const";
 import { useContext, useState } from "react";
 import { DatabaseContext } from "../../App";
 import SelectDropdown from "react-native-select-dropdown";
@@ -69,9 +69,10 @@ function DropdownItem(item, index, isSelected) {
 }
 
 
-export default function EditLesson() {
+export default function EditLessonScreen({ navigation }) {
     theme = useTheme();
     const db = useContext(DatabaseContext);
+    const statuses = useColorScheme() == "dark" ? possibleStatuses.dark : possibleStatuses.light;
 
     const styles = StyleSheet.create({
         chipContainer: {
@@ -98,11 +99,7 @@ export default function EditLesson() {
     const [showTime_oneLess, setShowTime_oneLess] = useState(false);
 
     const students = db.students;
-    const lessons = db.lessons;
 
-    console.log(lessons);
-
-    // const students = [];
     const [selectedStudentID, setSelectedStudentID] = useState();
     const [subject, setSubject] = useState("");
     const [level, setLevel] = useState("");
@@ -259,32 +256,7 @@ export default function EditLesson() {
                         style={styles.chipContainer}
                         value={status}
                         onSelect={setStatus}
-                        chips={[
-                            {
-                                value: 0, label: "Zaplanowane", colors: {
-                                    background: theme.colors.statusPlanned,
-                                    backgroundSelected: theme.colors.statusPlannedSelected,
-                                    onBackground: theme.colors.onStatusPlanned,
-                                    onBackgroundSelected: theme.colors.onStatusPlannedSelected
-                                }
-                            },
-                            {
-                                value: 1, label: "Wykonane", colors: {
-                                    background: theme.colors.statusDone,
-                                    backgroundSelected: theme.colors.statusDoneSelected,
-                                    onBackground: theme.colors.onStatusDone,
-                                    onBackgroundSelected: theme.colors.onStatusDoneSelected
-                                }
-                            },
-                            {
-                                value: 2, label: "Opłacone", colors: {
-                                    background: theme.colors.statusPaid,
-                                    backgroundSelected: theme.colors.statusPaidSelected,
-                                    onBackground: theme.colors.onStatusPaid,
-                                    onBackgroundSelected: theme.colors.onStatusPaidSelected
-                                }
-                            }
-                        ]}
+                        chips={statuses}
                     />
                 </View>
 
@@ -320,6 +292,7 @@ export default function EditLesson() {
                         }
                         db.insert("lessons", newLesson);
                         setLoading(false);
+                        navigation.pop();
                     }}
                 >
                     Zapisz

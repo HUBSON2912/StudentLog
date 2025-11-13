@@ -90,15 +90,15 @@ export async function updateS(student, id) {
 
         const res = await db.executeSql(
             `UPDATE students
-            SET name=${student.name},
-                surname=${student.surname},
-                phone=${student.phone},
-                email=${student.email},
+            SET name="${student.name}",
+                surname="${student.surname}",
+                phone="${student.phone}",
+                email="${student.email}",
                 form=${student.form},
-                platform=${student.platform},
-                nick=${student.nick},
-                city=${student.city},
-                address=${student.address}
+                platform="${student.platform}",
+                nick="${student.nick}",
+                city="${student.city}",
+                address="${student.address}"
             WHERE id=${id}`
         );
     } catch (error) {

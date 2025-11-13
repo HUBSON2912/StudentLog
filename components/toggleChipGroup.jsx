@@ -11,26 +11,22 @@ export function ToggleChipGroup({ onSelect = () => { }, style = {}, chips = [], 
                     const selected = (value == x.value);
                     const colors = x.colors ?? null;
 
+                    const bgColor = selected ? ((colors && colors.background) ? colors.background : theme.colors.primaryContainer) : theme.colors.inversePrimary;
+                    const txColor = selected ? ((colors && colors.onBackground) ? colors.onBackground : theme.colors.onPrimaryContainer) : theme.colors.onBackground;
+
                     return (
                         <Chip
                             key={index}
                             icon={x.icon}
-                            selectedColor={selected ?
-                                (colors && colors.onBackgroundSelected ? colors.onBackgroundSelected : theme.colors.onPrimaryContainer) :
-                                (colors && colors.onBackground ? colors.onBackground : theme.colors.onPrimary)}
                             onPress={() => { onSelect(x.value) }}
                             selected={selected}
+                            selectedColor={txColor}
                             style={{
-                                backgroundColor: selected ?
-                                    (colors && colors.backgroundSelected ? colors.backgroundSelected : theme.colors.primaryContainer) :
-                                    (colors && colors.background ? colors.background : theme.colors.inversePrimary)
-
+                                backgroundColor: bgColor
                             }}
                         >
                             <Text style={{
-                                color: selected ?
-                                    (colors && colors.onBackgroundSelected ? colors.onBackgroundSelected : theme.colors.onPrimaryContainer) :
-                                    (colors && colors.onBackground ? colors.onBackground : theme.colors.onPrimary)
+                                color: txColor
                             }}>
                                 {x.label ? x.label : x.value}
                             </Text>

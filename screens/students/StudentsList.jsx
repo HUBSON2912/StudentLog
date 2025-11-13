@@ -58,7 +58,7 @@ function StudentTile({ student, deleteAction = (id) => { }, editAction = (id) =>
                 </Card.Content>
                 <Card.Actions>
                     <IconButton icon={"delete"} iconColor={theme.colors.error} onPress={() => { deleteAction(student.id) }} />
-                    <IconButton icon={"account-details"} mode="outlined" onPress={() => { detailsAction(student.id) }} />
+                    <IconButton icon={"dots-horizontal-circle-outline"} mode="outlined" onPress={() => { detailsAction(student.id) }} />
                     <IconButton icon={"text-box-edit"} mode="outlined" onPress={() => editAction(student.id)} />
                 </Card.Actions>
             </Card>

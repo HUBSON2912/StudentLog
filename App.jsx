@@ -1,15 +1,18 @@
 import { Platform, SafeAreaView, StatusBar, StyleSheet, useColorScheme } from "react-native";
 import { PaperProvider, } from "react-native-paper";
 import { themeDark, themeLight } from "./theme";
-import { possibleTableNames } from "./constants/const";
 import { createContext, useState, useEffect } from "react";
 import { createTableS, deleteS, getAllS, insertS, updateS } from "./database/students";
 import { NavigationContainer } from "@react-navigation/native";
-import EditLesson from "./screens/lessons/EditLesson";
 import { createTableL, deleteL, getAllL, insertL, updateL } from "./database/lessons";
 import StudetnsScreen from "./screens/Students";
+import LessonsScreen from "./screens/Lessons";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { possibleTableNames } from "./constants/const";
 
 export const DatabaseContext = createContext(null);
+
+const Tab = createBottomTabNavigator();
 
 export default function App() {
     const systemTheme = useColorScheme();
@@ -47,7 +50,7 @@ export default function App() {
                     break;
             }
         } catch (error) {
-            console.log(`Error while creating table '${name}': ${JSON.stringify(error)}`);
+            console.log(`Error while creating table '${name}': ${error.message}`);
             return error;
         }
     };
@@ -67,7 +70,7 @@ export default function App() {
                     break;
             }
         } catch (error) {
-            console.log(`Error while getting all from '${name}': ${JSON.stringify(error)}`);
+            console.log(`Error while getting all from '${name}': ${error.message}`);
             return error;
         }
     };
@@ -93,7 +96,7 @@ export default function App() {
                     break;
             }
         } catch (error) {
-            console.log(`Error while inserting ${JSON.stringify(value)} into table '${name}': ${JSON.stringify(error)}`);
+            console.log(`Error while inserting ${JSON.stringify(value)} into table '${name}': ${error.message}`);
             return error;
         }
     };
@@ -118,7 +121,7 @@ export default function App() {
                     break;
             }
         } catch (error) {
-            console.log(`Error while removing id: ${id} table '${name}': ${JSON.stringify(error)}`);
+            console.log(`Error while removing id: ${id} table '${name}': ${error.message}`);
             return error;
         }
     };
@@ -139,7 +142,7 @@ export default function App() {
                     break;
             }
         } catch (error) {
-            console.log(`Error while geting by ID: ${id} from table '${name}': ${JSON.stringify(error)}`);
+            console.log(`Error while geting by ID: ${id} from table '${name}': ${error.message}`);
             return error;
         }
     }
@@ -182,7 +185,7 @@ export default function App() {
                     break;
             }
         } catch (error) {
-            console.log(`Error while updateing '${name}' with value: ${JSON.stringify(value)} and id: ${id}: ${JSON.stringify(error)}`);
+            console.log(`Error while updateing '${name}' with value: ${JSON.stringify(value)} and id: ${id}: ${error.message}`);
             return error;
         }
     }
@@ -199,23 +202,28 @@ export default function App() {
     }
 
     useEffect(() => {
-        createTable(possibleTableNames[0])
-            .then(() => getAll(possibleTableNames[0]))
+        createTable("students")
+            .then(() => getAll("students"))
             .then(setStudents);
-        createTable(possibleTableNames[1])
-            .then(() => getAll(possibleTableNames[1]))
+        createTable("lessons")
+            .then(() => getAll("lessons"))
             .then(setLessons);
     }, []);
 
     return (
-        <NavigationContainer theme={theme}>
-            <DatabaseContext value={database}>
-                <PaperProvider theme={theme}>
-                    <SafeAreaView style={styles.container}>
-                        <EditLesson />
-                    </SafeAreaView>
-                </PaperProvider>
-            </DatabaseContext>
-        </NavigationContainer>
+        <DatabaseContext value={database}>
+            <PaperProvider theme={theme}>
+                <SafeAreaView style={styles.container}>
+                    <NavigationContainer theme={theme}>
+
+                        <Tab.Navigator screenOptions={{ headerShown: false }}>
+                            <Tab.Screen name="Students" component={StudetnsScreen} />
+                            <Tab.Screen name="Lessons" component={LessonsScreen} />
+                        </Tab.Navigator>
+
+                    </NavigationContainer>
+                </SafeAreaView>
+            </PaperProvider>
+        </DatabaseContext>
     );
 }
