@@ -45,6 +45,10 @@ function LessonTile({ lesson, deleteAction = (id) => { }, editAction = (id) => {
                 />
                 <Card.Content>
                     <View style={styles.dataContainer}>
+                        <Icon size={20} source={"cash"} />
+                        <Text style={styles.text}>{lesson.price} zł</Text>
+                    </View>
+                    <View style={styles.dataContainer}>
                         <Icon size={20} source={"clock"} />
                         <Text style={styles.text}>{lesson.date} {"\u2022"} {lesson.hour}</Text>
                     </View>
@@ -108,7 +112,7 @@ export default function LessonsListScreen({ navigation }) {
                                 setDetailsDialogVisiable(true);
                             }}
                             editAction={(id) => {
-                                navigation.navigate("EditLesson", { studentID: id });
+                                navigation.navigate("EditLesson", { lessonID: id });
                             }}
                         />
                     }
@@ -129,7 +133,7 @@ export default function LessonsListScreen({ navigation }) {
                 dismissableBackButton={true}
                 onDismiss={dismissDialog}
             >
-                <Dialog.Title>Czy na pewno chcesz usunąć ucznia?</Dialog.Title>
+                <Dialog.Title>Czy na pewno chcesz usunąć wpis?</Dialog.Title>
                 <Dialog.Actions>
                     <Button onPress={dismissDialog}>Anuluj</Button>
                     <Button onPress={handleDelete}>Potwierdź</Button>
@@ -183,7 +187,7 @@ export default function LessonsListScreen({ navigation }) {
                         </View>
                         <View style={{ flexDirection: "row", gap: 5 }}>
                             <Text variant="bodyMedium">Status:</Text>
-                            <Text variant="bodyMedium">{possibleStatuses[selectedLesson.status].label}</Text>
+                            <Text variant="bodyMedium">{statuses[selectedLesson.status].label}</Text>
                         </View>
                     </Dialog.Content>
                 }

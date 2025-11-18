@@ -4,7 +4,7 @@ import { themeDark, themeLight } from "./theme";
 import { createContext, useState, useEffect } from "react";
 import { createTableS, deleteS, getAllS, insertS, updateS } from "./database/students";
 import { NavigationContainer } from "@react-navigation/native";
-import { createTableL, deleteL, getAllL, insertL, updateL } from "./database/lessons";
+import { createTableL, deleteL, deleteStudentsLessonL, getAllL, insertL, updateL } from "./database/lessons";
 import StudetnsScreen from "./screens/Students";
 import LessonsScreen from "./screens/Lessons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -110,7 +110,9 @@ export default function App() {
             switch (name) {
                 case "students":
                     deleteS(id);
+                    deleteStudentsLessonL(id);
                     setStudents(students.filter(s => s.id != id));
+                    setLessons(lessons.filter(l => l.student_id != id));
                     break;
                 case "lessons":
                     deleteL(id);
@@ -185,7 +187,48 @@ export default function App() {
                     break;
             }
         } catch (error) {
-            console.log(`Error while updateing '${name}' with value: ${JSON.stringify(value)} and id: ${id}: ${error.message}`);
+            console.log(`Error while updating '${name}' with value: ${JSON.stringify(value)} and id: ${id}: ${error.message}`);
+            return error;
+        }
+    }
+
+    const getDetails = (name, id) => {
+        try {
+            if (!(possibleTableNames.includes(name))) {
+                throw new Error(`Unknow table name: '${name}'`);
+            }
+            let res = get(name, id);
+            switch (name) {
+                case "students":
+                    let studLess = lessons.filter(less => less.student_id == id);
+                    let plannedLessons = studLess.filter(less => less.status == 0);
+                    let doneLessons = studLess.filter(less => less.status == 1);
+                    let paidLessons = studLess.filter(less => less.status == 2);
+
+                    let totalTime = 0, totalMoney = 0;
+                    for (let i = 0; i < studLess.length; i++) {
+                        totalMoney += studLess[i].status == 2 ? studLess[i].price : 0;
+                        totalTime += studLess[i].status == 2 ? studLess[i].duration : 0;
+                    }
+
+                    return {
+                        ...res,
+                        totalMoney: totalMoney,
+                        totalTime: totalTime,
+                        lessonsAmount: {
+                            planned: plannedLessons.length,
+                            done: doneLessons.length,
+                            paid: paidLessons.length
+                        }
+                    }
+                case "lessons":
+                    return res;
+
+                default:
+                    break;
+            }
+        } catch (error) {
+            console.log(`Error while geting details about '${name}' id=${id} with value: ${JSON.stringify(value)} and id: ${id}: ${error.message}`);
             return error;
         }
     }
@@ -198,7 +241,8 @@ export default function App() {
         getAll: getAll,
         get: get,
         remove: remove,
-        update: update
+        update: update,
+        getDetails: getDetails
     }
 
     useEffect(() => {

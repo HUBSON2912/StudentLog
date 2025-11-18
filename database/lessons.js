@@ -106,3 +106,15 @@ export async function updateL(lesson, id) {
         return error;
     }
 }
+
+export async function deleteStudentsLessonL(student_id) {
+    try {
+        const db = await SQLite.openDatabase({ name: 'studentlog.db', location: 'default' })
+
+        const del = await db.executeSql(
+            `DELETE FROM lessons WHERE student_id=${student_id}`
+        );
+    } catch (error) {
+        return error;
+    }
+}

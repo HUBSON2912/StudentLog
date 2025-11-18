@@ -69,10 +69,11 @@ function StudentTile({ student, deleteAction = (id) => { }, editAction = (id) =>
 export default function StudentsListScreen({ navigation }) {
     const theme = useTheme();
     const db = useContext(DatabaseContext);
-    
+
     const [selectedStudent, setSelectedStudent] = useState(null);
     const [isDeleteDialogVisiable, setDeleteDialogVisiable] = useState(false);
     const [isDetailsDialogVisiable, setDetailsDialogVisiable] = useState(false);
+    const [studentDetails, setStudentDetails] = useState(null);
 
     const handleDelete = () => {
         db.remove("students", selectedStudent.id);
@@ -103,6 +104,7 @@ export default function StudentsListScreen({ navigation }) {
                             }}
                             detailsAction={(id) => {
                                 setSelectedStudent(db.get("students", id));
+                                setStudentDetails(db.getDetails("students", id));
                                 setDetailsDialogVisiable(true);
                             }}
                             editAction={(id) => {
@@ -128,6 +130,9 @@ export default function StudentsListScreen({ navigation }) {
                 onDismiss={dismissDialog}
             >
                 <Dialog.Title>Czy na pewno chcesz usunąć ucznia?</Dialog.Title>
+                <Dialog.Content>
+                    <Text variant="bodyMedium">Spowoduje to usunięcie wszystkich zapisanych lekcji z tym uczniem.</Text>
+                </Dialog.Content>
                 <Dialog.Actions>
                     <Button onPress={dismissDialog}>Anuluj</Button>
                     <Button onPress={handleDelete}>Potwierdź</Button>
@@ -195,21 +200,23 @@ export default function StudentsListScreen({ navigation }) {
                                 </View>
                             </>
                         }
-                        <View style={{ flexDirection: "row", gap: 5, marginTop: 10 }}>
-                            <Text variant="bodyMedium">Ilość zajęć Z/W/O:</Text>
-                            <Text variant="bodyMedium">1/2/3</Text>
-                            {/* todo kiedy już będą lekcje */}
-                        </View>
-                        <View style={{ flexDirection: "row", gap: 5, marginTop: 10 }}>
-                            <Text variant="bodyMedium">Całkowity czas zajęć:</Text>
-                            <Text variant="bodyMedium">1h</Text>
-                            {/* todo kiedy już będą lekcje */}
-                        </View>
-                        <View style={{ flexDirection: "row", gap: 5 }}>
-                            <Text variant="bodyMedium">Zarobki:</Text>
-                            <Text variant="bodyMedium">150 + 50</Text>
-                            {/* todo kiedy już będą lekcje */}
-                        </View>
+                        {
+                            studentDetails &&
+                            <>
+                                <View style={{ flexDirection: "row", gap: 5, marginTop: 10 }}>
+                                    <Text variant="bodyMedium">Ilość zajęć Z/W/O:</Text>
+                                    <Text variant="bodyMedium">{studentDetails.lessonsAmount.planned}/{studentDetails.lessonsAmount.done}/{studentDetails.lessonsAmount.paid}</Text>
+                                </View>
+                                <View style={{ flexDirection: "row", gap: 5, marginTop: 10 }}>
+                                    <Text variant="bodyMedium">Całkowity czas zajęć:</Text>
+                                    <Text variant="bodyMedium">{studentDetails.totalTime} h</Text>
+                                </View>
+                                <View style={{ flexDirection: "row", gap: 5 }}>
+                                    <Text variant="bodyMedium">Zarobki:</Text>
+                                    <Text variant="bodyMedium">{studentDetails.totalMoney}</Text>
+                                </View>
+                            </>
+                        }
                     </Dialog.Content>
                 }
                 <Dialog.Actions>

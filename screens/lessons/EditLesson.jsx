@@ -2,77 +2,20 @@ import { KeyboardAvoidingView, ScrollView, StatusBar, StyleSheet, useColorScheme
 import { AnimatedFAB, Button, Icon, SegmentedButtons, Text, TextInput, useTheme } from "react-native-paper";
 import { ToggleChipGroup } from "../../components/toggleChipGroup";
 import { possibleLessonsAddMode, possibleStatuses } from "../../constants/const";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { DatabaseContext } from "../../App";
 import SelectDropdown from "react-native-select-dropdown";
 import { AutocompleteTextInput } from "../../components/autocompleteTextInput";
 import { DatePickerModal, TimePickerModal } from "react-native-paper-dates";
-import { dateToDDMMYYYY, hourToHHMM } from "../../functions/misc/date";
+import { dateToDDMMYYYY, DDMMYYYYToDate, HHMMToHour, hourToHHMM } from "../../functions/misc/date";
 
 let theme;
 
-function DropdownButton(selectedItem, isOpen) {
-    const styles = StyleSheet.create({
-        listContainer: {
-            borderWidth: 1,
-            borderColor: theme.colors.outline,
-            borderRadius: theme.roundness,
-            paddingHorizontal: 15,
-            paddingVertical: 10,
-            flex: 1,
-            flexDirection: "row",
-            alignItems: "center",
-            alignContent: "center",
-            justifyContent: "space-between"
-        },
-        placeholder: {
-            color: theme.colors.onSurfaceVariant
-        }
-    });
-
-    return (
-        <View style={styles.listContainer}>
-            {
-                selectedItem &&
-                <Text variant="bodyLarge">{selectedItem.name} {selectedItem.surname}</Text>
-            }
-            {
-                !selectedItem &&
-                <Text variant="bodyLarge" style={styles.placeholder}>Wybierz ucznia</Text>
-            }
-            <Icon source={isOpen ? "arrow-left-drop-circle-outline" : "arrow-down-drop-circle-outline"} size={20} />
-        </View>
-    );
-}
-
-function DropdownItem(item, index, isSelected) {
-    const styles = StyleSheet.create({
-        elementContainer: {
-            backgroundColor: isSelected ? theme.colors.surface : "black",
-            borderWidth: 1,
-            borderColor: theme.colors.outline,
-            paddingHorizontal: 15,
-            paddingVertical: 10,
-            flexDirection: "row",
-            alignItems: "center",
-            alignContent: "center",
-            gap: 10
-        }
-    });
-
-    return (
-        <View style={styles.elementContainer}>
-            <Text>{item.id}</Text>
-            <Text variant="bodyLarge">{item.name} {item.surname}</Text>
-        </View>
-    );
-}
-
-
-export default function EditLessonScreen({ navigation }) {
+export default function EditLessonScreen({ navigation, route }) {
     theme = useTheme();
     const db = useContext(DatabaseContext);
     const statuses = useColorScheme() == "dark" ? possibleStatuses.dark : possibleStatuses.light;
+    const { lessonID } = route.params ?? { lessonID: null };
 
     const styles = StyleSheet.create({
         chipContainer: {
@@ -100,7 +43,7 @@ export default function EditLessonScreen({ navigation }) {
 
     const students = db.students;
 
-    const [selectedStudentID, setSelectedStudentID] = useState();
+    const [selectedStudentID, setSelectedStudentID] = useState(null);
     const [subject, setSubject] = useState("");
     const [level, setLevel] = useState("");
     const [duration, setDuration] = useState("1");
@@ -111,7 +54,125 @@ export default function EditLessonScreen({ navigation }) {
     const [topic, setTopic] = useState("");
     const [status, setStatus] = useState(0);
 
+    useEffect(() => {
+        if (!lessonID) {
+            return;
+        }
+
+        navigation.setOptions({ title: `Edytuj lekcję (${lessonID})` })
+
+        const lessonData = db.get("lessons", lessonID);
+
+        setSelectedStudentID(lessonData.student_id);
+        setSubject(lessonData.subject);
+        setLevel(lessonData.level);
+        setDuration(String(lessonData.duration));
+        setPrice(String(lessonData.price));
+        setDate_oneLess(DDMMYYYYToDate(lessonData.date));
+        setHour_oneLess(HHMMToHour(lessonData.hour));
+        setTopic(lessonData.topic);
+        setStatus(lessonData.status);
+    }, []);
+
     const [loading, setLoading] = useState(false);
+
+    const handleSaveInsert = async () => {
+        setLoading(true);
+        const newLesson = {
+            student_id: selectedStudentID,
+            subject: subject,
+            level: level,
+            duration: parseFloat(duration),
+            price: parseInt(price),
+            date: dateToDDMMYYYY(date_oneLess),
+            hour: hourToHHMM(hour_oneLess),
+            status: status,
+            topic: topic
+        };
+        await db.insert("lessons", newLesson);
+        setLoading(false);
+        navigation.pop();
+    }
+
+    const handleSaveUpdate = async () => {
+        setLoading(true);
+        const newLesson = {
+            student_id: selectedStudentID,
+            subject: subject,
+            level: level,
+            duration: parseFloat(duration),
+            price: parseInt(price),
+            date: dateToDDMMYYYY(date_oneLess),
+            hour: hourToHHMM(hour_oneLess),
+            status: status,
+            topic: topic
+        };
+        await db.update("lessons", newLesson, lessonID);
+        setLoading(false);
+        navigation.pop();
+    }
+
+
+    const DropdownItem = (item, index, isSelected) => {
+        const styles = StyleSheet.create({
+            elementContainer: {
+                backgroundColor: isSelected ? theme.colors.surface : "black",
+                borderWidth: 1,
+                borderColor: theme.colors.outline,
+                paddingHorizontal: 15,
+                paddingVertical: 10,
+                flexDirection: "row",
+                alignItems: "center",
+                alignContent: "center",
+                gap: 10
+            }
+        });
+
+        return (
+            <View style={styles.elementContainer}>
+                <Text>{item.id}</Text>
+                <Text variant="bodyLarge">{item.name} {item.surname}</Text>
+            </View>
+        );
+    }
+
+    function DropdownButton(selectedItem, isOpen) {
+        if (selectedStudentID) {
+            selectedItem = db.get("students", selectedStudentID);
+        }
+
+        const styles = StyleSheet.create({
+            listContainer: {
+                borderWidth: 1,
+                borderColor: theme.colors.outline,
+                borderRadius: theme.roundness,
+                paddingHorizontal: 15,
+                paddingVertical: 10,
+                flex: 1,
+                flexDirection: "row",
+                alignItems: "center",
+                alignContent: "center",
+                justifyContent: "space-between"
+            },
+            placeholder: {
+                color: theme.colors.onSurfaceVariant
+            }
+        });
+
+        return (
+            <View style={styles.listContainer}>
+                {
+                    selectedItem &&
+                    <Text variant="bodyLarge">{selectedItem.name} {selectedItem.surname}</Text>
+                }
+                {
+                    !selectedItem &&
+                    <Text variant="bodyLarge" style={styles.placeholder}>Wybierz ucznia</Text>
+                }
+                <Icon source={isOpen ? "arrow-left-drop-circle-outline" : "arrow-down-drop-circle-outline"} size={20} />
+            </View>
+        );
+    }
 
     return (
         <KeyboardAvoidingView behavior="padding" keyboardVerticalOffset={StatusBar.currentHeight + 5}>
@@ -192,15 +253,18 @@ export default function EditLessonScreen({ navigation }) {
                 </View>
 
                 {/* one lesson or regulary */}
-                <View style={styles.row}>
-                    <Text style={styles.label} pointerEvents="none">Tryb:</Text>
-                    <ToggleChipGroup
-                        style={styles.chipContainer}
-                        value={mode}
-                        onSelect={setMode}
-                        chips={possibleLessonsAddMode}
-                    />
-                </View>
+                {
+                    !lessonID &&
+                    <View style={styles.row}>
+                        <Text style={styles.label} pointerEvents="none">Tryb:</Text>
+                        <ToggleChipGroup
+                            style={styles.chipContainer}
+                            value={mode}
+                            onSelect={setMode}
+                            chips={possibleLessonsAddMode}
+                        />
+                    </View>
+                }
 
                 {/* button with text */}
                 <View style={styles.row}>
@@ -277,23 +341,7 @@ export default function EditLessonScreen({ navigation }) {
                     icon={"content-save"}
                     disabled={loading}
                     loading={loading}
-                    onPress={() => {
-                        setLoading(true);
-                        const newLesson = {
-                            student_id: selectedStudentID,
-                            subject: subject,
-                            level: level,
-                            duration: parseFloat(duration),
-                            price: parseInt(price),
-                            date: dateToDDMMYYYY(date_oneLess),
-                            hour: hourToHHMM(hour_oneLess),
-                            status: status,
-                            topic: topic
-                        }
-                        db.insert("lessons", newLesson);
-                        setLoading(false);
-                        navigation.pop();
-                    }}
+                    onPress={lessonID ? handleSaveUpdate : handleSaveInsert}
                 >
                     Zapisz
                 </Button>
