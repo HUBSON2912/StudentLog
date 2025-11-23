@@ -6,8 +6,8 @@ export const themeLight = {
         ...MD3LightTheme.colors,
         "primary": "#2962FF",
         "onPrimary": "#FFFFFF",
-        "primaryContainer": "#D6E2FF",
-        "onPrimaryContainer": "#001A54",
+        "primaryContainer": "#99B6FF",
+        "onPrimaryContainer": "#2C3437",
 
         "secondary": "#4A6572",
         "onSecondary": "#FFFFFF",
@@ -58,7 +58,7 @@ export const themeDark = {
         ...MD3DarkTheme.colors,
         "primary": "#9DB3FF",
         "onPrimary": "#002A78",
-        "primaryContainer": "#003DAE",
+        "primaryContainer": "#0050e6",
         "onPrimaryContainer": "#D6E2FF",
 
         "secondary": "#B5C7D0",

@@ -11,7 +11,7 @@ export function ToggleChipGroup({ onSelect = () => { }, style = {}, chips = [], 
                     const selected = (value == x.value);
                     const colors = x.colors ?? null;
 
-                    const bgColor = selected ? ((colors && colors.background) ? colors.background : theme.colors.primaryContainer) : theme.colors.inversePrimary;
+                    const bgColor = selected ? ((colors && colors.background) ? colors.background : theme.colors.primaryContainer) : theme.colors.surfaceVariant;
                     const txColor = selected ? ((colors && colors.onBackground) ? colors.onBackground : theme.colors.onPrimaryContainer) : theme.colors.onBackground;
 
                     return (

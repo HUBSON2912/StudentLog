@@ -1,5 +1,5 @@
 import { Platform, SafeAreaView, StatusBar, StyleSheet, useColorScheme } from "react-native";
-import { PaperProvider, } from "react-native-paper";
+import { Icon, PaperProvider, } from "react-native-paper";
 import { themeDark, themeLight } from "./theme";
 import { createContext, useState, useEffect } from "react";
 import { createTableS, deleteS, getAllS, insertS, updateS } from "./database/students";
@@ -7,7 +7,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createTableL, deleteL, deleteStudentsLessonL, getAllL, insertL, updateL } from "./database/lessons";
 import StudetnsScreen from "./screens/Students";
 import LessonsScreen from "./screens/Lessons";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { BottomTabBar, createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { possibleTableNames } from "./constants/const";
 
 export const DatabaseContext = createContext(null);
@@ -261,8 +261,8 @@ export default function App() {
                     <NavigationContainer theme={theme}>
 
                         <Tab.Navigator screenOptions={{ headerShown: false }}>
-                            <Tab.Screen name="Students" component={StudetnsScreen} />
-                            <Tab.Screen name="Lessons" component={LessonsScreen} />
+                            <Tab.Screen name="Students" component={StudetnsScreen} options={{tabBarIcon: () => <Icon source={"account"} size={26}/>}}/>
+                            <Tab.Screen name="Lessons" component={LessonsScreen} options={{tabBarIcon: () => <Icon source={"calendar"} size={26}/>}}/>
                         </Tab.Navigator>
 
                     </NavigationContainer>
