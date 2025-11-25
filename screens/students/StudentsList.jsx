@@ -36,10 +36,13 @@ function StudentTile({ student, deleteAction = (id) => { }, editAction = (id) =>
                         <Icon size={16} source={"phone"} />
                         <Text style={styles.text}>{student.phone}</Text>
                     </View>
-                    <View style={styles.dataContainer}>
-                        <Icon size={16} source={"email-outline"} />
-                        <Text style={styles.text}>{student.email}</Text>
-                    </View>
+                    {
+                        student.email &&
+                        <View style={styles.dataContainer}>
+                            <Icon size={16} source={"email-outline"} />
+                            <Text style={styles.text}>{student.email}</Text>
+                        </View>
+                    }
                     {
                         remotelyForm.includes(student.form) &&
                         <>

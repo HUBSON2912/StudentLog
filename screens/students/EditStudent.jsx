@@ -1,9 +1,9 @@
 import { StyleSheet, View } from "react-native";
-import { Button, Text, TextInput, useTheme } from "react-native-paper";
+import { Button, HelperText, Text, TextInput, useTheme } from "react-native-paper";
 import { useContext, useEffect, useState } from "react";
 import { ToggleChipGroup } from "../../components/toggleChipGroup";
 import { AutocompleteTextInput } from '../../components/autocompleteTextInput';
-import { possibleForms, suggestedPlatforms } from "../../constants/const";
+import { possibleForms, remotelyForm, stationaryForm, suggestedPlatforms } from "../../constants/const";
 import { DatabaseContext } from "../../App";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
 
@@ -44,7 +44,46 @@ export default function EditStudentScreen({ navigation, route }) {
 
     const [loading, setLoading] = useState(false);
 
+
+    // input errors
+    const [inputErrors, setInputErrors] = useState({
+        name: false,
+        surname: false,
+        phone: false,
+        platform: false,
+        nick: false,
+        city: false,
+        address: false
+    });
+
+    const areInputsGood = async () => {
+        let errors = {
+            name: !name,
+            surname: !surname,
+            phone: !phoneNumber,
+        };
+        if (remotelyForm.includes(form)) {
+            errors.platform = !platform;
+            errors.nick = !nick;
+        }
+        if (stationaryForm.includes(form)) {
+            errors.city = !city;
+            errors.address = !address;
+        }
+
+        setInputErrors({ ...inputErrors, ...errors });
+
+        if (Object.values(errors).includes(true)) {
+            return false;
+        }
+        return true;
+    };
+
     const handleSaveInsert = async () => {
+        const inpErr = await areInputsGood();
+        if (!inpErr) {
+            return;
+        }
         setLoading(true);
         const newStudent = {
             name: name,
@@ -63,6 +102,10 @@ export default function EditStudentScreen({ navigation, route }) {
     };
 
     const handleSaveUpdate = async () => {
+        const inpErr = await areInputsGood();
+        if (!inpErr) {
+            return;
+        }
         setLoading(true);
         const newStudent = {
             name: name,
@@ -81,37 +124,48 @@ export default function EditStudentScreen({ navigation, route }) {
     };
 
     return (
-        <KeyboardAwareScrollView style={styles.container} keyboardShouldPersistTaps="always">
+        <KeyboardAwareScrollView style={styles.container} keyboardShouldPersistTaps="handled">
             <View style={styles.row}>
                 <Text style={styles.label} pointerEvents="none">Imię:</Text>
-                <TextInput
-                    mode="outlined"
-                    style={styles.input}
-                    label="Imię"
-                    value={name}
-                    onChangeText={setName}
-                />
+                <View style={styles.input}>
+                    <TextInput
+                        mode="outlined"
+                        label="Imię"
+                        value={name}
+                        onChangeText={(value) => { setName(value); setInputErrors({ ...inputErrors, name: !value }); }}
+                        error={inputErrors.name}
+                    />
+                    <HelperText visible={inputErrors.name} type="error" style={{ display: inputErrors.name ? "flex" : "none" }}>To pole jest wymagane.</HelperText>
+                </View>
             </View>
             <View style={styles.row}>
                 <Text style={styles.label} pointerEvents="none">Nazwisko:</Text>
-                <TextInput
-                    mode="outlined"
-                    style={styles.input}
-                    label="Nazwisko"
-                    value={surname}
-                    onChangeText={setSurname}
-                />
+                <View style={styles.input}>
+                    <TextInput
+                        mode="outlined"
+                        style={styles.input}
+                        label="Nazwisko"
+                        value={surname}
+                        onChangeText={(value) => { setSurname(value); setInputErrors({ ...inputErrors, surname: !value }); }}
+                        error={inputErrors.surname}
+                    />
+                    <HelperText visible={inputErrors.surname} type="error" style={{ display: inputErrors.surname ? "flex" : "none" }}>To pole jest wymagane.</HelperText>
+                </View>
             </View>
             <View style={styles.row}>
                 <Text style={styles.label} pointerEvents="none">Numer telefonu:</Text>
-                <TextInput
-                    mode="outlined"
-                    style={styles.input}
-                    label="Numer telefonu"
-                    value={phoneNumber}
-                    onChangeText={setPhoneNumber}
-                    keyboardType="phone-pad"
-                />
+                <View style={styles.input}>
+                    <TextInput
+                        mode="outlined"
+                        style={styles.input}
+                        label="Numer telefonu"
+                        value={phoneNumber}
+                        onChangeText={(value) => { setPhoneNumber(value); setInputErrors({ ...inputErrors, phone: !value }); }}
+                        error={inputErrors.phone}
+                        keyboardType="phone-pad"
+                    />
+                    <HelperText visible={inputErrors.phone} type="error" style={{ display: inputErrors.phone ? "flex" : "none" }}>To pole jest wymagane.</HelperText>
+                </View>
             </View>
             <View style={styles.row}>
                 <Text style={styles.label} pointerEvents="none">Email:</Text>
@@ -121,7 +175,7 @@ export default function EditStudentScreen({ navigation, route }) {
                     label="Email"
                     value={email}
                     onChangeText={setEmail}
-                    keyboardType="email"
+                    keyboardType="email-address"
                 />
             </View>
             <View style={styles.row}>
@@ -139,29 +193,37 @@ export default function EditStudentScreen({ navigation, route }) {
                 <>
                     <View style={styles.row}>
                         <Text style={styles.label} pointerEvents="none">Platforma:</Text>
-                        <AutocompleteTextInput
-                            containerStyle={styles.input}
-                            textInputStyle={styles.input}
-                            label="Platforma"
-                            suggestions={suggestedPlatforms}
-                            value={platform}
-                            onChangeText={setPlatform}
-                            renderSuggestion={(item, index) => {
-                                return (
-                                    <Text key={index} style={{ borderWidth: 1, borderColor: theme.colors.outline, padding: 10 }}>{item}</Text>
-                                );
-                            }}
-                        />
+                        <View style={styles.input}>
+                            <AutocompleteTextInput
+                                containerStyle={styles.input}
+                                textInputStyle={styles.input}
+                                label="Platforma"
+                                suggestions={suggestedPlatforms}
+                                value={platform}
+                                onChangeText={(value) => { setPlatform(value); setInputErrors({ ...inputErrors, platform: !value }); }}
+                                error={inputErrors.platform}
+                                renderSuggestion={(item, index) => {
+                                    return (
+                                        <Text key={index} style={{ borderWidth: 1, borderColor: theme.colors.outline, padding: 10 }}>{item}</Text>
+                                    );
+                                }}
+                            />
+                            <HelperText visible={inputErrors.platform} type="error" style={{ display: inputErrors.platform ? "flex" : "none" }}>To pole jest wymagane.</HelperText>
+                        </View>
                     </View>
                     <View style={styles.row}>
                         <Text style={styles.label} pointerEvents="none">Nick:</Text>
-                        <TextInput
-                            mode="outlined"
-                            style={styles.input}
-                            label="Nick"
-                            value={nick}
-                            onChangeText={setNick}
-                        />
+                        <View style={styles.input}>
+                            <TextInput
+                                mode="outlined"
+                                style={styles.input}
+                                label="Nick"
+                                value={nick}
+                                onChangeText={(value) => { setNick(value); setInputErrors({ ...inputErrors, nick: !value }); }}
+                                error={inputErrors.nick}
+                            />
+                            <HelperText visible={inputErrors.nick} type="error" style={{ display: inputErrors.nick ? "flex" : "none" }}>To pole jest wymagane.</HelperText>
+                        </View>
                     </View>
                 </>
             }
@@ -172,23 +234,31 @@ export default function EditStudentScreen({ navigation, route }) {
                 <>
                     <View style={styles.row}>
                         <Text style={styles.label} pointerEvents="none">Miejscowość:</Text>
-                        <TextInput
-                            mode="outlined"
-                            style={styles.input}
-                            label="Miejscowość"
-                            value={city}
-                            onChangeText={setCity}
-                        />
+                        <View style={styles.input}>
+                            <TextInput
+                                mode="outlined"
+                                style={styles.input}
+                                label="Miejscowość"
+                                value={city}
+                                onChangeText={(value) => { setCity(value); setInputErrors({ ...inputErrors, city: !value }); }}
+                                error={inputErrors.city}
+                            />
+                            <HelperText visible={inputErrors.city} type="error" style={{ display: inputErrors.city ? "flex" : "none" }}>To pole jest wymagane.</HelperText>
+                        </View>
                     </View>
                     <View style={styles.row}>
                         <Text style={styles.label} pointerEvents="none">Adres:</Text>
-                        <TextInput
-                            mode="outlined"
-                            style={styles.input}
-                            label="Adres"
-                            value={address}
-                            onChangeText={setAddress}
-                        />
+                        <View style={styles.input}>
+                            <TextInput
+                                mode="outlined"
+                                style={styles.input}
+                                label="Adres"
+                                value={address}
+                                onChangeText={(value) => { setAddress(value); setInputErrors({ ...inputErrors, address: !value }); }}
+                                error={inputErrors.address}
+                            />
+                            <HelperText visible={inputErrors.address} type="error" style={{ display: inputErrors.address ? "flex" : "none" }}>To pole jest wymagane.</HelperText>
+                        </View>
                     </View>
                 </>
             }

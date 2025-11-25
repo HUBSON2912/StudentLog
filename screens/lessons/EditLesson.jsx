@@ -178,7 +178,7 @@ export default function EditLessonScreen({ navigation, route }) {
     }
 
     return (
-        <KeyboardAwareScrollView style={styles.container} keyboardShouldPersistTaps="always">
+        <KeyboardAwareScrollView style={styles.container} keyboardShouldPersistTaps="handled">
 
             <View style={styles.row}>
                 <Text style={styles.label} pointerEvents="none">Uczeń:</Text>

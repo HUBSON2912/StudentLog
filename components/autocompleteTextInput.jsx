@@ -10,7 +10,8 @@ export function AutocompleteTextInput({
     onChangeText = (val) => { },
     containerStyle = {},
     textInputStyle = {},
-    textInputMode = "outlined" }) {
+    textInputMode = "outlined",
+    error = false }) {
 
 
 
@@ -51,6 +52,7 @@ export function AutocompleteTextInput({
                 onLayout={(event) => {
                     setInputHeight(event.nativeEvent.layout.height);
                 }}
+                error={error}
             />
             {
                 focused && filterSuggestions().length != 0 &&
