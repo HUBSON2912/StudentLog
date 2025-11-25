@@ -8,16 +8,19 @@ import SelectDropdown from "react-native-select-dropdown";
 import { AutocompleteTextInput } from "../../components/autocompleteTextInput";
 import { DatePickerModal, TimePickerModal } from "react-native-paper-dates";
 import { dateToDDMMYYYY, DDMMYYYYToDate, HHMMToHour, hourToHHMM } from "../../functions/misc/date";
-
-let theme;
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
 
 export default function EditLessonScreen({ navigation, route }) {
-    theme = useTheme();
+    const theme = useTheme();
     const db = useContext(DatabaseContext);
     const statuses = useColorScheme() == "dark" ? possibleStatuses.dark : possibleStatuses.light;
     const { lessonID } = route.params ?? { lessonID: null };
 
     const styles = StyleSheet.create({
+        container: {
+            paddingHorizontal: 20,
+            flexGrow: 1
+        },
         chipContainer: {
             flex: 1,
             gap: 5,
@@ -175,177 +178,173 @@ export default function EditLessonScreen({ navigation, route }) {
     }
 
     return (
-        <KeyboardAvoidingView behavior="padding" keyboardVerticalOffset={StatusBar.currentHeight + 5}>
-            <ScrollView
-                nestedScrollEnabled={true}
-                keyboardShouldPersistTaps="handled"
-                contentContainerStyle={{ paddingHorizontal: 20 }}
-            >
-                <View style={styles.row}>
-                    <Text style={styles.label} pointerEvents="none">Uczeń:</Text>
-                    {
-                        students.length != 0 &&
-                        <SelectDropdown
-                            data={students}
-                            onSelect={(sel) => setSelectedStudentID(sel.id)}
-                            renderButton={DropdownButton}
-                            renderItem={DropdownItem}
-                        />
-                    }
-                    {
-                        students.length == 0 &&
-                        <Text style={{ fontSize: 16, borderRadius: theme.roundness, ...styles.input, borderWidth: 1, borderColor: theme.colors.outline, paddingVertical: 10, paddingHorizontal: 15 }}>Brak uczniów</Text>
-                    }
-                </View>
-                <View style={styles.row}>
-                    <Text style={styles.label} pointerEvents="none">Przedmiot:</Text>
-                    <AutocompleteTextInput
-                        label="Przedmiot"
-                        containerStyle={styles.input}
-                        onChangeText={setSubject}
-                        suggestions={["Matematyka", "Fizyka", "Informatyka"]}
-                        value={subject}
-                        renderSuggestion={(item, index) => {
-                            return (
-                                <Text key={index} style={{ borderWidth: 1, borderColor: theme.colors.outline, padding: 10 }}>{item}</Text>
-                            );
-                        }}
-                    />
-                </View>
-                <View style={styles.row}>
-                    <Text style={styles.label} pointerEvents="none">Poziom:</Text>
-                    <AutocompleteTextInput
-                        label="Poziom"
-                        containerStyle={styles.input}
-                        onChangeText={setLevel}
-                        suggestions={["Szkoła podstawowa", "Szkoła średnia - PP", "Szkoła średnia - PR"]}
-                        value={level}
-                        renderSuggestion={(item, index) => {
-                            return (
-                                <Text key={index} style={{ borderWidth: 1, borderColor: theme.colors.outline, padding: 10 }}>{item}</Text>
-                            );
-                        }}
-                    />
-                </View>
-                <View style={styles.row}>
-                    <Text style={styles.label} pointerEvents="none">Czas trwania:</Text>
-                    <TextInput
-                        mode="outlined"
-                        style={styles.input}
-                        label="Czas trwania"
-                        value={duration}
-                        onChangeText={setDuration}
-                        right={<TextInput.Affix text="h" />}
-                        keyboardType="decimal-pad"
-                    />
-                </View>
-                <View style={styles.row}>
-                    <Text style={styles.label} pointerEvents="none">Cena:</Text>
-                    <TextInput
-                        mode="outlined"
-                        style={styles.input}
-                        label="Cena"
-                        value={price}
-                        onChangeText={setPrice}
-                        right={<TextInput.Affix text="zł" />}
-                        keyboardType="decimal-pad"
-                    />
-                </View>
+        <KeyboardAwareScrollView style={styles.container} keyboardShouldPersistTaps="always">
 
-                {/* one lesson or regulary */}
+            <View style={styles.row}>
+                <Text style={styles.label} pointerEvents="none">Uczeń:</Text>
                 {
-                    !lessonID &&
-                    <View style={styles.row}>
-                        <Text style={styles.label} pointerEvents="none">Tryb:</Text>
-                        <ToggleChipGroup
-                            style={styles.chipContainer}
-                            value={mode}
-                            onSelect={setMode}
-                            chips={possibleLessonsAddMode}
-                        />
-                    </View>
+                    students.length != 0 &&
+                    <SelectDropdown
+                        data={students}
+                        onSelect={(sel) => setSelectedStudentID(sel.id)}
+                        renderButton={DropdownButton}
+                        renderItem={DropdownItem}
+                    />
                 }
+                {
+                    students.length == 0 &&
+                    <Text style={{ fontSize: 16, borderRadius: theme.roundness, ...styles.input, borderWidth: 1, borderColor: theme.colors.outline, paddingVertical: 10, paddingHorizontal: 15 }}>Brak uczniów</Text>
+                }
+            </View>
+            <View style={styles.row}>
+                <Text style={styles.label} pointerEvents="none">Przedmiot:</Text>
+                <AutocompleteTextInput
+                    label="Przedmiot"
+                    containerStyle={styles.input}
+                    onChangeText={setSubject}
+                    suggestions={["Matematyka", "Fizyka", "Informatyka"]}
+                    value={subject}
+                    renderSuggestion={(item, index) => {
+                        return (
+                            <Text key={index} style={{ borderWidth: 1, borderColor: theme.colors.outline, padding: 10 }}>{item}</Text>
+                        );
+                    }}
+                />
+            </View>
+            <View style={styles.row}>
+                <Text style={styles.label} pointerEvents="none">Poziom:</Text>
+                <AutocompleteTextInput
+                    label="Poziom"
+                    containerStyle={styles.input}
+                    onChangeText={setLevel}
+                    suggestions={["Szkoła podstawowa", "Szkoła średnia - PP", "Szkoła średnia - PR"]}
+                    value={level}
+                    renderSuggestion={(item, index) => {
+                        return (
+                            <Text key={index} style={{ borderWidth: 1, borderColor: theme.colors.outline, padding: 10 }}>{item}</Text>
+                        );
+                    }}
+                />
+            </View>
+            <View style={styles.row}>
+                <Text style={styles.label} pointerEvents="none">Czas trwania:</Text>
+                <TextInput
+                    mode="outlined"
+                    style={styles.input}
+                    label="Czas trwania"
+                    value={duration}
+                    onChangeText={setDuration}
+                    right={<TextInput.Affix text="h" />}
+                    keyboardType="decimal-pad"
+                />
+            </View>
+            <View style={styles.row}>
+                <Text style={styles.label} pointerEvents="none">Cena:</Text>
+                <TextInput
+                    mode="outlined"
+                    style={styles.input}
+                    label="Cena"
+                    value={price}
+                    onChangeText={setPrice}
+                    right={<TextInput.Affix text="zł" />}
+                    keyboardType="decimal-pad"
+                />
+            </View>
 
-                {/* button with text */}
+            {/* one lesson or regulary */}
+            {
+                !lessonID &&
                 <View style={styles.row}>
-                    <Text style={styles.label} pointerEvents="none">Data:</Text>
-                    <Button
-                        onPress={() => setShowCalendar_oneLess(!showCalendar_oneLess)}
-                        mode="outlined"
-                        style={{ borderRadius: theme.roundness, ...styles.input }}
-                    >
-                        {String(date_oneLess.getDate()).padStart(2, '0')}.{String(date_oneLess.getMonth() + 1).padStart(2, '0')}.{date_oneLess.getFullYear()}
-                    </Button>
-                    <DatePickerModal
-                        locale="pl"
-                        mode="single"
-                        animationType="slide"
-                        date={date_oneLess}
-                        visible={showCalendar_oneLess}
-                        onDismiss={() => setShowCalendar_oneLess(false)}
-                        onConfirm={({ date }) => { setDate_oneLess(date); setShowCalendar_oneLess(false) }}
-                        label="Wybierz datę"
-                        saveLabel="Zapisz"
-                    />
-                </View>
-
-                {/* button with text */}
-                <View style={styles.row}>
-                    <Text style={styles.label} pointerEvents="none">Godzina:</Text>
-                    <Button
-                        onPress={() => setShowTime_oneLess(!showTime_oneLess)}
-                        mode="outlined"
-                        style={{ borderRadius: theme.roundness, ...styles.input }}
-                    >
-                        {hour_oneLess.hours}:{String(hour_oneLess.minutes).padStart(2, '0')}
-                    </Button>
-                    <TimePickerModal
-                        visible={showTime_oneLess}
-                        onConfirm={(hmin) => { setHour_oneLess(hmin); setShowTime_oneLess(false); }}
-                        onDismiss={() => setShowTime_oneLess(false)}
-                        label="Wybierz godzinę"
-                        locale="pl"
-                        hours={hour_oneLess.hours}
-                        minutes={hour_oneLess.minutes}
-                        confirmLabel="Zapisz"
-                        use24HourClock={true}
-                        animationType="slide"
-                        cancelLabel="Anuluj"
-                    />
-                </View>
-
-                <View style={styles.row}>
-                    <Text style={styles.label} pointerEvents="none">Status:</Text>
+                    <Text style={styles.label} pointerEvents="none">Tryb:</Text>
                     <ToggleChipGroup
                         style={styles.chipContainer}
-                        value={status}
-                        onSelect={setStatus}
-                        chips={statuses}
+                        value={mode}
+                        onSelect={setMode}
+                        chips={possibleLessonsAddMode}
                     />
                 </View>
+            }
 
-                <View style={styles.row}>
-                    <Text style={styles.label} pointerEvents="none">Temat:</Text>
-                    <TextInput
-                        mode="outlined"
-                        style={styles.input}
-                        label="Temat"
-                        value={topic}
-                        onChangeText={setTopic}
-                    />
-                </View>
-
-
+            {/* button with text */}
+            <View style={styles.row}>
+                <Text style={styles.label} pointerEvents="none">Data:</Text>
                 <Button
-                    mode="contained"
-                    icon={"content-save"}
-                    disabled={loading}
-                    loading={loading}
-                    onPress={lessonID ? handleSaveUpdate : handleSaveInsert}
+                    onPress={() => setShowCalendar_oneLess(!showCalendar_oneLess)}
+                    mode="outlined"
+                    style={{ borderRadius: theme.roundness, ...styles.input }}
                 >
-                    Zapisz
+                    {String(date_oneLess.getDate()).padStart(2, '0')}.{String(date_oneLess.getMonth() + 1).padStart(2, '0')}.{date_oneLess.getFullYear()}
                 </Button>
-            </ScrollView>
-        </KeyboardAvoidingView>
+                <DatePickerModal
+                    locale="pl"
+                    mode="single"
+                    animationType="slide"
+                    date={date_oneLess}
+                    startWeekOnMonday={true}
+                    visible={showCalendar_oneLess}
+                    onDismiss={() => setShowCalendar_oneLess(false)}
+                    onConfirm={({ date }) => { setDate_oneLess(date); setShowCalendar_oneLess(false) }}
+                    label="Wybierz datę"
+                    saveLabel="Zapisz"
+                />
+            </View>
+
+            {/* button with text */}
+            <View style={styles.row}>
+                <Text style={styles.label} pointerEvents="none">Godzina:</Text>
+                <Button
+                    onPress={() => setShowTime_oneLess(!showTime_oneLess)}
+                    mode="outlined"
+                    style={{ borderRadius: theme.roundness, ...styles.input }}
+                >
+                    {hour_oneLess.hours}:{String(hour_oneLess.minutes).padStart(2, '0')}
+                </Button>
+                <TimePickerModal
+                    visible={showTime_oneLess}
+                    onConfirm={(hmin) => { setHour_oneLess(hmin); setShowTime_oneLess(false); }}
+                    onDismiss={() => setShowTime_oneLess(false)}
+                    label="Wybierz godzinę"
+                    locale="pl"
+                    hours={hour_oneLess.hours}
+                    minutes={hour_oneLess.minutes}
+                    confirmLabel="Zapisz"
+                    use24HourClock={true}
+                    animationType="slide"
+                    cancelLabel="Anuluj"
+                />
+            </View>
+
+            <View style={styles.row}>
+                <Text style={styles.label} pointerEvents="none">Status:</Text>
+                <ToggleChipGroup
+                    style={styles.chipContainer}
+                    value={status}
+                    onSelect={setStatus}
+                    chips={statuses}
+                />
+            </View>
+
+            <View style={styles.row}>
+                <Text style={styles.label} pointerEvents="none">Temat:</Text>
+                <TextInput
+                    mode="outlined"
+                    style={styles.input}
+                    label="Temat"
+                    value={topic}
+                    onChangeText={setTopic}
+                />
+            </View>
+
+
+            <Button
+                mode="contained"
+                icon={"content-save"}
+                disabled={loading}
+                loading={loading}
+                onPress={lessonID ? handleSaveUpdate : handleSaveInsert}
+            >
+                Zapisz
+            </Button>
+        </KeyboardAwareScrollView>
     );
 }

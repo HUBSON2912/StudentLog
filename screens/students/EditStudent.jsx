@@ -5,7 +5,7 @@ import { ToggleChipGroup } from "../../components/toggleChipGroup";
 import { AutocompleteTextInput } from '../../components/autocompleteTextInput';
 import { possibleForms, suggestedPlatforms } from "../../constants/const";
 import { DatabaseContext } from "../../App";
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
 
 export default function EditStudentScreen({ navigation, route }) {
     const theme = useTheme();
@@ -81,9 +81,7 @@ export default function EditStudentScreen({ navigation, route }) {
     };
 
     return (
-        <KeyboardAwareScrollView style={styles.container}
-        keyboardShouldPersistTaps="always"
-        >
+        <KeyboardAwareScrollView style={styles.container} keyboardShouldPersistTaps="always">
             <View style={styles.row}>
                 <Text style={styles.label} pointerEvents="none">Imię:</Text>
                 <TextInput

@@ -1,9 +1,8 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import { Appbar, Avatar, Button, Card, Dialog, Divider, Icon, IconButton, Menu, Modal, Portal, Searchbar, Text, useTheme } from "react-native-paper";
+import { Appbar, Avatar, Button, Card, Dialog, Divider, FAB, Icon, IconButton, Menu, Modal, Portal, Searchbar, Text, useTheme } from "react-native-paper";
 import { DatabaseContext } from "../../App";
 import { Animated, FlatList, KeyboardAvoidingView, Platform, StatusBar, StyleSheet, TouchableWithoutFeedback, View } from "react-native";
 import { possibleForms, remotelyForm, stationaryForm, studentsOrder } from "../../constants/const";
-import { FloatingIconButton } from "../../components/floatingIconButton";
 
 
 function StudentTile({ student, deleteAction = (id) => { }, editAction = (id) => { }, detailsAction = (id) => { } }) {
@@ -115,7 +114,7 @@ export default function StudentsListScreen({ navigation }) {
             }
             return 0;
         });
-        if(!filter.order.ascending) {
+        if (!filter.order.ascending) {
             _stud.reverse();
         }
         if (!filter.active) {
@@ -202,11 +201,11 @@ export default function StudentsListScreen({ navigation }) {
                     </>
                 }
 
-                <FloatingIconButton
+                <FAB
                     icon={"plus"}
+                    style={{ ...styles.plusButton }}
+                    customSize={48}
                     onPress={() => navigation.navigate("EditStudent")}
-                    right={20}
-                    bottom={20}
                 />
 
                 {/* delete dialog */}
@@ -323,5 +322,11 @@ const styles = StyleSheet.create({
     detailContainer: {
         flexDirection: "row",
         gap: 5
+    },
+    plusButton: {
+        position: 'absolute',
+        margin: 16,
+        right: 0,
+        bottom: 0,
     }
 })
