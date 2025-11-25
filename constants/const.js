@@ -33,4 +33,48 @@ export const possibleStatuses = {
         { value: 1, label: "Wykonane", colors: themeLight.colors.status[1] },
         { value: 2, label: "Opłacone", colors: themeLight.colors.status[2] }
     ]
-}
+};
+
+export const studentsOrder = [
+    {
+        label: "Trafność ￬",
+        paramName: ["id"],
+        ascending: true
+    },
+    {
+        label: "Trafność ￪",
+        paramName: ["id"],
+        ascending: false
+    },
+
+    {
+        label: "Imię i nazwisko ￬",
+        paramName: ["name", "surname"],
+        ascending: true
+    },
+    {
+        label: "Imię i nazwisko ￪",
+        paramName: ["name", "surname"],
+        ascending: false
+    },
+    {
+        label: "Nazwisko i imię ￬",
+        paramName: ["surname", "name"],
+        ascending: true
+    },
+    {
+        label: "Nazwisko i imię ￪",
+        paramName: ["surname", "name"],
+        ascending: false
+    },
+    {
+        label: "Forma ￬",
+        paramName: ["form"],
+        ascending: true
+    },
+    {
+        label: "Forma ￪",
+        paramName: ["form"],
+        ascending: false
+    },
+];

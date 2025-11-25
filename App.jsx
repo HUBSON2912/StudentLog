@@ -259,10 +259,11 @@ export default function App() {
             <PaperProvider theme={theme}>
                 <SafeAreaView style={styles.container}>
                     <NavigationContainer theme={theme}>
+                        <StatusBar translucent backgroundColor="transparent" />
 
-                        <Tab.Navigator screenOptions={{ headerShown: false }}>
-                            <Tab.Screen name="Students" component={StudetnsScreen} options={{tabBarIcon: () => <Icon source={"account"} size={26}/>}}/>
-                            <Tab.Screen name="Lessons" component={LessonsScreen} options={{tabBarIcon: () => <Icon source={"calendar"} size={26}/>}}/>
+                        <Tab.Navigator screenOptions={{ headerShown: false, tabBarInactiveTintColor: theme.colors.onBackground, tabBarActiveTintColor: theme.colors.primary }}>
+                            <Tab.Screen name="Students" component={StudetnsScreen} options={{ tabBarIcon: () => <Icon source={"account"} size={26} />, title: "Uczniowie" }} />
+                            <Tab.Screen name="Lessons" component={LessonsScreen} options={{ tabBarIcon: () => <Icon source={"calendar"} size={26} /> }} />
                         </Tab.Navigator>
 
                     </NavigationContainer>

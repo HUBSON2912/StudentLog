@@ -18,7 +18,7 @@ function LessonTile({ lesson, deleteAction = (id) => { }, editAction = (id) => {
             alignItems: "center"
         },
         text: {
-            fontSize: 18
+            fontSize: 15
         },
     });
 
@@ -29,9 +29,9 @@ function LessonTile({ lesson, deleteAction = (id) => { }, editAction = (id) => {
         <>
             <Card mode="contained" style={{ marginVertical: 10, paddingRight: 15 }} theme={theme}>
                 <Card.Title title={student.name + " " + student.surname}
-                    titleStyle={{ fontSize: 26 }}
+                    titleStyle={{ fontSize: 22 }}
                     right={() => <Chip style={{
-                        backgroundColor: status.colors.background
+                        backgroundColor: status.colors.background,
                     }}
                         // change status on long press
                         onLongPress={() => {
@@ -40,24 +40,24 @@ function LessonTile({ lesson, deleteAction = (id) => { }, editAction = (id) => {
                             db.update("lessons", lesson, lesson.id);
                         }}
                     >
-                        <Text style={{ color: status.colors.onBackground }}>{status.label}</Text>
+                        <Text variant={"bodySmall"} style={{ color: status.colors.onBackground}}>{status.label}</Text>
                     </Chip>}
                 />
                 <Card.Content>
                     <View style={styles.dataContainer}>
-                        <Icon size={20} source={"cash"} />
+                        <Icon size={16} source={"cash"} />
                         <Text style={styles.text}>{lesson.price} zł</Text>
                     </View>
                     <View style={styles.dataContainer}>
-                        <Icon size={20} source={"clock"} />
+                        <Icon size={16} source={"clock"} />
                         <Text style={styles.text}>{lesson.date} {"\u2022"} {lesson.hour}</Text>
                     </View>
                     <View style={styles.dataContainer}>
-                        <Icon size={20} source={"school"} />
+                        <Icon size={16} source={"school"} />
                         <Text style={styles.text}>{lesson.subject} {"\u2022"} {lesson.level}</Text>
                     </View>
                     <View style={styles.dataContainer}>
-                        <Icon size={20} source={"notebook"} />
+                        <Icon size={16} source={"notebook"} />
                         <Text style={styles.text}>{lesson.topic}</Text>
                     </View>
                 </Card.Content>

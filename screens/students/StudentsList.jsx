@@ -1,8 +1,8 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import { Appbar, Avatar, Button, Card, Dialog, Icon, IconButton, Modal, Portal, Searchbar, Text, useTheme } from "react-native-paper";
+import { Appbar, Avatar, Button, Card, Dialog, Divider, Icon, IconButton, Menu, Modal, Portal, Searchbar, Text, useTheme } from "react-native-paper";
 import { DatabaseContext } from "../../App";
 import { Animated, FlatList, KeyboardAvoidingView, Platform, StatusBar, StyleSheet, TouchableWithoutFeedback, View } from "react-native";
-import { possibleForms, remotelyForm, stationaryForm } from "../../constants/const";
+import { possibleForms, remotelyForm, stationaryForm, studentsOrder } from "../../constants/const";
 import { FloatingIconButton } from "../../components/floatingIconButton";
 
 
@@ -16,7 +16,7 @@ function StudentTile({ student, deleteAction = (id) => { }, editAction = (id) =>
             alignItems: "center"
         },
         text: {
-            fontSize: 18
+            fontSize: 15
         },
         container: {
             marginVertical: 10,
@@ -28,24 +28,24 @@ function StudentTile({ student, deleteAction = (id) => { }, editAction = (id) =>
         <>
             <Card mode="contained" style={styles.container} theme={theme}>
                 <Card.Title title={student.name + " " + student.surname}
-                    titleStyle={{ fontSize: 26 }}
+                    titleStyle={{ fontSize: 22 }}
                     right={() => <Icon size={50} source={possibleForms[student.form].icon}
                         color={theme.colors.primary} />}
                 />
                 <Card.Content>
                     <View style={styles.dataContainer}>
-                        <Icon size={20} source={"phone"} />
+                        <Icon size={16} source={"phone"} />
                         <Text style={styles.text}>{student.phone}</Text>
                     </View>
                     <View style={styles.dataContainer}>
-                        <Icon size={20} source={"email-outline"} />
+                        <Icon size={16} source={"email-outline"} />
                         <Text style={styles.text}>{student.email}</Text>
                     </View>
                     {
                         remotelyForm.includes(student.form) &&
                         <>
                             <View style={styles.dataContainer}>
-                                <Icon size={20} source={"laptop"} />
+                                <Icon size={16} source={"laptop"} />
                                 <Text style={styles.text}>{student.platform} {"\u2022"} {student.nick}</Text>
                             </View>
                         </>
@@ -54,7 +54,7 @@ function StudentTile({ student, deleteAction = (id) => { }, editAction = (id) =>
                         stationaryForm.includes(student.form) &&
                         <>
                             <View style={styles.dataContainer}>
-                                <Icon size={20} source={"home"} />
+                                <Icon size={16} source={"home"} />
                                 <Text style={styles.text}>{student.city} {"\u2022"} {student.address}</Text>
                             </View>
                         </>
@@ -74,7 +74,6 @@ export default function StudentsListScreen({ navigation }) {
     const theme = useTheme();
     const db = useContext(DatabaseContext);
 
-    const [students, setStudents] = useState([]);
     const [selectedStudent, setSelectedStudent] = useState(null);
     const [isDeleteDialogVisiable, setDeleteDialogVisiable] = useState(false);
     const [isDetailsDialogVisiable, setDetailsDialogVisiable] = useState(false);
@@ -93,6 +92,7 @@ export default function StudentsListScreen({ navigation }) {
     // filters
     const [filter, setFilter] = useState({
         active: false,
+        order: studentsOrder[0],
         contain: null,
         forms: [],
         platform: null,
@@ -104,6 +104,20 @@ export default function StudentsListScreen({ navigation }) {
     });
 
     const doFilter = (_stud) => {
+        _stud.sort((a, b) => {
+            const params = filter.order.paramName;
+            for (let i = 0; i < params.length; i++) {
+                if (a[params[i]] < b[params[i]]) {
+                    return -1;
+                } else if (a[params[i]] > b[params[i]]) {
+                    return 1;
+                }
+            }
+            return 0;
+        });
+        if(!filter.order.ascending) {
+            _stud.reverse();
+        }
         if (!filter.active) {
             return _stud;
         }
@@ -135,21 +149,18 @@ export default function StudentsListScreen({ navigation }) {
         if (filter.totalTimeRange.max) {
             _stud = _stud.filter(item => db.getDetails("students", item.id).totalTime <= filter.totalTimeRange.max);
         }
-        if(filter.unpaid) {
+        if (filter.unpaid) {
             _stud = _stud.filter(item => db.getDetails("students", item.id).lessonsAmount.done != 0);
         }
-        if(filter.planned) {
+        if (filter.planned) {
             _stud = _stud.filter(item => db.getDetails("students", item.id).lessonsAmount.planned != 0);
         }
-        if(filter.forms.length!=0) {
+        if (filter.forms.length != 0) {
             _stud = _stud.filter(item => filter.forms.includes(item.form));
         }
+
         return _stud;
     }
-
-    useEffect(() => {
-        console.log(filter);
-    }, [filter]);
 
     return (
         <>
@@ -157,7 +168,6 @@ export default function StudentsListScreen({ navigation }) {
             <Appbar style={{ backgroundColor: theme.colors.background }}>
                 <Appbar.Content title={`Liczba uczniów: ${doFilter(db.students).length}`} />
                 <Appbar.Action icon={filter.active ? "filter-check" : "filter"} onPress={() => navigation.navigate("FilterStudents", { setFilter: setFilter, activeFilter: filter })} size={28} />
-                <Appbar.Action icon={"swap-vertical"} onPress={() => console.log("sort")} size={28} />
             </Appbar>
 
             {/* content */}

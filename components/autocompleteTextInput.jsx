@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState } from "react";
-import { FlatList, Keyboard, ScrollView, StyleSheet, TouchableWithoutFeedback, View } from "react-native";
+import { FlatList, Keyboard, Pressable, ScrollView, StyleSheet, TouchableWithoutFeedback, View } from "react-native";
 import { Menu, Text, TextInput, useTheme } from "react-native-paper";
 
 export function AutocompleteTextInput({
@@ -56,18 +56,18 @@ export function AutocompleteTextInput({
                 focused && filterSuggestions().length != 0 &&
 
                 <View style={[styles.suggestionListContainer, { top: inputHeight }]}>
-                    <ScrollView nestedScrollEnabled={true} keyboardShouldPersistTaps="handled">
+                    <ScrollView nestedScrollEnabled={true} keyboardShouldPersistTaps="always">
                         {
                             filterSuggestions().map((value, index) => {
                                 return (
-                                    <TouchableWithoutFeedback key={`twfList${index}`} onPress={() => {
+                                    <Pressable key={index} onPress={() => {
                                         onChangeText(value);
                                         Keyboard.dismiss();
                                     }}>
                                         {
                                             renderSuggestion(value, index)
                                         }
-                                    </TouchableWithoutFeedback>
+                                    </Pressable>
                                 );
                             })
                         }
