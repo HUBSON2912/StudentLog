@@ -106,6 +106,9 @@ export default function StudentsListScreen({ navigation }) {
     });
 
     const doFilter = (_stud) => {
+        if(!_stud) {
+            return [];
+        }
         _stud.sort((a, b) => {
             const params = filter.order.paramName;
             for (let i = 0; i < params.length; i++) {

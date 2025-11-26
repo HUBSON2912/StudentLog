@@ -78,3 +78,5 @@ export const studentsOrder = [
         ascending: false
     },
 ];
+
+export const weekDays=["Poniedziałek", "Wtorek", "Środa", "Czwartek", "Piątek", "Sobota", "Niedziela"];

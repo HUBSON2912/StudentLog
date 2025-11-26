@@ -60,12 +60,16 @@ export default function App() {
             if (!(possibleTableNames.includes(name))) {
                 throw new Error(`Unknow table name: '${name}'`);
             }
-
+            let buf = [];
             switch (name) {
                 case "students":
-                    return await getAllS();
+                    buf = await getAllS();
+                    setStudents(buf);
+                    return buf;
                 case "lessons":
-                    return await getAllL();
+                    buf = await getAllL();
+                    setLessons(buf);
+                    return buf;
                 default:
                     break;
             }
@@ -85,12 +89,12 @@ export default function App() {
                 case "students":
                     id = await insertS(value);
                     value.id = id;
-                    setStudents([...students, value]);
+                    setStudents(prev => [...prev, value]);
                     break;
                 case "lessons":
                     id = await insertL(value);
                     value.id = id;
-                    setLessons([...lessons, value]);
+                    setLessons(prev => [...prev, value]);
                     break;
                 default:
                     break;
@@ -111,12 +115,12 @@ export default function App() {
                 case "students":
                     deleteS(id);
                     deleteStudentsLessonL(id);
-                    setStudents(students.filter(s => s.id != id));
-                    setLessons(lessons.filter(l => l.student_id != id));
+                    setStudents(prev => prev.filter(s => s.id != id));
+                    setLessons(prev => prev.filter(l => l.student_id != id));
                     break;
                 case "lessons":
                     deleteL(id);
-                    setLessons(lessons.filter(l => l.id != id));
+                    setLessons(prev => prev.filter(l => l.id != id));
                     break;
 
                 default:
@@ -160,27 +164,31 @@ export default function App() {
             switch (name) {
                 case "students":
                     updateS(value, id);
-                    buff = [...students];
-                    for (let i = 0; i < buff.length; i++) {
-                        if (buff[i].id == id) {
-                            buff[i] = value;
-                            buff[i].id = id;
-                            break;
+                    setStudents(prev => {
+                        buff = [...prev];
+                        for (let i = 0; i < buff.length; i++) {
+                            if (buff[i].id == id) {
+                                buff[i] = value;
+                                buff[i].id = id;
+                                break;
+                            }
                         }
-                    }
-                    setStudents(buff);
+                        return buff;
+                    });
                     break;
                 case "lessons":
                     updateL(value, id);
-                    buff = [...lessons];
-                    for (let i = 0; i < buff.length; i++) {
-                        if (buff[i].id == id) {
-                            buff[i] = value;
-                            buff[i].id = id;
-                            break;
+                    setLessons(prev => {
+                        buff = [...prev];
+                        for (let i = 0; i < buff.length; i++) {
+                            if (buff[i].id == id) {
+                                buff[i] = value;
+                                buff[i].id = id;
+                                break;
+                            }
                         }
-                    }
-                    setLessons(buff);
+                        return buff;
+                    });
                     break;
 
                 default:

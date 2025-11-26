@@ -1,7 +1,7 @@
 import { KeyboardAvoidingView, ScrollView, StatusBar, StyleSheet, useColorScheme, View } from "react-native";
-import { AnimatedFAB, Button, Icon, SegmentedButtons, Text, TextInput, useTheme } from "react-native-paper";
+import { AnimatedFAB, Button, Chip, Icon, SegmentedButtons, Snackbar, Text, TextInput, useTheme } from "react-native-paper";
 import { ToggleChipGroup } from "../../components/toggleChipGroup";
-import { possibleLessonsAddMode, possibleStatuses } from "../../constants/const";
+import { possibleLessonsAddMode, possibleStatuses, weekDays } from "../../constants/const";
 import { useContext, useEffect, useState } from "react";
 import { DatabaseContext } from "../../App";
 import SelectDropdown from "react-native-select-dropdown";
@@ -38,11 +38,18 @@ export default function EditLessonScreen({ navigation, route }) {
         },
         input: {
             flex: 1
+        },
+        chipHoursWeekDays: {
+            flexDirection: "row",
+            gap: 5,
+            flexWrap: "wrap",
+            flexShrink: 1
         }
     });
 
     const [showCalendar_oneLess, setShowCalendar_oneLess] = useState(false);
     const [showTime_oneLess, setShowTime_oneLess] = useState(false);
+    const [showCalendar_regulary, setShowCalendar_regulary] = useState(false);
 
     const students = db.students;
 
@@ -54,8 +61,12 @@ export default function EditLessonScreen({ navigation, route }) {
     const [mode, setMode] = useState(0);
     const [date_oneLess, setDate_oneLess] = useState(new Date());
     const [hour_oneLess, setHour_oneLess] = useState({ hours: new Date().getHours(), minutes: new Date().getMinutes() });
-    const [topic, setTopic] = useState("");
     const [status, setStatus] = useState(0);
+    const [topic, setTopic] = useState("");
+    const [dateRange_regulary, setDateRange_regulary] = useState({ startDate: new Date(), endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, new Date().getDate()) });
+    const [timesPerDay_regulary, setTimesPerDay_regulary] = useState([[], [], [], [], [], [], []]);
+    const [pressedDayIndex, setPressedDayIndex] = useState(null);
+    const [showTimeWeekDay, setShowTimeWeekDay] = useState(false);
 
     useEffect(() => {
         if (!lessonID) {
@@ -79,7 +90,7 @@ export default function EditLessonScreen({ navigation, route }) {
 
     const [loading, setLoading] = useState(false);
 
-    const handleSaveInsert = async () => {
+    const handleSaveInsert_oneLesson = async () => {
         setLoading(true);
         const newLesson = {
             student_id: selectedStudentID,
@@ -97,13 +108,13 @@ export default function EditLessonScreen({ navigation, route }) {
         navigation.pop();
     }
 
-    const handleSaveUpdate = async () => {
+    const handleSaveUpdate_oneLesson = async () => {
         setLoading(true);
         const newLesson = {
             student_id: selectedStudentID,
             subject: subject,
             level: level,
-            duration: parseFloat(duration),
+            duration: parseFloat(duration.replace(',', '.')),
             price: parseInt(price),
             date: dateToDDMMYYYY(date_oneLess),
             hour: hourToHHMM(hour_oneLess),
@@ -115,6 +126,63 @@ export default function EditLessonScreen({ navigation, route }) {
         navigation.pop();
     }
 
+    const handleSaveInsert_regulary = async () => {
+        setLoading(true);
+        let newLessons = [];
+        let newItem;
+
+        // the loop is in range [startDate, endDate) 
+        // so we can add one day to the end date so
+        // now we have [startDate, endDate]
+        let endDate = new Date(dateRange_regulary.endDate.valueOf() + 1 * 24 * 60 * 60 * 1000);
+
+        for (let day = dateRange_regulary.startDate;
+            dateToDDMMYYYY(day) !== dateToDDMMYYYY(endDate);
+            day = new Date(day.getFullYear(), day.getMonth(), day.getDate() + 1)
+        ) {
+            let dayofweek = day.getDay() - 1;
+            dayofweek = (dayofweek < 0 ? 6 : dayofweek);
+            console.log(dateToDDMMYYYY(day), weekDays[dayofweek]);
+            for (let i = 0; i < timesPerDay_regulary[dayofweek].length; i++) {
+                newItem = {
+                    student_id: selectedStudentID,
+                    subject: subject,
+                    level: level,
+                    duration: parseFloat(duration.replace(',', '.')),
+                    price: parseInt(price),
+                    date: dateToDDMMYYYY(day),
+                    hour: hourToHHMM(timesPerDay_regulary[dayofweek][i]),
+                    status: 0,  // defaultly planned
+                    topic: ""
+                };
+                console.log(newItem);
+                newLessons.push({ ...newItem });
+            }
+        }
+        for (let i = 0; i < newLessons.length; i++) {
+            db.insert("lessons", newLessons[i]);
+        }
+        console.log(db);
+        setLoading(false);
+        navigation.pop();
+    }
+
+    const chooseSaveMone = () => {
+        if (mode == 0) {
+            if (lessonID) {
+                handleSaveUpdate_oneLesson();
+                return;
+            }
+            else {
+                handleSaveInsert_oneLesson();
+                return;
+            }
+        }
+        else {
+            handleSaveInsert_regulary();
+            return;
+        }
+    }
 
     const DropdownItem = (item, index, isSelected) => {
         const styles = StyleSheet.create({
@@ -131,10 +199,15 @@ export default function EditLessonScreen({ navigation, route }) {
             }
         });
 
+        console.log(`"${item.name}"`, `"${item.surname}"`);
+
         return (
             <View style={styles.elementContainer}>
                 <Text>{item.id}</Text>
-                <Text variant="bodyLarge">{item.name} {item.surname}</Text>
+                <View style={{ flexDirection: "row", gap: 5 }}>
+                    <Text variant="bodyLarge">{item.name}</Text>
+                    <Text variant="bodyLarge">{item.surname}</Text>
+                </View>
             </View>
         );
     }
@@ -166,7 +239,10 @@ export default function EditLessonScreen({ navigation, route }) {
             <View style={styles.listContainer}>
                 {
                     selectedItem &&
-                    <Text variant="bodyLarge">{selectedItem.name} {selectedItem.surname}</Text>
+                    <View style={{ flexDirection: "row", gap: 5 }}>
+                        <Text variant="bodyLarge">{selectedItem.name}</Text>
+                        <Text variant="bodyLarge">{selectedItem.surname}</Text>
+                    </View>
                 }
                 {
                     !selectedItem &&
@@ -265,75 +341,162 @@ export default function EditLessonScreen({ navigation, route }) {
                 </View>
             }
 
-            {/* button with text */}
-            <View style={styles.row}>
-                <Text style={styles.label} pointerEvents="none">Data:</Text>
-                <Button
-                    onPress={() => setShowCalendar_oneLess(!showCalendar_oneLess)}
-                    mode="outlined"
-                    style={{ borderRadius: theme.roundness, ...styles.input }}
-                >
-                    {String(date_oneLess.getDate()).padStart(2, '0')}.{String(date_oneLess.getMonth() + 1).padStart(2, '0')}.{date_oneLess.getFullYear()}
-                </Button>
-                <DatePickerModal
-                    locale="pl"
-                    mode="single"
-                    animationType="slide"
-                    date={date_oneLess}
-                    startWeekOnMonday={true}
-                    visible={showCalendar_oneLess}
-                    onDismiss={() => setShowCalendar_oneLess(false)}
-                    onConfirm={({ date }) => { setDate_oneLess(date); setShowCalendar_oneLess(false) }}
-                    label="Wybierz datę"
-                    saveLabel="Zapisz"
-                />
-            </View>
 
-            {/* button with text */}
-            <View style={styles.row}>
-                <Text style={styles.label} pointerEvents="none">Godzina:</Text>
-                <Button
-                    onPress={() => setShowTime_oneLess(!showTime_oneLess)}
-                    mode="outlined"
-                    style={{ borderRadius: theme.roundness, ...styles.input }}
-                >
-                    {hour_oneLess.hours}:{String(hour_oneLess.minutes).padStart(2, '0')}
-                </Button>
-                <TimePickerModal
-                    visible={showTime_oneLess}
-                    onConfirm={(hmin) => { setHour_oneLess(hmin); setShowTime_oneLess(false); }}
-                    onDismiss={() => setShowTime_oneLess(false)}
-                    label="Wybierz godzinę"
-                    locale="pl"
-                    hours={hour_oneLess.hours}
-                    minutes={hour_oneLess.minutes}
-                    confirmLabel="Zapisz"
-                    use24HourClock={true}
-                    animationType="slide"
-                    cancelLabel="Anuluj"
-                />
-            </View>
+            {
+                mode == 0 &&  // one-lesson
+                <>
+                    <View style={styles.row}>
+                        <Text style={styles.label} pointerEvents="none">Data:</Text>
+                        <Button
+                            onPress={() => setShowCalendar_oneLess(!showCalendar_oneLess)}
+                            mode="outlined"
+                            style={{ borderRadius: theme.roundness, ...styles.input }}
+                        >
+                            {String(date_oneLess.getDate()).padStart(2, '0')}.{String(date_oneLess.getMonth() + 1).padStart(2, '0')}.{date_oneLess.getFullYear()}
+                        </Button>
+                        <DatePickerModal
+                            locale="pl"
+                            mode="single"
+                            animationType="slide"
+                            date={date_oneLess}
+                            startWeekOnMonday={true}
+                            visible={showCalendar_oneLess}
+                            onDismiss={() => setShowCalendar_oneLess(false)}
+                            onConfirm={({ date }) => { setDate_oneLess(date); setShowCalendar_oneLess(false) }}
+                            label="Wybierz datę"
+                            saveLabel="Zapisz"
+                        />
+                    </View>
 
-            <View style={styles.row}>
-                <Text style={styles.label} pointerEvents="none">Status:</Text>
-                <ToggleChipGroup
-                    style={styles.chipContainer}
-                    value={status}
-                    onSelect={setStatus}
-                    chips={statuses}
-                />
-            </View>
+                    <View style={styles.row}>
+                        <Text style={styles.label} pointerEvents="none">Godzina:</Text>
+                        <Button
+                            onPress={() => setShowTime_oneLess(!showTime_oneLess)}
+                            mode="outlined"
+                            style={{ borderRadius: theme.roundness, ...styles.input }}
+                        >
+                            {hour_oneLess.hours}:{String(hour_oneLess.minutes).padStart(2, '0')}
+                        </Button>
+                        <TimePickerModal
+                            visible={showTime_oneLess}
+                            onConfirm={(hmin) => { setHour_oneLess(hmin); setShowTime_oneLess(false); }}
+                            onDismiss={() => setShowTime_oneLess(false)}
+                            label="Wybierz godzinę"
+                            locale="pl"
+                            hours={hour_oneLess.hours}
+                            minutes={hour_oneLess.minutes}
+                            confirmLabel="Zapisz"
+                            use24HourClock={true}
+                            animationType="slide"
+                            cancelLabel="Anuluj"
+                        />
+                    </View>
+                    <View style={styles.row}>
+                        <Text style={styles.label} pointerEvents="none">Status:</Text>
+                        <ToggleChipGroup
+                            style={styles.chipContainer}
+                            value={status}
+                            onSelect={setStatus}
+                            chips={statuses}
+                        />
+                    </View>
 
-            <View style={styles.row}>
-                <Text style={styles.label} pointerEvents="none">Temat:</Text>
-                <TextInput
-                    mode="outlined"
-                    style={styles.input}
-                    label="Temat"
-                    value={topic}
-                    onChangeText={setTopic}
-                />
-            </View>
+                    <View style={styles.row}>
+                        <Text style={styles.label} pointerEvents="none">Temat:</Text>
+                        <TextInput
+                            mode="outlined"
+                            style={styles.input}
+                            label="Temat"
+                            value={topic}
+                            onChangeText={setTopic}
+                        />
+                    </View>
+                </>
+            }
+
+            {
+                mode == 1 &&
+                <>
+                    <View style={styles.row}>
+                        <Text style={styles.label} pointerEvents="none">Data:</Text>
+                        <Button
+                            onPress={() => setShowCalendar_regulary(!showCalendar_oneLess)}
+                            mode="outlined"
+                            style={{ borderRadius: theme.roundness, ...styles.input }}
+                        >
+                            {String(dateRange_regulary.startDate.getDate()).padStart(2, '0')}.{String(dateRange_regulary.startDate.getMonth() + 1).padStart(2, '0')}.{dateRange_regulary.startDate.getFullYear()} {"-"} {String(dateRange_regulary.endDate.getDate()).padStart(2, '0')}.{String(dateRange_regulary.endDate.getMonth() + 1).padStart(2, '0')}.{dateRange_regulary.endDate.getFullYear()}
+                        </Button>
+                        <DatePickerModal
+                            locale="pl"
+                            mode="range"
+                            animationType="slide"
+                            startDate={dateRange_regulary.startDate}
+                            endDate={dateRange_regulary.endDate}
+                            startWeekOnMonday={true}
+                            visible={showCalendar_regulary}
+                            onDismiss={() => setShowCalendar_regulary(false)}
+                            onConfirm={({ startDate, endDate }) => {
+                                setShowCalendar_regulary(false);
+                                setDateRange_regulary({ startDate, endDate });
+                            }}
+                            label="Wybierz datę"
+                            saveLabel="Zapisz"
+                        />
+                    </View>
+                    {
+                        weekDays.map((value, dayIndex) => {
+                            return (
+                                <View style={styles.row} key={`d${dayIndex}`}>
+                                    <Text style={styles.label} pointerEvents="none">{value}:</Text>
+                                    <View style={styles.chipHoursWeekDays}>
+                                        <Chip onPress={() => {
+                                            setShowTimeWeekDay(true);
+                                            setPressedDayIndex(dayIndex);
+                                        }}>
+                                            <Text>+</Text>
+                                        </Chip>
+                                        {
+                                            timesPerDay_regulary[dayIndex].map((item, index) => {
+                                                return (
+                                                    <Chip
+                                                        key={`0${index}`}
+                                                        onPress={() => {
+                                                            let buf = [...timesPerDay_regulary];
+                                                            buf[dayIndex] = timesPerDay_regulary[dayIndex].filter((v, ind) => ind != index);
+                                                            setTimesPerDay_regulary(buf);
+                                                        }}
+                                                        icon={"close"}
+                                                    >
+                                                        {hourToHHMM(item)}
+                                                    </Chip>
+                                                );
+                                            })
+                                        }
+                                    </View>
+                                </View>
+                            );
+                        })
+                    }
+                    <TimePickerModal
+                        visible={showTimeWeekDay}
+                        onConfirm={(hmin) => {
+                            let buf = [...timesPerDay_regulary];
+                            buf[pressedDayIndex].push(hmin)
+                            setTimesPerDay_regulary(buf);
+                            setShowTimeWeekDay(false);
+                        }}
+                        onDismiss={() => setShowTimeWeekDay(false)}
+                        label={`Wybierz godzinę (${weekDays[pressedDayIndex]})`}
+                        locale="pl"
+                        hours={12}
+                        minutes={0}
+                        confirmLabel="Zapisz"
+                        use24HourClock={true}
+                        animationType="slide"
+                        cancelLabel="Anuluj"
+                    />
+                </>
+            }
 
 
             <Button
@@ -341,7 +504,7 @@ export default function EditLessonScreen({ navigation, route }) {
                 icon={"content-save"}
                 disabled={loading}
                 loading={loading}
-                onPress={lessonID ? handleSaveUpdate : handleSaveInsert}
+                onPress={chooseSaveMone}
             >
                 Zapisz
             </Button>

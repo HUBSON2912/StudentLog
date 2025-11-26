@@ -6,6 +6,7 @@ export async function createTableL() {
     try {
         const db = await SQLite.openDatabase({ name: 'studentlog.db', location: 'default' })
         db.executeSql(
+            // `DROP TABLE lessons;
             `CREATE TABLE IF NOT EXISTS lessons (
              id INTEGER PRIMARY KEY AUTOINCREMENT,
              student_id INTEGER,

@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Button, Card, Chip, Dialog, FAB, Icon, IconButton, Text, useTheme } from "react-native-paper";
 import { DatabaseContext } from "../../App";
 import { FlatList, StyleSheet, useColorScheme, View } from "react-native";
@@ -11,6 +11,7 @@ function LessonTile({ lesson, deleteAction = (id) => { }, editAction = (id) => {
     const theme = useTheme();
 
     const student = db.get("students", lesson.student_id);
+
     const status = statuses[lesson.status];
 
     return (
@@ -89,21 +90,19 @@ export default function LessonsListScreen({ navigation }) {
                 db.lessons.length != 0 &&
                 <FlatList
                     data={db.lessons}
-                    renderItem={({ item }) =>
-                        <LessonTile lesson={item}
-                            deleteAction={(id) => {
-                                setSelectedLesson(db.get("lessons", id));
-                                setDeleteDialogVisiable(true);
-                            }}
-                            detailsAction={(id) => {
-                                setSelectedLesson(db.get("lessons", id));
-                                setDetailsDialogVisiable(true);
-                            }}
-                            editAction={(id) => {
-                                navigation.navigate("EditLesson", { lessonID: id });
-                            }}
-                        />
-                    }
+                    renderItem={({ item }) => <LessonTile lesson={item}
+                        deleteAction={(id) => {
+                            setSelectedLesson(db.get("lessons", id));
+                            setDeleteDialogVisiable(true);
+                        }}
+                        detailsAction={(id) => {
+                            setSelectedLesson(db.get("lessons", id));
+                            setDetailsDialogVisiable(true);
+                        }}
+                        editAction={(id) => {
+                            navigation.navigate("EditLesson", { lessonID: id });
+                        }}
+                    />}
                 />
             }
             <FAB
