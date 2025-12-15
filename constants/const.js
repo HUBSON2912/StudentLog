@@ -46,7 +46,6 @@ export const studentsOrder = [
         paramName: ["id"],
         ascending: false
     },
-
     {
         label: "Imię i nazwisko ￬",
         paramName: ["name", "surname"],
@@ -79,4 +78,67 @@ export const studentsOrder = [
     },
 ];
 
-export const weekDays=["Poniedziałek", "Wtorek", "Środa", "Czwartek", "Piątek", "Sobota", "Niedziela"];
+export const lessonsOrder = [
+    {
+        label: "Trafność ￬",
+        paramName: ["status", "date", "hour", "id"],
+        ascending: true
+    },
+    {
+        label: "Trafność ￪",
+        paramName: ["status", "date", "hour", "id"],
+        ascending: false
+    },
+    {
+        label: "ID ucznia ￬",
+        paramName: ["student_id"],
+        ascending: true
+    },
+    {
+        label: "ID ucznia ￪",
+        paramName: ["student_id"],
+        ascending: false
+    },
+    {
+        label: "Data ￬",
+        paramName: ["date", "hour"],
+        ascending: true
+    },
+    {
+        label: "Data ￪",
+        paramName: ["date", "hour"],
+        ascending: false
+    },
+    {
+        label: "Przedmiot i poziom ￬",
+        paramName: ["subject", "level"],
+        ascending: true
+    },
+    {
+        label: "Przedmiot i poziom ￪",
+        paramName: ["subject", "level"],
+        ascending: false
+    },
+    {
+        label: "Cena ￬",
+        paramName: ["price"],
+        ascending: true
+    },
+    {
+        label: "Cena ￪",
+        paramName: ["price"],
+        ascending: false
+    },
+    {
+        label: "Status ￬",
+        paramName: ["status"],
+        ascending: true
+    },
+    {
+        label: "Status ￪",
+        paramName: ["status"],
+        ascending: false
+    },
+];
+
+export const weekDays = ["Poniedziałek", "Wtorek", "Środa", "Czwartek", "Piątek", "Sobota", "Niedziela"];

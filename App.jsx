@@ -269,9 +269,9 @@ export default function App() {
                     <NavigationContainer theme={theme}>
                         <StatusBar translucent backgroundColor="transparent" />
 
-                        <Tab.Navigator screenOptions={{ headerShown: false, tabBarInactiveTintColor: theme.colors.onBackground, tabBarActiveTintColor: theme.colors.primary }}>
+                        <Tab.Navigator screenOptions={{ headerShown: false, tabBarInactiveTintColor: theme.colors.onBackground, tabBarActiveTintColor: theme.colors.primary }} initialRouteName="Lessons">
                             <Tab.Screen name="Students" component={StudetnsScreen} options={{ tabBarIcon: () => <Icon source={"account"} size={26} />, title: "Uczniowie" }} />
-                            <Tab.Screen name="Lessons" component={LessonsScreen} options={{ tabBarIcon: () => <Icon source={"calendar"} size={26} /> }} />
+                            <Tab.Screen name="Lessons" component={LessonsScreen} options={{ tabBarIcon: () => <Icon source={"calendar"} size={26} />, title: "Lekcje"}} />
                         </Tab.Navigator>
 
                     </NavigationContainer>

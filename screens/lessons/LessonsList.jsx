@@ -1,8 +1,8 @@
 import { useContext, useEffect, useState } from "react";
-import { Button, Card, Chip, Dialog, FAB, Icon, IconButton, Text, useTheme } from "react-native-paper";
+import { Appbar, Button, Card, Chip, Dialog, FAB, Icon, IconButton, Text, useTheme } from "react-native-paper";
 import { DatabaseContext } from "../../App";
 import { FlatList, StyleSheet, useColorScheme, View } from "react-native";
-import { possibleStatuses } from "../../constants/const";
+import { lessonsOrder, possibleStatuses } from "../../constants/const";
 
 let db = null;
 let statuses = [];
@@ -47,7 +47,7 @@ function LessonTile({ lesson, deleteAction = (id) => { }, editAction = (id) => {
                     </View>
                     <View style={styles.dataContainer}>
                         <Icon size={16} source={"notebook"} />
-                        <Text style={styles.text}>{lesson.topic}</Text>
+                        <Text style={{...styles.text, color: lesson.topic?theme.colors.onBackground:theme.colors.error}}>{(!!lesson.topic)?lesson.topic:"Brak tematu"}</Text>
                     </View>
                 </Card.Content>
                 <Card.Actions>
@@ -79,109 +79,155 @@ export default function LessonsListScreen({ navigation }) {
         setDetailsDialogVisiable(false);
     };
 
-    return (
-        <View style={styles.constainer}>
-            {
-                db.lessons.length == 0 &&
-                <Text variant="displaySmall" style={styles.noDataText}>Brak lekcji</Text>
-            }
 
-            {
-                db.lessons.length != 0 &&
-                <FlatList
-                    data={db.lessons}
-                    renderItem={({ item }) => <LessonTile lesson={item}
-                        deleteAction={(id) => {
-                            setSelectedLesson(db.get("lessons", id));
-                            setDeleteDialogVisiable(true);
-                        }}
-                        detailsAction={(id) => {
-                            setSelectedLesson(db.get("lessons", id));
-                            setDetailsDialogVisiable(true);
-                        }}
-                        editAction={(id) => {
-                            navigation.navigate("EditLesson", { lessonID: id });
-                        }}
-                    />}
-                />
-            }
-            <FAB
-                icon={"plus"}
-                style={{ ...styles.plusButton }}
-                customSize={48}
-                onPress={() => navigation.navigate("EditLesson")}
-            />
+    const [filter, setFilter] = useState({
+        active: false,
+        order: lessonsOrder[0],
+        contain: null,
+        student: null,
+        subject: null,
+        level: null,
+        dateRange: { since: null, to: null },
+        priceRange: { min: null, max: null },
+        durationRange: { min: null, max: null },
+        status: [],
+    });
 
-            {/* delete dialog */}
-            <Dialog visible={isDeleteDialogVisiable}
-                theme={theme}
-                dismissable={true}
-                dismissableBackButton={true}
-                onDismiss={dismissDialog}
-            >
-                <Dialog.Title>Czy na pewno chcesz usunąć wpis?</Dialog.Title>
-                <Dialog.Actions>
-                    <Button onPress={dismissDialog}>Anuluj</Button>
-                    <Button onPress={handleDelete}>Potwierdź</Button>
-                </Dialog.Actions>
-            </Dialog>
-
-            {/* details action */}
-            <Dialog visible={isDetailsDialogVisiable}
-                theme={theme}
-                dismissable={true}
-                dismissableBackButton={true}
-                onDismiss={dismissDialog}
-            >
-                <Dialog.Title>Szczegóły</Dialog.Title>
-                {
-
-                    selectedLesson &&
-                    <Dialog.Content>
-
-                        <View style={styles.detailsContainer}>
-                            <Text variant="bodyMedium">ID:</Text>
-                            <Text variant="bodyMedium">{selectedLesson.id}</Text>
-                        </View>
-                        <View style={styles.detailsContainer}>
-                            <Text variant="bodyMedium">ID ucznia:</Text>
-                            <Text variant="bodyMedium">{selectedLesson.student_id}</Text>
-                        </View>
-                        <View style={styles.detailsContainer}>
-                            <Text variant="bodyMedium">Data:</Text>
-                            <Text variant="bodyMedium">{selectedLesson.date}</Text>
-                        </View>
-                        <View style={styles.detailsContainer}>
-                            <Text variant="bodyMedium">Godzina:</Text>
-                            <Text variant="bodyMedium">{selectedLesson.hour}</Text>
-                        </View>
-                        <View style={styles.detailsContainer}>
-                            <Text variant="bodyMedium">Czas trwania:</Text>
-                            <Text variant="bodyMedium">{selectedLesson.duration}</Text>
-                        </View>
-                        <View style={styles.detailsContainer}>
-                            <Text variant="bodyMedium">Przedmiot:</Text>
-                            <Text variant="bodyMedium">{selectedLesson.subject}</Text>
-                        </View>
-                        <View style={styles.detailsContainer}>
-                            <Text variant="bodyMedium">Poziom:</Text>
-                            <Text variant="bodyMedium">{selectedLesson.level}</Text>
-                        </View>
-                        <View style={styles.detailsContainer}>
-                            <Text variant="bodyMedium">Cena:</Text>
-                            <Text variant="bodyMedium">{selectedLesson.price}</Text>
-                        </View>
-                        <View style={styles.detailsContainer}>
-                            <Text variant="bodyMedium">Status:</Text>
-                            <Text variant="bodyMedium">{statuses[selectedLesson.status].label}</Text>
-                        </View>
-                    </Dialog.Content>
+    const doFilter = (_stud) => {
+        console.log(filter);
+        if (!_stud) {
+            return [];
+        }
+        _stud.sort((a, b) => {
+            const params = filter.order.paramName;
+            for (let i = 0; i < params.length; i++) {
+                if (a[params[i]] < b[params[i]]) {
+                    return -1;
+                } else if (a[params[i]] > b[params[i]]) {
+                    return 1;
                 }
-                <Dialog.Actions>
-                    <Button onPress={dismissDialog}>Cofnij</Button>
-                </Dialog.Actions>
-            </Dialog>
-        </View>
+            }
+            return 0;
+        });
+        if (!filter.order.ascending) {
+            _stud.reverse();
+        }
+        console.log("Filters:")
+        console.log(filter);
+        return _stud;
+    }
+
+    return (
+        <>
+            <Appbar style={{ backgroundColor: theme.colors.background }}>
+                <Appbar.Content title={`Zarobki: ${doFilter(db.lessons).reduce((prev, curr) => prev + (curr.status == 2 ? curr.price : 0), 0)} zł`} />
+                <Appbar.Action icon={filter.active ? "filter-check" : "filter"} onPress={() => navigation.navigate("FilterLessons", { setFilter: setFilter, activeFilter: filter })} size={28} />
+            </Appbar>
+
+
+            <View style={styles.constainer}>
+                {
+                    db.lessons.length == 0 &&
+                    <Text variant="displaySmall" style={styles.noDataText}>Brak lekcji</Text>
+                }
+
+                {
+                    db.lessons.length != 0 &&
+                    <FlatList
+                        data={db.lessons}
+                        renderItem={({ item }) => <LessonTile lesson={item}
+                            deleteAction={(id) => {
+                                setSelectedLesson(db.get("lessons", id));
+                                setDeleteDialogVisiable(true);
+                            }}
+                            detailsAction={(id) => {
+                                setSelectedLesson(db.get("lessons", id));
+                                setDetailsDialogVisiable(true);
+                            }}
+                            editAction={(id) => {
+                                navigation.navigate("EditLesson", { lessonID: id });
+                            }}
+                        />}
+                    />
+                }
+                <FAB
+                    icon={"plus"}
+                    style={{ ...styles.plusButton }}
+                    customSize={48}
+                    onPress={() => navigation.navigate("EditLesson")}
+                />
+
+                {/* delete dialog */}
+                <Dialog visible={isDeleteDialogVisiable}
+                    theme={theme}
+                    dismissable={true}
+                    dismissableBackButton={true}
+                    onDismiss={dismissDialog}
+                >
+                    <Dialog.Title>Czy na pewno chcesz usunąć wpis?</Dialog.Title>
+                    <Dialog.Actions>
+                        <Button onPress={dismissDialog}>Anuluj</Button>
+                        <Button onPress={handleDelete}>Potwierdź</Button>
+                    </Dialog.Actions>
+                </Dialog>
+
+                {/* details action */}
+                <Dialog visible={isDetailsDialogVisiable}
+                    theme={theme}
+                    dismissable={true}
+                    dismissableBackButton={true}
+                    onDismiss={dismissDialog}
+                >
+                    <Dialog.Title>Szczegóły</Dialog.Title>
+                    {
+
+                        selectedLesson &&
+                        <Dialog.Content>
+
+                            <View style={styles.detailsContainer}>
+                                <Text variant="bodyMedium">ID:</Text>
+                                <Text variant="bodyMedium">{selectedLesson.id}</Text>
+                            </View>
+                            <View style={styles.detailsContainer}>
+                                <Text variant="bodyMedium">ID ucznia:</Text>
+                                <Text variant="bodyMedium">{selectedLesson.student_id}</Text>
+                            </View>
+                            <View style={styles.detailsContainer}>
+                                <Text variant="bodyMedium">Data:</Text>
+                                <Text variant="bodyMedium">{selectedLesson.date}</Text>
+                            </View>
+                            <View style={styles.detailsContainer}>
+                                <Text variant="bodyMedium">Godzina:</Text>
+                                <Text variant="bodyMedium">{selectedLesson.hour}</Text>
+                            </View>
+                            <View style={styles.detailsContainer}>
+                                <Text variant="bodyMedium">Czas trwania:</Text>
+                                <Text variant="bodyMedium">{selectedLesson.duration}</Text>
+                            </View>
+                            <View style={styles.detailsContainer}>
+                                <Text variant="bodyMedium">Przedmiot:</Text>
+                                <Text variant="bodyMedium">{selectedLesson.subject}</Text>
+                            </View>
+                            <View style={styles.detailsContainer}>
+                                <Text variant="bodyMedium">Poziom:</Text>
+                                <Text variant="bodyMedium">{selectedLesson.level}</Text>
+                            </View>
+                            <View style={styles.detailsContainer}>
+                                <Text variant="bodyMedium">Cena:</Text>
+                                <Text variant="bodyMedium">{selectedLesson.price}</Text>
+                            </View>
+                            <View style={styles.detailsContainer}>
+                                <Text variant="bodyMedium">Status:</Text>
+                                <Text variant="bodyMedium">{statuses[selectedLesson.status].label}</Text>
+                            </View>
+                        </Dialog.Content>
+                    }
+                    <Dialog.Actions>
+                        <Button onPress={dismissDialog}>Cofnij</Button>
+                    </Dialog.Actions>
+                </Dialog>
+            </View>
+        </>
     );
 }
 const styles = StyleSheet.create({
