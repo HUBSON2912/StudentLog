@@ -1,5 +1,5 @@
 import { KeyboardAvoidingView, ScrollView, StatusBar, StyleSheet, useColorScheme, View } from "react-native";
-import { AnimatedFAB, Button, Chip, Icon, SegmentedButtons, Snackbar, Text, TextInput, useTheme } from "react-native-paper";
+import { AnimatedFAB, Button, Chip, HelperText, Icon, SegmentedButtons, Snackbar, Text, TextInput, useTheme } from "react-native-paper";
 import { ToggleChipGroup } from "../../components/toggleChipGroup";
 import { possibleLessonsAddMode, possibleStatuses, weekDays } from "../../constants/const";
 import { useContext, useEffect, useState } from "react";
@@ -90,6 +90,36 @@ export default function EditLessonScreen({ navigation, route }) {
 
     const [loading, setLoading] = useState(false);
 
+    const [inputErrors, setInputErrors] = useState({
+        student: false,
+        subject: false,
+        level: false,
+        duration: false,
+        price: false,
+        timesPerDay_regulary: false
+    });
+
+    const areInputsGood = () => {
+        let errors = {
+            student: !selectedStudentID,
+            subject: !subject,
+            level: !level,
+            duration: !duration,
+            price: !price,
+            timesPerDay_regulary: false
+        }
+        if (mode == 1) {
+            errors.timesPerDay_regulary = (timesPerDay_regulary.filter(x => x.length == 0).length == 7);
+        }
+
+        setInputErrors(errors);
+
+        if (Object.values(errors).includes(true)) {
+            return false;
+        }
+        return true;
+    }
+
     const handleSaveInsert_oneLesson = async () => {
         setLoading(true);
         const newLesson = {
@@ -110,6 +140,7 @@ export default function EditLessonScreen({ navigation, route }) {
 
     const handleSaveUpdate_oneLesson = async () => {
         setLoading(true);
+
         const newLesson = {
             student_id: selectedStudentID,
             subject: subject,
@@ -165,6 +196,10 @@ export default function EditLessonScreen({ navigation, route }) {
     }
 
     const chooseSaveMone = () => {
+        if (!areInputsGood()) {
+            return;
+        }
+
         if (mode == 0) {
             if (lessonID) {
                 handleSaveUpdate_oneLesson();
@@ -195,7 +230,7 @@ export default function EditLessonScreen({ navigation, route }) {
                 gap: 10
             }
         });
-        
+
         return (
             <View style={styles.elementContainer}>
                 <Text>{item.id}</Text>
@@ -255,12 +290,15 @@ export default function EditLessonScreen({ navigation, route }) {
                 <Text style={styles.label} pointerEvents="none">Uczeń:</Text>
                 {
                     students.length != 0 &&
-                    <SelectDropdown
-                        data={students}
-                        onSelect={(sel) => setSelectedStudentID(sel.id)}
-                        renderButton={DropdownButton}
-                        renderItem={DropdownItem}
-                    />
+                    <View style={styles.input}>
+                        <SelectDropdown
+                            data={students}
+                            onSelect={(sel) => { setSelectedStudentID(sel.id); setInputErrors({ ...inputErrors, student: !sel }) }}
+                            renderButton={DropdownButton}
+                            renderItem={DropdownItem}
+                        />
+                        <HelperText visible={inputErrors.student} type="error" style={{ display: inputErrors.student ? "flex" : "none" }}>To pole jest wymagane.</HelperText>
+                    </View>
                 }
                 {
                     students.length == 0 &&
@@ -269,57 +307,72 @@ export default function EditLessonScreen({ navigation, route }) {
             </View>
             <View style={styles.row}>
                 <Text style={styles.label} pointerEvents="none">Przedmiot:</Text>
-                <AutocompleteTextInput
-                    label="Przedmiot"
-                    containerStyle={styles.input}
-                    onChangeText={setSubject}
-                    suggestions={["Matematyka", "Fizyka", "Informatyka"]}
-                    value={subject}
-                    renderSuggestion={(item, index) => {
-                        return (
-                            <Text key={index} style={{ borderWidth: 1, borderColor: theme.colors.outline, padding: 10 }}>{item}</Text>
-                        );
-                    }}
-                />
+                <View style={styles.input}>
+                    <AutocompleteTextInput
+                        label="Przedmiot"
+                        containerStyle={styles.input}
+                        onChangeText={(value) => { setSubject(value); setInputErrors({ ...inputErrors, subject: !value }) }}
+                        suggestions={["Matematyka", "Fizyka", "Informatyka"]}
+                        value={subject}
+                        renderSuggestion={(item, index) => {
+                            return (
+                                <Text key={index} style={{ borderWidth: 1, borderColor: theme.colors.outline, padding: 10 }}>{item}</Text>
+                            );
+                        }}
+                        error={inputErrors.subject}
+                    />
+                    <HelperText visible={inputErrors.subject} type="error" style={{ display: inputErrors.subject ? "flex" : "none" }}>To pole jest wymagane.</HelperText>
+                </View>
             </View>
             <View style={styles.row}>
                 <Text style={styles.label} pointerEvents="none">Poziom:</Text>
-                <AutocompleteTextInput
-                    label="Poziom"
-                    containerStyle={styles.input}
-                    onChangeText={setLevel}
-                    suggestions={["Szkoła podstawowa", "Szkoła średnia - PP", "Szkoła średnia - PR"]}
-                    value={level}
-                    renderSuggestion={(item, index) => {
-                        return (
-                            <Text key={index} style={{ borderWidth: 1, borderColor: theme.colors.outline, padding: 10 }}>{item}</Text>
-                        );
-                    }}
-                />
+                <View style={styles.input}>
+                    <AutocompleteTextInput
+                        label="Poziom"
+                        containerStyle={styles.input}
+                        onChangeText={(value) => { setLevel(value); setInputErrors({ ...inputErrors, level: !value }) }}
+                        suggestions={["Szkoła podstawowa", "Szkoła średnia - PP", "Szkoła średnia - PR"]}
+                        value={level}
+                        renderSuggestion={(item, index) => {
+                            return (
+                                <Text key={index} style={{ borderWidth: 1, borderColor: theme.colors.outline, padding: 10 }}>{item}</Text>
+                            );
+                        }}
+                        error={inputErrors.level}
+                    />
+                    <HelperText visible={inputErrors.level} type="error" style={{ display: inputErrors.level ? "flex" : "none" }}>To pole jest wymagane.</HelperText>
+                </View>
             </View>
             <View style={styles.row}>
                 <Text style={styles.label} pointerEvents="none">Czas trwania:</Text>
-                <TextInput
-                    mode="outlined"
-                    style={styles.input}
-                    label="Czas trwania"
-                    value={duration}
-                    onChangeText={setDuration}
-                    right={<TextInput.Affix text="h" />}
-                    keyboardType="decimal-pad"
-                />
+                <View style={styles.input}>
+                    <TextInput
+                        mode="outlined"
+                        style={styles.input}
+                        label="Czas trwania"
+                        value={duration}
+                        onChangeText={(value) => { setDuration(value); setInputErrors({ ...inputErrors, duration: !value }) }}
+                        right={<TextInput.Affix text="h" />}
+                        keyboardType="decimal-pad"
+                        error={inputErrors.duration}
+                    />
+                    <HelperText visible={inputErrors.duration} type="error" style={{ display: inputErrors.duration ? "flex" : "none" }}>To pole jest wymagane.</HelperText>
+                </View>
             </View>
             <View style={styles.row}>
                 <Text style={styles.label} pointerEvents="none">Cena:</Text>
-                <TextInput
-                    mode="outlined"
-                    style={styles.input}
-                    label="Cena"
-                    value={price}
-                    onChangeText={setPrice}
-                    right={<TextInput.Affix text="zł" />}
-                    keyboardType="decimal-pad"
-                />
+                <View style={styles.input}>
+                    <TextInput
+                        mode="outlined"
+                        style={styles.input}
+                        label="Cena"
+                        value={price}
+                        onChangeText={(value) => { setPrice(value); setInputErrors({ ...inputErrors, price: !value }) }}
+                        right={<TextInput.Affix text="zł" />}
+                        keyboardType="decimal-pad"
+                    />
+                    <HelperText visible={inputErrors.price} type="error" style={{ display: inputErrors.price ? "flex" : "none" }}>To pole jest wymagane.</HelperText>
+                </View>
             </View>
 
             {/* one lesson or regulary */}
@@ -438,40 +491,44 @@ export default function EditLessonScreen({ navigation, route }) {
                             saveLabel="Zapisz"
                         />
                     </View>
-                    {
-                        weekDays.map((value, dayIndex) => {
-                            return (
-                                <View style={styles.row} key={`d${dayIndex}`}>
-                                    <Text style={styles.label} pointerEvents="none">{value}:</Text>
-                                    <View style={styles.chipHoursWeekDays}>
-                                        <Chip onPress={() => {
-                                            setShowTimeWeekDay(true);
-                                            setPressedDayIndex(dayIndex);
-                                        }}>
-                                            <Text>+</Text>
-                                        </Chip>
-                                        {
-                                            timesPerDay_regulary[dayIndex].map((item, index) => {
-                                                return (
-                                                    <Chip
-                                                        key={`0${index}`}
-                                                        onPress={() => {
-                                                            let buf = [...timesPerDay_regulary];
-                                                            buf[dayIndex] = timesPerDay_regulary[dayIndex].filter((v, ind) => ind != index);
-                                                            setTimesPerDay_regulary(buf);
-                                                        }}
-                                                        icon={"close"}
-                                                    >
-                                                        {hourToHHMM(item)}
-                                                    </Chip>
-                                                );
-                                            })
-                                        }
+                    <View style={styles.input}>
+                        {
+                            weekDays.map((value, dayIndex) => {
+                                return (
+                                    <View style={styles.row} key={`d${dayIndex}`}>
+                                        <Text style={styles.label} pointerEvents="none">{value}:</Text>
+                                        <View style={styles.chipHoursWeekDays}>
+                                            <Chip onPress={() => {
+                                                setShowTimeWeekDay(true);
+                                                setPressedDayIndex(dayIndex);
+                                            }}>
+                                                <Text>+</Text>
+                                            </Chip>
+                                            {
+                                                timesPerDay_regulary[dayIndex].map((item, index) => {
+                                                    return (
+                                                        <Chip
+                                                            key={`0${index}`}
+                                                            onPress={() => {
+                                                                let buf = [...timesPerDay_regulary];
+                                                                buf[dayIndex] = timesPerDay_regulary[dayIndex].filter((v, ind) => ind != index);
+                                                                setTimesPerDay_regulary(buf);
+                                                                setInputErrors({ ...inputErrors, timesPerDay_regulary: (buf.filter(x => x.length == 0).length == 7) })  // every array is empty
+                                                            }}
+                                                            icon={"close"}
+                                                        >
+                                                            {hourToHHMM(item)}
+                                                        </Chip>
+                                                    );
+                                                })
+                                            }
+                                        </View>
                                     </View>
-                                </View>
-                            );
-                        })
-                    }
+                                );
+                            })
+                        }
+                        <HelperText visible={inputErrors.timesPerDay_regulary} type="error" style={{ display: inputErrors.timesPerDay_regulary ? "flex" : "none" }}>Dodaj godziny zajęć.</HelperText>
+                    </View>
                     <TimePickerModal
                         visible={showTimeWeekDay}
                         onConfirm={(hmin) => {
@@ -479,6 +536,7 @@ export default function EditLessonScreen({ navigation, route }) {
                             buf[pressedDayIndex].push(hmin)
                             setTimesPerDay_regulary(buf);
                             setShowTimeWeekDay(false);
+                            setInputErrors({ ...inputErrors, timesPerDay_regulary: (buf.filter(x => x.length == 0).length == 7) })  // every array is empty
                         }}
                         onDismiss={() => setShowTimeWeekDay(false)}
                         label={`Wybierz godzinę (${weekDays[pressedDayIndex]})`}
