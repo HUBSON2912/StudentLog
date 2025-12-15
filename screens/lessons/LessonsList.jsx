@@ -1,8 +1,9 @@
 import { useContext, useEffect, useState } from "react";
 import { Appbar, Button, Card, Chip, Dialog, FAB, Icon, IconButton, Text, useTheme } from "react-native-paper";
 import { DatabaseContext } from "../../App";
-import { FlatList, StyleSheet, useColorScheme, View } from "react-native";
+import { FlatList, RefreshControl, StyleSheet, useColorScheme, View } from "react-native";
 import { lessonsOrder, possibleStatuses } from "../../constants/const";
+import { DDMMYYYYToDate } from "../../functions/misc/date";
 
 let db = null;
 let statuses = [];
@@ -47,7 +48,7 @@ function LessonTile({ lesson, deleteAction = (id) => { }, editAction = (id) => {
                     </View>
                     <View style={styles.dataContainer}>
                         <Icon size={16} source={"notebook"} />
-                        <Text style={{...styles.text, color: lesson.topic?theme.colors.onBackground:theme.colors.error}}>{(!!lesson.topic)?lesson.topic:"Brak tematu"}</Text>
+                        <Text style={{ ...styles.text, color: lesson.topic ? theme.colors.onBackground : theme.colors.error }}>{(!!lesson.topic) ? lesson.topic : "Brak tematu"}</Text>
                     </View>
                 </Card.Content>
                 <Card.Actions>
@@ -94,10 +95,10 @@ export default function LessonsListScreen({ navigation }) {
     });
 
     const doFilter = (_stud) => {
-        console.log(filter);
         if (!_stud) {
             return [];
         }
+
         _stud.sort((a, b) => {
             const params = filter.order.paramName;
             for (let i = 0; i < params.length; i++) {
@@ -112,8 +113,46 @@ export default function LessonsListScreen({ navigation }) {
         if (!filter.order.ascending) {
             _stud.reverse();
         }
-        console.log("Filters:")
-        console.log(filter);
+        if (!filter.active) {
+            return _stud;
+        }
+
+        if (filter.contain) {
+            _stud = _stud.filter(x => JSON.stringify(x).toUpperCase().includes(filter.contain.toUpperCase()));
+        }
+
+        if (filter.subject) {
+            _stud = _stud.filter(x => x.subject.toUpperCase().includes(filter.subject.toUpperCase()));
+        }
+        if (filter.level) {
+            _stud = _stud.filter(x => x.level.toUpperCase().includes(filter.level.toUpperCase()));
+        }
+        if (filter.status.length!=0) {
+            _stud = _stud.filter(x => filter.status.includes(x.status));
+        }
+        if (filter.student) {
+            _stud = _stud.filter(x => x.student_id==filter.student);
+        }
+        if (filter.dateRange.since) {
+            _stud = _stud.filter(x => DDMMYYYYToDate(x.date).valueOf()>=filter.dateRange.since.valueOf());
+        }
+        if (filter.dateRange.to) {
+            _stud = _stud.filter(x => DDMMYYYYToDate(x.date).valueOf()<=filter.dateRange.to.valueOf());
+        }
+        if (filter.priceRange.min) {
+            _stud = _stud.filter(x => x.price>=filter.priceRange.min);
+        }
+        if (filter.priceRange.max) {
+            _stud = _stud.filter(x => x.price<=filter.priceRange.max);
+        }
+        if (filter.durationRange.min) {
+            _stud = _stud.filter(x => x.duration>=filter.durationRange.min);
+        }
+        if (filter.durationRange.max) {
+            _stud = _stud.filter(x => x.duration<=filter.durationRange.max);
+        }
+        
+
         return _stud;
     }
 
@@ -127,14 +166,14 @@ export default function LessonsListScreen({ navigation }) {
 
             <View style={styles.constainer}>
                 {
-                    db.lessons.length == 0 &&
+                    doFilter(db.lessons).length == 0 &&
                     <Text variant="displaySmall" style={styles.noDataText}>Brak lekcji</Text>
                 }
 
                 {
-                    db.lessons.length != 0 &&
+                    doFilter(db.lessons).length != 0 &&
                     <FlatList
-                        data={db.lessons}
+                        data={doFilter(db.lessons)}
                         renderItem={({ item }) => <LessonTile lesson={item}
                             deleteAction={(id) => {
                                 setSelectedLesson(db.get("lessons", id));

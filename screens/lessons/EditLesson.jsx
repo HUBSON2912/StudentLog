@@ -142,7 +142,6 @@ export default function EditLessonScreen({ navigation, route }) {
         ) {
             let dayofweek = day.getDay() - 1;
             dayofweek = (dayofweek < 0 ? 6 : dayofweek);
-            console.log(dateToDDMMYYYY(day), weekDays[dayofweek]);
             for (let i = 0; i < timesPerDay_regulary[dayofweek].length; i++) {
                 newItem = {
                     student_id: selectedStudentID,
@@ -155,14 +154,12 @@ export default function EditLessonScreen({ navigation, route }) {
                     status: 0,  // defaultly planned
                     topic: ""
                 };
-                console.log(newItem);
                 newLessons.push({ ...newItem });
             }
         }
         for (let i = 0; i < newLessons.length; i++) {
             db.insert("lessons", newLessons[i]);
         }
-        console.log(db);
         setLoading(false);
         navigation.pop();
     }
@@ -198,9 +195,7 @@ export default function EditLessonScreen({ navigation, route }) {
                 gap: 10
             }
         });
-
-        console.log(`"${item.name}"`, `"${item.surname}"`);
-
+        
         return (
             <View style={styles.elementContainer}>
                 <Text>{item.id}</Text>

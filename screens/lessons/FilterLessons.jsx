@@ -22,11 +22,10 @@ export default function FilterLessonsScreen({ navigation, route }) {
     const [subject, setSubject] = useState("");
     const [level, setLevel] = useState("");
     const [dateRange, setDateRange] = useState({ since: new Date(0), to: new Date(0) });
-    // const [dateStart, setDateStart]=useState(null);
-    // const [dateEnd, setDateEnd]=useState(null);
     const [priceRange, setPriceRange] = useState({ min: null, max: null });
     const [durationRange, setDurationRange] = useState({ min: null, max: null });
     const [selectedStatuses, setSelectedStatuses] = useState([]);
+    const [studentData, setStudentData] = useState({});
 
     const toggleForm = (val) => {
         let buff = [...selectedStatuses];
@@ -40,25 +39,29 @@ export default function FilterLessonsScreen({ navigation, route }) {
     };
 
     useEffect(() => {
-        // setOrder(activeFilter.order);
-        // setContain(activeFilter.contain);
-        // setSelectedStatuses(activeFilter.forms);
-        // setPlatform(activeFilter.platform);
-        // setCity(activeFilter.city);
-        // setIncomes({
-        //     min: activeFilter.incomesRange.min ?
-        //         String(activeFilter.incomesRange.min) : "",
-        //     max: activeFilter.incomesRange.max ?
-        //         String(activeFilter.incomesRange.max) : ""
-        // });
-        // setIsSthUnpaid(activeFilter.unpaid);
-        // setIsSthPlanned(activeFilter.planned);
-        // setTotalTime({
-        //     min: activeFilter.totalTimeRange.min ?
-        //         String(activeFilter.totalTimeRange.min) : "",
-        //     max: activeFilter.totalTimeRange.max ?
-        //         String(activeFilter.totalTimeRange.max) : ""
-        // });
+        setOrder(activeFilter.order);
+        setContain(activeFilter.contain);
+
+        setSelectedStatuses(activeFilter.status);
+        setStudent(activeFilter.student);
+        setSubject(activeFilter.subject);
+        setLevel(activeFilter.level);
+        setDateRange({
+            since: activeFilter.dateRange.since ? activeFilter.dateRange.since : new Date(0),
+            to: activeFilter.dateRange.to ? activeFilter.dateRange.to : new Date(0)
+        });
+        setPriceRange({
+            min: activeFilter.priceRange.min ?
+                String(activeFilter.priceRange.min) : "",
+            max: activeFilter.priceRange.max ?
+                String(activeFilter.priceRange.max) : ""
+        });
+        setDurationRange({
+            min: activeFilter.durationRange.min ?
+                String(activeFilter.durationRange.min) : "",
+            max: activeFilter.durationRange.max ?
+                String(activeFilter.durationRange.max) : ""
+        });
     }, [activeFilter]);
 
     const setStartDate = (value) => {
@@ -148,7 +151,6 @@ export default function FilterLessonsScreen({ navigation, route }) {
         if (student) {
             selectedItem = db.get("students", student);
         }
-
         const styles = StyleSheet.create({
             listContainer: {
                 borderWidth: 1,
@@ -219,32 +221,22 @@ export default function FilterLessonsScreen({ navigation, route }) {
             </View>
             <View style={styles.row}>
                 <Text style={styles.label} pointerEvents="none">Przedmiot:</Text>
-                <AutocompleteTextInput
+                <TextInput
+                    mode="outlined"
+                    style={styles.input}
                     label="Przedmiot"
-                    containerStyle={styles.input}
-                    onChangeText={setSubject}
-                    suggestions={["Matematyka", "Fizyka", "Informatyka"]}
                     value={subject}
-                    renderSuggestion={(item, index) => {
-                        return (
-                            <Text key={index} style={{ borderWidth: 1, borderColor: theme.colors.outline, padding: 10 }}>{item}</Text>
-                        );
-                    }}
+                    onChangeText={setSubject}
                 />
             </View>
             <View style={styles.row}>
                 <Text style={styles.label} pointerEvents="none">Poziom:</Text>
-                <AutocompleteTextInput
+                <TextInput
+                    mode="outlined"
+                    style={styles.input}
                     label="Poziom"
-                    containerStyle={styles.input}
-                    onChangeText={setLevel}
-                    suggestions={["Szkoła podstawowa", "Szkoła średnia - PP", "Szkoła średnia - PR"]}
                     value={level}
-                    renderSuggestion={(item, index) => {
-                        return (
-                            <Text key={index} style={{ borderWidth: 1, borderColor: theme.colors.outline, padding: 10 }}>{item}</Text>
-                        );
-                    }}
+                    onChangeText={setLevel}
                 />
             </View>
             <View style={styles.row}>
@@ -388,11 +380,11 @@ export default function FilterLessonsScreen({ navigation, route }) {
                                 level || priceRange.min || priceRange.max ||
                                 durationRange.max || durationRange.min),
                             order: order,
-                            contain: contain ?? null,
-                            student: student,
-                            subject: subject,
-                            level: level,
-                            dateRange: dateRange,
+                            contain: contain ? contain : null,
+                            student: student ? student : null,
+                            subject: subject ? subject : null,
+                            level: level ? level : null,
+                            dateRange: { since: dateRange.since.getFullYear()==1970?null:dateRange.since, to: dateRange.to.getFullYear()==1970?null:dateRange.to },
                             priceRange: { min: priceRange.min ? parseInt(priceRange.min) : null, max: priceRange.max ? parseInt(priceRange.max) : null },
                             durationRange: { min: durationRange.min ? parseFloat(durationRange.min) : null, max: durationRange.max ? parseFloat(durationRange.max) : null },
                             status: selectedStatuses

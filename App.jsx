@@ -50,7 +50,7 @@ export default function App() {
                     break;
             }
         } catch (error) {
-            console.log(`Error while creating table '${name}': ${error.message}`);
+            console.error(`Error while creating table '${name}': ${error.message}`);
             return error;
         }
     };
@@ -74,7 +74,7 @@ export default function App() {
                     break;
             }
         } catch (error) {
-            console.log(`Error while getting all from '${name}': ${error.message}`);
+            console.error(`Error while getting all from '${name}': ${error.message}`);
             return error;
         }
     };
@@ -100,7 +100,7 @@ export default function App() {
                     break;
             }
         } catch (error) {
-            console.log(`Error while inserting ${JSON.stringify(value)} into table '${name}': ${error.message}`);
+            console.error(`Error while inserting ${JSON.stringify(value)} into table '${name}': ${error.message}`);
             return error;
         }
     };
@@ -127,7 +127,7 @@ export default function App() {
                     break;
             }
         } catch (error) {
-            console.log(`Error while removing id: ${id} table '${name}': ${error.message}`);
+            console.error(`Error while removing id: ${id} table '${name}': ${error.message}`);
             return error;
         }
     };
@@ -148,7 +148,7 @@ export default function App() {
                     break;
             }
         } catch (error) {
-            console.log(`Error while geting by ID: ${id} from table '${name}': ${error.message}`);
+            console.error(`Error while geting by ID: ${id} from table '${name}': ${error.message}`);
             return error;
         }
     }
@@ -195,7 +195,7 @@ export default function App() {
                     break;
             }
         } catch (error) {
-            console.log(`Error while updating '${name}' with value: ${JSON.stringify(value)} and id: ${id}: ${error.message}`);
+            console.error(`Error while updating '${name}' with value: ${JSON.stringify(value)} and id: ${id}: ${error.message}`);
             return error;
         }
     }
@@ -236,7 +236,7 @@ export default function App() {
                     break;
             }
         } catch (error) {
-            console.log(`Error while geting details about '${name}' id=${id} with value: ${JSON.stringify(value)} and id: ${id}: ${error.message}`);
+            console.error(`Error while geting details about '${name}' id=${id} with value: ${JSON.stringify(value)} and id: ${id}: ${error.message}`);
             return error;
         }
     }
