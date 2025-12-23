@@ -4,16 +4,6 @@ export function dateToDDMMYYYY(date) {
     return `${String(date.getDate()).padStart(2, "0")}.${String(date.getMonth() + 1).padStart(2, "0")}.${date.getFullYear()}`
 }
 
-export function hourToHHMM(time) {
-    try {
-        return `${time.hours}:${String(time.minutes).padStart(2, '0')}`;
-    }
-    catch (error) {
-        console.error(`Unexpected error: ${JSON.stringify(error)}`);
-        return "";
-    }
-}
-
 export function DDMMYYYYToDate(dmy) {
     try {
         const [d, m, y] = dmy.split(".").map(x=>parseInt(x));
@@ -24,16 +14,7 @@ export function DDMMYYYYToDate(dmy) {
         return "";
     }
 }
-export function HHMMToHour(hm) {
-    try {
-        const [h, m] = hm.split(":").map(x=>parseInt(x));
-        return { hours: h, minutes: m };
-    }
-    catch (error) {
-        console.error(`Unexpected error: ${JSON.stringify(error)}`);
-        return "";
-    }
-}
+
 
 /**
  * 
@@ -77,16 +58,18 @@ export function parseDate(d,m,y) {
  * @returns {boolean|Date} Returns Date object if the string is DD.MM.YYYY and false if it's not
  */
 export function isDDMMYYYYDateFormat(str) {
-    
+    const regex = /^\d{1,2}\.\d{1,2}\.\d{4}$/;
+
+    if(typeof(str)!=="string")
+        return false;
+
     // if str is like xx.xx.xxxx
-    if(!str.match(/^(0?[1-9]|[12][0-9]|3[01])[\.](0?[1-9]|1[012])[\.]\d{4}$/))
+    if(!(str.match(regex)))
         return false;
 
     const [d,m,y]=str.split('.').map(x=>parseInt(x));
-    console.log(d,m,y);
     if(!parseDate(d,m,y)) 
         return false;
     const res=new Date(y,m-1,d);
-    console.log(res.getDate(), res.getMonth()+1, res.getFullYear());
     return new Date(y,m-1,d);
 }
