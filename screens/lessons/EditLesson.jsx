@@ -370,6 +370,7 @@ export default function EditLessonScreen({ navigation, route }) {
                         onChangeText={(value) => { setPrice(value); setInputErrors({ ...inputErrors, price: !value }) }}
                         right={<TextInput.Affix text="zł" />}
                         keyboardType="decimal-pad"
+                        error={inputErrors.price}
                     />
                     <HelperText visible={inputErrors.price} type="error" style={{ display: inputErrors.price ? "flex" : "none" }}>To pole jest wymagane.</HelperText>
                 </View>

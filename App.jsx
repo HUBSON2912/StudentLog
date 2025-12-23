@@ -9,6 +9,7 @@ import StudetnsScreen from "./screens/Students";
 import LessonsScreen from "./screens/Lessons";
 import { BottomTabBar, createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { possibleTableNames } from "./constants/const";
+import { isDDMMYYYYDateFormat } from "./functions/misc/date";
 
 export const DatabaseContext = createContext(null);
 
@@ -17,6 +18,13 @@ const Tab = createBottomTabNavigator();
 export default function App() {
     const systemTheme = useColorScheme();
     const theme = systemTheme == "dark" ? themeDark : themeLight;
+
+    console.log(isDDMMYYYYDateFormat("lubie placki"))
+    console.log(isDDMMYYYYDateFormat("li.ss.bbbb"))
+    console.log(isDDMMYYYYDateFormat("21.11.1234"))
+    console.log(isDDMMYYYYDateFormat("29.02.2024"))
+    console.log(isDDMMYYYYDateFormat("31.11.1234"))
+    console.log(isDDMMYYYYDateFormat("35.34.2346"))
 
     const styles = StyleSheet.create({
         container: {
