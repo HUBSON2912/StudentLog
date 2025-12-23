@@ -3,7 +3,8 @@ import { Appbar, Button, Card, Chip, Dialog, FAB, Icon, IconButton, Text, useThe
 import { DatabaseContext } from "../../App";
 import { FlatList, RefreshControl, StyleSheet, useColorScheme, View } from "react-native";
 import { lessonsOrder, possibleStatuses } from "../../constants/const";
-import { DDMMYYYYToDate } from "../../functions/misc/date";
+import { DDMMYYYYToDate, isDDMMYYYYDateFormat } from "../../functions/misc/date";
+import { compareHour, HHMMToHour } from "../../functions/misc/hour";
 
 let db = null;
 let statuses = [];
@@ -102,10 +103,28 @@ export default function LessonsListScreen({ navigation }) {
         _stud.sort((a, b) => {
             const params = filter.order.paramName;
             for (let i = 0; i < params.length; i++) {
-                if (a[params[i]] < b[params[i]]) {
-                    return -1;
-                } else if (a[params[i]] > b[params[i]]) {
-                    return 1;
+
+                //if it is a date parameter
+                if (params[i] === "date") {
+                    const aDate = isDDMMYYYYDateFormat(a[params[i]]);
+                    const bDate = isDDMMYYYYDateFormat(b[params[i]]);
+                    if (aDate.valueOf() < bDate.valueOf()) {
+                        return -1;
+                    } else if (aDate.valueOf() > bDate.valueOf()) {
+                        return 1;
+                    }
+                }
+                else if (params[i] === "hour") {
+                    const aHour = HHMMToHour(a.hour);
+                    const bHour = HHMMToHour(b.hour);
+                    return compareHour(aHour, bHour);
+                }
+                else {
+                    if (a[params[i]] < b[params[i]]) {
+                        return -1;
+                    } else if (a[params[i]] > b[params[i]]) {
+                        return 1;
+                    }
                 }
             }
             return 0;
@@ -127,31 +146,31 @@ export default function LessonsListScreen({ navigation }) {
         if (filter.level) {
             _stud = _stud.filter(x => x.level.toUpperCase().includes(filter.level.toUpperCase()));
         }
-        if (filter.status.length!=0) {
+        if (filter.status.length != 0) {
             _stud = _stud.filter(x => filter.status.includes(x.status));
         }
         if (filter.student) {
-            _stud = _stud.filter(x => x.student_id==filter.student);
+            _stud = _stud.filter(x => x.student_id == filter.student);
         }
         if (filter.dateRange.since) {
-            _stud = _stud.filter(x => DDMMYYYYToDate(x.date).valueOf()>=filter.dateRange.since.valueOf());
+            _stud = _stud.filter(x => DDMMYYYYToDate(x.date).valueOf() >= filter.dateRange.since.valueOf());
         }
         if (filter.dateRange.to) {
-            _stud = _stud.filter(x => DDMMYYYYToDate(x.date).valueOf()<=filter.dateRange.to.valueOf());
+            _stud = _stud.filter(x => DDMMYYYYToDate(x.date).valueOf() <= filter.dateRange.to.valueOf());
         }
         if (filter.priceRange.min) {
-            _stud = _stud.filter(x => x.price>=filter.priceRange.min);
+            _stud = _stud.filter(x => x.price >= filter.priceRange.min);
         }
         if (filter.priceRange.max) {
-            _stud = _stud.filter(x => x.price<=filter.priceRange.max);
+            _stud = _stud.filter(x => x.price <= filter.priceRange.max);
         }
         if (filter.durationRange.min) {
-            _stud = _stud.filter(x => x.duration>=filter.durationRange.min);
+            _stud = _stud.filter(x => x.duration >= filter.durationRange.min);
         }
         if (filter.durationRange.max) {
-            _stud = _stud.filter(x => x.duration<=filter.durationRange.max);
+            _stud = _stud.filter(x => x.duration <= filter.durationRange.max);
         }
-        
+
 
         return _stud;
     }

@@ -7,8 +7,9 @@ import { DatabaseContext } from "../../App";
 import SelectDropdown from "react-native-select-dropdown";
 import { AutocompleteTextInput } from "../../components/autocompleteTextInput";
 import { DatePickerModal, TimePickerModal } from "react-native-paper-dates";
-import { dateToDDMMYYYY, DDMMYYYYToDate, HHMMToHour, hourToHHMM } from "../../functions/misc/date";
+import { dateToDDMMYYYY, DDMMYYYYToDate } from "../../functions/misc/date";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
+import { HHMMToHour, hourToHHMM } from "../../functions/misc/hour";
 
 export default function EditLessonScreen({ navigation, route }) {
     const theme = useTheme();
@@ -370,6 +371,7 @@ export default function EditLessonScreen({ navigation, route }) {
                         onChangeText={(value) => { setPrice(value); setInputErrors({ ...inputErrors, price: !value }) }}
                         right={<TextInput.Affix text="zł" />}
                         keyboardType="decimal-pad"
+                        error={inputErrors.price}
                     />
                     <HelperText visible={inputErrors.price} type="error" style={{ display: inputErrors.price ? "flex" : "none" }}>To pole jest wymagane.</HelperText>
                 </View>
