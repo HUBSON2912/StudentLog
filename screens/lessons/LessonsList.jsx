@@ -1,9 +1,10 @@
 import { useContext, useEffect, useState } from "react";
-import { Appbar, Button, Card, Chip, Dialog, FAB, Icon, IconButton, Text, useTheme } from "react-native-paper";
+import { Appbar, Button, Card, Chip, Dialog, FAB, Icon, IconButton, Portal, Text, useTheme } from "react-native-paper";
 import { DatabaseContext } from "../../App";
 import { FlatList, RefreshControl, StyleSheet, useColorScheme, View } from "react-native";
 import { lessonsOrder, possibleStatuses } from "../../constants/const";
 import { DDMMYYYYToDate } from "../../functions/misc/date";
+import { StatusChip } from "../../components/statusChip";
 
 let db = null;
 let statuses = [];
@@ -13,7 +14,9 @@ function LessonTile({ lesson, deleteAction = (id) => { }, editAction = (id) => {
 
     const student = db.get("students", lesson.student_id);
 
-    const status = statuses[lesson.status];
+    const __currentStatus = statuses[lesson.status];
+    const [showStatusDialog, setShowStatusDialog] = useState(false);
+    console.log(__currentStatus);
 
     return (
         <>
@@ -21,16 +24,12 @@ function LessonTile({ lesson, deleteAction = (id) => { }, editAction = (id) => {
                 <Card.Title title={student.name + " " + student.surname}
                     titleStyle={{ fontSize: 22 }}
                     right={() => <Chip style={{
-                        backgroundColor: status.colors.background,
+                        backgroundColor: __currentStatus.colors.background,
                     }}
                         // change status on long press
-                        onLongPress={() => {
-                            lesson.status++;
-                            lesson.status %= 3;
-                            db.update("lessons", lesson, lesson.id);
-                        }}
+                        onLongPress={() => setShowStatusDialog(true)}
                     >
-                        <Text variant={"bodySmall"} style={{ color: status.colors.onBackground }}>{status.label}</Text>
+                        <Text variant={"bodySmall"} style={{ color: __currentStatus.colors.onBackground }}>{__currentStatus.label}</Text>
                     </Chip>}
                 />
                 <Card.Content>
@@ -57,6 +56,27 @@ function LessonTile({ lesson, deleteAction = (id) => { }, editAction = (id) => {
                     <IconButton icon={"text-box-edit"} mode="outlined" onPress={() => editAction(lesson.id)} />
                 </Card.Actions>
             </Card>
+
+            <Portal>
+                <Dialog visible={showStatusDialog} onDismiss={() => setShowStatusDialog(false)}>
+                    <Dialog.Title>Wybierz nowy status</Dialog.Title>
+                    <Dialog.Content style={{ alignItems: "center", gap: 5 }}>
+                        {statuses.map((item) => <StatusChip
+                            value={item.value}
+                            key={item.value}
+                            onPress={(status) => {
+                                lesson.status = status;
+                                db.update("lessons", lesson, lesson.id);
+                                setShowStatusDialog(false);
+                            }}
+                            selected={lesson.status == item.value}
+                        />)}
+                    </Dialog.Content>
+                    <Dialog.Actions>
+                        <Button onPress={() => setShowStatusDialog(false)}>Anuluj</Button>
+                    </Dialog.Actions>
+                </Dialog>
+            </Portal>
         </>
     );
 }
@@ -127,31 +147,31 @@ export default function LessonsListScreen({ navigation }) {
         if (filter.level) {
             _stud = _stud.filter(x => x.level.toUpperCase().includes(filter.level.toUpperCase()));
         }
-        if (filter.status.length!=0) {
+        if (filter.status.length != 0) {
             _stud = _stud.filter(x => filter.status.includes(x.status));
         }
         if (filter.student) {
-            _stud = _stud.filter(x => x.student_id==filter.student);
+            _stud = _stud.filter(x => x.student_id == filter.student);
         }
         if (filter.dateRange.since) {
-            _stud = _stud.filter(x => DDMMYYYYToDate(x.date).valueOf()>=filter.dateRange.since.valueOf());
+            _stud = _stud.filter(x => DDMMYYYYToDate(x.date).valueOf() >= filter.dateRange.since.valueOf());
         }
         if (filter.dateRange.to) {
-            _stud = _stud.filter(x => DDMMYYYYToDate(x.date).valueOf()<=filter.dateRange.to.valueOf());
+            _stud = _stud.filter(x => DDMMYYYYToDate(x.date).valueOf() <= filter.dateRange.to.valueOf());
         }
         if (filter.priceRange.min) {
-            _stud = _stud.filter(x => x.price>=filter.priceRange.min);
+            _stud = _stud.filter(x => x.price >= filter.priceRange.min);
         }
         if (filter.priceRange.max) {
-            _stud = _stud.filter(x => x.price<=filter.priceRange.max);
+            _stud = _stud.filter(x => x.price <= filter.priceRange.max);
         }
         if (filter.durationRange.min) {
-            _stud = _stud.filter(x => x.duration>=filter.durationRange.min);
+            _stud = _stud.filter(x => x.duration >= filter.durationRange.min);
         }
         if (filter.durationRange.max) {
-            _stud = _stud.filter(x => x.duration<=filter.durationRange.max);
+            _stud = _stud.filter(x => x.duration <= filter.durationRange.max);
         }
-        
+
 
         return _stud;
     }
@@ -273,6 +293,11 @@ const styles = StyleSheet.create({
     constainer: {
         flex: 1,
         paddingHorizontal: 20
+    },
+    chipContainer: {
+        flex: 1,
+        gap: 5,
+        alignItems: "center"
     },
     dataContainer: {
         flexDirection: "row",

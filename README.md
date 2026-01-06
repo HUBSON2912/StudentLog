@@ -1,10 +1,2 @@
 # Used images
-* The form of learning
-    * Stationary: Desktop Computer, MIT licence, https://www.iconarchive.com/show/fluentui-emoji-flat-icons-by-microsoft/Desktop-Computer-Flat-icon.html
-    * Remotely: House With Garden, MIT licence, https://www.iconarchive.com/show/fluentui-emoji-flat-icons-by-microsoft/House-With-Garden-Flat-icon.html
-    * Mixed: Shuffle Tracks, MIT licence, https://www.iconarchive.com/show/fluentui-emoji-flat-icons-by-microsoft/Shuffle-Tracks-Button-Flat-icon.html
-* Other icons
-    * Magic wand, MIT licence, https://www.iconarchive.com/show/fluentui-emoji-3d-icons-by-microsoft/Magic-Wand-3d-icon.html
-
-# Used data
-* Currencies: currency-symbols.json https://gist.github.com/Chintan7027/fc4708d8b5c8d1639a7c
+Icons (such as form of the teaching) come from [MaterialDesignIcons](https://pictogrammers.com/library/mdi/) using Apache v2 license.
