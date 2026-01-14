@@ -7,7 +7,7 @@ import SelectDropdown from "react-native-select-dropdown";
 import { DatabaseContext } from "../../App";
 import { AutocompleteTextInput } from "../../components/autocompleteTextInput";
 import { DatePickerModal } from "react-native-paper-dates";
-import { dateToDDMMYYYY } from "../../functions/misc/date";
+import { dateToDDMMYYYY } from "../../functions/date";
 
 export default function FilterLessonsScreen({ navigation, route }) {
     const theme = useTheme();

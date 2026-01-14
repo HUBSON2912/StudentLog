@@ -1,11 +1,10 @@
 import { ScrollView, View } from "react-native";
 import ActionTile from "../components/actionTile";
 import { useState } from "react";
+import { getVersion } from "../functions/version";
 
 export default function SettingsScreen() {
-    const [sw, setsw] = useState(false);
-    const [val, setval] = useState("1");
-    const [textVal, setTextVal] = useState("");
+    
     return (
         <View style={{ flex: 1 }}>
             <ScrollView>
@@ -38,7 +37,7 @@ export default function SettingsScreen() {
                 <ActionTile label={"O aplikacji"} />
                 <ActionTile label={"O autorze"} />
                 <ActionTile label={"Licencja"} />
-                <ActionTile label={"Wersja"} />
+                <ActionTile label={"Wersja"} type="text" text={getVersion()}/>
 
             </ScrollView>
         </View>

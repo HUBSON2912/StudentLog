@@ -3,7 +3,7 @@ import { Appbar, Button, Card, Chip, Dialog, FAB, Icon, IconButton, Portal, Text
 import { DatabaseContext } from "../../App";
 import { FlatList, RefreshControl, StyleSheet, useColorScheme, View } from "react-native";
 import { lessonsOrder, possibleStatuses } from "../../constants/const";
-import { DDMMYYYYToDate } from "../../functions/misc/date";
+import { DDMMYYYYToDate } from "../../functions/date";
 import { StatusChip } from "../../components/statusChip";
 
 let db = null;

@@ -7,7 +7,7 @@ import { DatabaseContext } from "../../App";
 import SelectDropdown from "react-native-select-dropdown";
 import { AutocompleteTextInput } from "../../components/autocompleteTextInput";
 import { DatePickerModal, TimePickerModal } from "react-native-paper-dates";
-import { dateToDDMMYYYY, DDMMYYYYToDate, HHMMToHour, hourToHHMM } from "../../functions/misc/date";
+import { dateToDDMMYYYY, DDMMYYYYToDate, HHMMToHour, hourToHHMM } from "../../functions/date";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
 
 export default function EditLessonScreen({ navigation, route }) {
