@@ -9,6 +9,7 @@ import StudetnsScreen from "./screens/Students";
 import LessonsScreen from "./screens/Lessons";
 import { BottomTabBar, createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { possibleTableNames } from "./constants/const";
+import SettingsScreen from "./screens/Settings";
 
 export const DatabaseContext = createContext(null);
 
@@ -269,9 +270,10 @@ export default function App() {
                     <NavigationContainer theme={theme}>
                         <StatusBar translucent backgroundColor="transparent" />
 
-                        <Tab.Navigator screenOptions={{ headerShown: false, tabBarInactiveTintColor: theme.colors.onBackground, tabBarActiveTintColor: theme.colors.primary }} initialRouteName="Lessons">
+                        <Tab.Navigator screenOptions={{ headerShown: false, tabBarInactiveTintColor: theme.colors.onBackground, tabBarActiveTintColor: theme.colors.primary }} initialRouteName="Settings">
                             <Tab.Screen name="Students" component={StudetnsScreen} options={{ tabBarIcon: () => <Icon source={"account"} size={26} />, title: "Uczniowie" }} />
                             <Tab.Screen name="Lessons" component={LessonsScreen} options={{ tabBarIcon: () => <Icon source={"calendar"} size={26} />, title: "Lekcje"}} />
+                            <Tab.Screen name="Settings" component={SettingsScreen} options={{ tabBarIcon: () => <Icon source={"cog"} size={26} />, title: "Opcje"}} />
                         </Tab.Navigator>
 
                     </NavigationContainer>
