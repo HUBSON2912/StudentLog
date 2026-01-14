@@ -10,11 +10,31 @@ const possibleTypes = [
     "text-input",  // there is way to write something
 ]
 
-export default function ActionTile({ label, text = null, type = "navigate", selectData = null, value = null, icon = null, iconSize = 24, onPress = () => { }, onLongPress = () => { }, onSelect = () => { }, onChangeText = () => { }, active = true, placeholder = null, keyboardType = "default" }) {
+export default function ActionTile({
+    label,
+    type = "navigate",
+    value = null,
+    active = true,
+    icon = null,
+    iconSize = 24,
+
+    keyboardType = "default",
+    placeholder = null,
+
+    text = null,
+
+    selectData = null,
+
+    onPress = () => { },
+    onLongPress = () => { },
+    onSelect = () => { },
+    onChangeText = () => { },
+}) {
+    
+
     const theme = useTheme();
     const styles = StyleSheet.create({
         card: {
-            margin: 15,
             borderColor: theme.colors.surfaceVariant,
             borderWidth: 1
         },

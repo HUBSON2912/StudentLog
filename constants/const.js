@@ -142,3 +142,5 @@ export const lessonsOrder = [
 ];
 
 export const weekDays = ["Poniedziałek", "Wtorek", "Środa", "Czwartek", "Piątek", "Sobota", "Niedziela"];
+
+export const possibleLanguages=["Polski", "English"]
