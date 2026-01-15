@@ -24,13 +24,14 @@ export default function ActionTile({
     text = null,
 
     selectData = null,
+    itemProperty = null,
 
     onPress = () => { },
     onLongPress = () => { },
     onSelect = () => { },
     onChangeText = () => { },
 }) {
-    
+
 
     const theme = useTheme();
     const styles = StyleSheet.create({
@@ -50,9 +51,9 @@ export default function ActionTile({
         },
         dropdownButton: {
             borderWidth: 1,
-            borderColor: theme.colors.outline,
+            borderColor: active ? theme.colors.outline : theme.colors.surfaceDisabled,
             borderRadius: theme.roundness,
-            minWidth: 100,
+            minWidth: 110,
             flexDirection: "row",
             alignItems: "center",
             justifyContent: "space-between",
@@ -73,26 +74,28 @@ export default function ActionTile({
     if (!active) {
         onPress = () => { };
         onLongPress = () => { };
+        onChangeText = () => { };
+        onSelect = () => { };
     }
 
     return (
-        <Card theme={theme} style={styles.card} onPress={onPress} onLongPress={onLongPress} mode="contained">
+        <Card theme={theme} style={styles.card} onPress={onPress} onLongPress={onLongPress} mode="contained" disabled={!active}>
             <Card.Content style={styles.cardInnerContainer}>
                 {
                     icon &&
                     <Icon source={icon} size={iconSize} />
                 }
                 <View style={styles.textAndArrowContainer}>
-                    <Text variant="bodyLarge">{label}</Text>
+                    <Text variant="bodyLarge" style={{ color: active ? theme.colors.onSurfaceVariant : theme.colors.surfaceDisabled }}>{label}</Text>
 
                     {
                         type == "navigate" &&
-                        <Icon source={"chevron-right"} size={24} />
+                        <Icon source={"chevron-right"} size={24} color={active ? theme.colors.onSurfaceVariant : theme.colors.surfaceDisabled} />
                     }
 
                     {
                         type == "switch" &&
-                        <Switch onChange={onPress} value={value} />
+                        <Switch onChange={onPress} value={value} disabled={!active} />
                     }
 
                     {
@@ -103,21 +106,29 @@ export default function ActionTile({
                     {
                         type == "select" &&
                         <SelectDropdown
+                            disabled={!active}
                             data={selectData}
                             onSelect={onSelect}
+                            disableAutoScroll
                             renderButton={(selected, isOpen) => {
                                 return (
                                     <View style={styles.dropdownButton}>
-                                        <Text>{value ? value : selectData[0]}</Text>
-                                        <Icon source={"chevron-down"} size={18} color={theme.colors.outline} />
+                                        <Text style={{ color: active ? theme.colors.onSurfaceVariant : theme.colors.surfaceDisabled }}>
+                                            {value ? (itemProperty ? value[itemProperty] : value) : selectData[0]}
+                                        </Text>
+                                        <Icon source={"chevron-down"} size={18} color={active ? theme.colors.outline : theme.colors.surfaceDisabled} />
                                     </View>
                                 );
                             }}
                             renderItem={(item, index) => {
-                                let isSelected = (item == value)
+                                let isSelected = false;
+                                if (itemProperty)
+                                    isSelected = (item[itemProperty] == value[itemProperty])
+                                else
+                                    isSelected = (item == value);
                                 return (
                                     <View style={[styles.dropdownItem, { backgroundColor: (isSelected ? theme.colors.surfaceVariant : theme.colors.surface) }]}>
-                                        <Text theme={theme}>{item}</Text>
+                                        <Text theme={theme}>{itemProperty ? item[itemProperty] : item}</Text>
                                     </View>
                                 );
                             }}
@@ -126,14 +137,18 @@ export default function ActionTile({
 
                     {
                         type == "text-input" &&
-                        <TextInput
-                            value={value}
-                            onChangeText={onChangeText}
-                            mode="outlined"
-                            placeholder={placeholder}
-                            keyboardType={keyboardType}
-                            style={{ backgroundColor: theme.colors.surfaceVariant, minWidth: 100 }}
-                        />
+                        <View style={{ borderColor: theme.colors.outline, borderWidth: 1, borderRadius: theme.roundness }}>
+                            <TextInput
+                                value={value}
+                                onChangeText={onChangeText}
+                                mode="outlined"
+                                disabled={!active}
+                                outlineColor={theme.colors.outlineVariant}
+                                placeholder={placeholder}
+                                keyboardType={keyboardType}
+                                style={{ backgroundColor: theme.colors.surfaceVariant, minWidth: 100 }}
+                            />
+                        </View>
                     }
                 </View>
             </Card.Content>
