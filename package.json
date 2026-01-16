@@ -1,6 +1,6 @@
 {
   "name": "StudentLog",
-  "version": "0.2.4.3",
+  "version": "0.2.4.4",
   "private": true,
   "scripts": {
     "android": "npx react-native run-android; npx react-native start",
@@ -12,12 +12,15 @@
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^2.2.0",
+    "@react-native-documents/picker": "^12.0.0",
     "@react-native-vector-icons/material-design-icons": "^12.3.0",
     "@react-navigation/bottom-tabs": "^7.8.4",
     "@react-navigation/native": "^7.1.19",
     "@react-navigation/native-stack": "^7.6.2",
     "react": "19.1.0",
     "react-native": "0.80.2",
+    "react-native-blob-util": "^0.24.6",
+    "react-native-fs": "^2.20.0",
     "react-native-keyboard-aware-scrollview": "^2.1.0",
     "react-native-paper": "^5.14.5",
     "react-native-paper-dates": "^0.22.50",

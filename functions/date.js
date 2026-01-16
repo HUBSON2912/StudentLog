@@ -16,7 +16,7 @@ export function hourToHHMM(time) {
 
 export function DDMMYYYYToDate(dmy) {
     try {
-        const [d, m, y] = dmy.split(".").map(x=>parseInt(x));
+        const [d, m, y] = dmy.split(".").map(x => parseInt(x));
         return new Date(y, m - 1, d);
     }
     catch (error) {
@@ -26,11 +26,16 @@ export function DDMMYYYYToDate(dmy) {
 }
 export function HHMMToHour(hm) {
     try {
-        const [h, m] = hm.split(":").map(x=>parseInt(x));
+        const [h, m] = hm.split(":").map(x => parseInt(x));
         return { hours: h, minutes: m };
     }
     catch (error) {
         console.error(`Unexpected error: ${JSON.stringify(error)}`);
         return "";
     }
+}
+
+export function dateUniqueString(date) {
+    date = date.toISOString().replaceAll("-", "").replaceAll(":", "");
+    return date.slice(0, date.indexOf("."));
 }

@@ -1,12 +1,19 @@
 import { ScrollView, View } from "react-native";
 import ActionTile from "../components/actionTile";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { getVersion } from "../functions/version";
 import SectionWithIcon from "../components/sectionWithIcon";
 import { possibleLanguages } from "../constants/const";
 import DismissKeyboard from "../components/dismissKeyboard";
+import { Snackbar } from "react-native-paper";
+import { createFile } from "../functions/manageFiles";
+import { dateUniqueString } from "../functions/date";
+import { DatabaseContext } from "../App";
+
+let RNFS = require('react-native-fs');
 
 export default function SettingsScreen() {
+    const db = useContext(DatabaseContext);
     const currencies = Object.values(require("../constants/currency.json"));
 
     const [language, setLanguage] = useState(possibleLanguages[0]);
@@ -24,6 +31,9 @@ export default function SettingsScreen() {
     const [notifUnknowTopic, setNotifUnknowTopic] = useState(true);
     const [notifUnpaidLessons, setNotifUnpaidLessons] = useState(true);
     const [notifTodayLessons, setNotifTodayLessons] = useState(true);
+
+    const [snackbarVisiable, setSnackbarVisiable] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState("");
 
     return (
         <DismissKeyboard style={{ flex: 1 }}>
@@ -47,7 +57,11 @@ export default function SettingsScreen() {
 
                 {/* imprt i eksport */}
                 <SectionWithIcon icon={"database-import"} label={"Import/eksport"}>
-                    <ActionTile label={"Zapisz do pliku"} onPress={() => {/**todo eksport */ }} />
+                    <ActionTile label={"Zapisz do pliku"} onPress={async () => {
+                        const res = await createFile(`studentlog_db_${dateUniqueString(new Date())}`, JSON.stringify(db), "application/json");
+                        setSnackbarMessage(res.message);
+                        setSnackbarVisiable(true);
+                    }} />
                     <ActionTile label={"Wczytaj z pliku"} onPress={() => {/**todo import */ }} />
                 </SectionWithIcon>
 
@@ -66,8 +80,11 @@ export default function SettingsScreen() {
                     <ActionTile label={"Licencja"} onPress={() => {/**todo as text */ }} />
                     <ActionTile label={"Wersja"} type="text" text={getVersion()} />
                 </SectionWithIcon>
-
             </ScrollView>
+
+            <Snackbar visible={snackbarVisiable} onDismiss={() => setSnackbarVisiable(false)}>
+                {snackbarMessage}
+            </Snackbar>
         </DismissKeyboard>
     );
 }
