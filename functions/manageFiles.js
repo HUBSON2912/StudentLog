@@ -2,9 +2,16 @@ import { saveDocuments } from "@react-native-documents/picker";
 
 let RNFS = require('react-native-fs');
 
-export async function createFile(fileName, textContent, mimeType="text/plain") {
+export async function createFile(fileName, extension, textContent, mimeType = "text/plain") {
     try {
-        const tempFile = `${RNFS.CachesDirectoryPath}/example.txt`;
+        let periodPos = fileName.indexOf(".");
+        if (periodPos != -1)
+            fileName = fileName.slice(0, periodPos);
+        
+        const tempFile = `${RNFS.CachesDirectoryPath}/temp_${fileName}.txt`;
+        
+        fileName = `${fileName}.${extension}`;
+        
         await RNFS.writeFile(tempFile, textContent, "utf8");
         const res = await saveDocuments({
             sourceUris: [`file://${tempFile}`],
@@ -15,5 +22,16 @@ export async function createFile(fileName, textContent, mimeType="text/plain") {
         return { success: true, message: "Zapisano pomyślnie" };
     } catch (e) {
         return { success: false, message: "Wystąpił nieoczekiwany błąd" }
+    }
+}
+
+export async function selectFile() {
+    try {
+        let res = await pick();
+        let content = await RNFS.readFile(res[0].uri);
+
+        return content;
+    } catch (err) {
+        return { success: false, message: "Nie udało się wczytać pliku" };
     }
 }

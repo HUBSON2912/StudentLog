@@ -119,3 +119,32 @@ export async function deleteStudentsLessonL(student_id) {
         return error;
     }
 }
+
+export async function dropTableL() {
+    try {
+        const db = await SQLite.openDatabase({ name: 'studentlog.db', location: 'default' })
+        db.executeSql(
+            `DROP TABLE IF EXISTS lessons;`
+        );
+    } catch (error) {
+        // console.error(`Cannot create the students table: ${JSON.stringify(error)}`);
+        return error;
+    }
+}
+
+export async function importL(array) {
+    try {
+        await dropTableL();
+        await createTableL();
+
+        const db = await SQLite.openDatabase({ name: 'studentlog.db', location: 'default' })
+        const items=array.map(x=>`(${x.id}, ${x.student_id}, "${x.subject}", "${x.level}", ${x.duration}, ${x.price}, "${x.date}", "${x.hour}", ${x.status}, "${x.topic}")`).join(",");
+        const insertRes = await db.executeSql(
+            `INSERT INTO lessons
+            (id, student_id, subject, level, duration, price, date, hour, status, topic)
+            VALUES ${items}`);
+    } catch (error) {
+        // console.error(`Error while inserting a new student: ${JSON.stringify(error)}`);
+        return error;
+    }
+}

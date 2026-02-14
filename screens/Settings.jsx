@@ -5,12 +5,14 @@ import { getVersion } from "../functions/version";
 import SectionWithIcon from "../components/sectionWithIcon";
 import { possibleLanguages } from "../constants/const";
 import DismissKeyboard from "../components/dismissKeyboard";
-import { Snackbar } from "react-native-paper";
+import { Button, Dialog, Portal, Snackbar, Text } from "react-native-paper";
 import { createFile } from "../functions/manageFiles";
 import { dateUniqueString } from "../functions/date";
 import { DatabaseContext } from "../App";
-
-let RNFS = require('react-native-fs');
+import { selectFile } from "../functions/manageFiles";
+import { importS } from "../database/students";
+import { importL } from "../database/lessons";
+import RNRestart from 'react-native-restart';
 
 export default function SettingsScreen() {
     const db = useContext(DatabaseContext);
@@ -35,9 +37,29 @@ export default function SettingsScreen() {
     const [snackbarVisiable, setSnackbarVisiable] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
 
+    const [dialogImportBackupVisiable, setDialogImportBackupVisiable] = useState(false);
+
+    // export and import stuff
+    const handleExport = async () => {
+        const res = await createFile(`studentlog_db_${dateUniqueString(new Date())}`, "stldb", JSON.stringify(db), "text/stldb");
+        setSnackbarMessage(res.message);
+        setSnackbarVisiable(true);
+    }
+    const [loadedDatabaseFile, setLoadedDatabaseFile] = useState("");
+
+    const loadDatabase = async (newContent) => {
+        newContent = await JSON.parse(newContent);
+        db.students=newContent.students;
+        db.lessons=newContent.lessons;
+        importS(newContent.students);
+        importL(newContent.lessons);
+        RNRestart.restart();
+    }
+
+
     return (
-        <DismissKeyboard style={{ flex: 1 }}>
-            <ScrollView>
+        <ScrollView>
+            <DismissKeyboard style={{ flex: 1 }}>
 
                 {/* interface */}
                 <SectionWithIcon icon={"land-plots"} label={"Interfejs"}>
@@ -57,12 +79,11 @@ export default function SettingsScreen() {
 
                 {/* imprt i eksport */}
                 <SectionWithIcon icon={"database-import"} label={"Import/eksport"}>
-                    <ActionTile label={"Zapisz do pliku"} onPress={async () => {
-                        const res = await createFile(`studentlog_db_${dateUniqueString(new Date())}`, JSON.stringify(db), "application/json");
-                        setSnackbarMessage(res.message);
-                        setSnackbarVisiable(true);
+                    <ActionTile label={"Zapisz do pliku"} onPress={handleExport} />
+                    <ActionTile label={"Wczytaj z pliku"} onPress={async () => {
+                        setLoadedDatabaseFile(await selectFile());
+                        setDialogImportBackupVisiable(true);
                     }} />
-                    <ActionTile label={"Wczytaj z pliku"} onPress={() => {/**todo import */ }} />
                 </SectionWithIcon>
 
                 {/* powiadomienia */}
@@ -80,11 +101,35 @@ export default function SettingsScreen() {
                     <ActionTile label={"Licencja"} onPress={() => {/**todo as text */ }} />
                     <ActionTile label={"Wersja"} type="text" text={getVersion()} />
                 </SectionWithIcon>
-            </ScrollView>
 
-            <Snackbar visible={snackbarVisiable} onDismiss={() => setSnackbarVisiable(false)}>
-                {snackbarMessage}
-            </Snackbar>
-        </DismissKeyboard>
+                <Snackbar visible={snackbarVisiable} onDismiss={() => setSnackbarVisiable(false)}>
+                    {snackbarMessage}
+                </Snackbar>
+
+
+                {/* all necessary dialogs */}
+                <Portal>
+                    <Dialog visible={dialogImportBackupVisiable} onDismiss={() => setDialogImportBackupVisiable(false)} dismissable>
+                        <Dialog.Title>Czy zapisać dane?</Dialog.Title>
+                        <Dialog.Content>
+                            <Text>
+                                Ta operacja usunie dotychczas zapisane dane. Jeśli będziesz kontynuował utracisz je wszystkie. Czy chcesz utworzyć kopię zapasową tych danych?
+                            </Text>
+                        </Dialog.Content>
+                        <Dialog.Actions>
+                            <Button onPress={async () => {
+                                await handleExport();
+                                await loadDatabase(loadedDatabaseFile);
+                                setDialogImportBackupVisiable(false);
+                            }}>Tak</Button>
+                            <Button onPress={async () => {
+                                await loadDatabase(loadedDatabaseFile);
+                                setDialogImportBackupVisiable(false);
+                            }}>Nie</Button>
+                        </Dialog.Actions>
+                    </Dialog>
+                </Portal>
+            </DismissKeyboard>
+        </ScrollView>
     );
 }
