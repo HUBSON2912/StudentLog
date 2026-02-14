@@ -6,10 +6,9 @@ import SectionWithIcon from "../components/sectionWithIcon";
 import { possibleLanguages } from "../constants/const";
 import DismissKeyboard from "../components/dismissKeyboard";
 import { Button, Dialog, Portal, Snackbar, Text } from "react-native-paper";
-import { createFile } from "../functions/manageFiles";
+import { createFile, selectFile } from "../functions/manageFiles";
 import { dateUniqueString } from "../functions/date";
 import { DatabaseContext } from "../App";
-import { selectFile } from "../functions/manageFiles";
 import { importS } from "../database/students";
 import { importL } from "../database/lessons";
 import RNRestart from 'react-native-restart';
@@ -47,13 +46,19 @@ export default function SettingsScreen() {
     }
     const [loadedDatabaseFile, setLoadedDatabaseFile] = useState("");
 
-    const loadDatabase = async (newContent) => {
-        newContent = await JSON.parse(newContent);
-        db.students=newContent.students;
-        db.lessons=newContent.lessons;
-        importS(newContent.students);
-        importL(newContent.lessons);
-        RNRestart.restart();
+    const loadDatabase = async () => {
+        try {
+
+            let newContent = await JSON.parse(loadedDatabaseFile);
+            db.students = newContent.students;
+            db.lessons = newContent.lessons;
+            importS(newContent.students);
+            importL(newContent.lessons);
+            RNRestart.restart();
+        } catch (err) {
+            setSnackbarMessage("Nie można zaimportować danych.");
+            setSnackbarVisiable(true);
+        }
     }
 
 
@@ -81,7 +86,20 @@ export default function SettingsScreen() {
                 <SectionWithIcon icon={"database-import"} label={"Import/eksport"}>
                     <ActionTile label={"Zapisz do pliku"} onPress={handleExport} />
                     <ActionTile label={"Wczytaj z pliku"} onPress={async () => {
-                        setLoadedDatabaseFile(await selectFile());
+                        const selected = await selectFile()
+                        if (!selected.success) {
+                            setSnackbarMessage(selected.message);
+                            setSnackbarVisiable(true);
+                            return;
+                        }
+                        const verKey = selected.content.slice(0, 5);
+                        if (verKey != "stldb") {
+                            setSnackbarMessage("Niepoprawny format pliku. Plik musi być wygenerowany przez StudentLog.");
+                            setSnackbarVisiable(true);
+                            return;
+                        }
+
+                        setLoadedDatabaseFile(selected.content.slice(5));
                         setDialogImportBackupVisiable(true);
                     }} />
                 </SectionWithIcon>
@@ -102,13 +120,14 @@ export default function SettingsScreen() {
                     <ActionTile label={"Wersja"} type="text" text={getVersion()} />
                 </SectionWithIcon>
 
-                <Snackbar visible={snackbarVisiable} onDismiss={() => setSnackbarVisiable(false)}>
-                    {snackbarMessage}
-                </Snackbar>
 
 
-                {/* all necessary dialogs */}
                 <Portal>
+                    <Snackbar visible={snackbarVisiable} onDismiss={() => setSnackbarVisiable(false)}>
+                        {snackbarMessage}
+                    </Snackbar>
+
+                    {/* all necessary dialogs */}
                     <Dialog visible={dialogImportBackupVisiable} onDismiss={() => setDialogImportBackupVisiable(false)} dismissable>
                         <Dialog.Title>Czy zapisać dane?</Dialog.Title>
                         <Dialog.Content>
@@ -119,11 +138,11 @@ export default function SettingsScreen() {
                         <Dialog.Actions>
                             <Button onPress={async () => {
                                 await handleExport();
-                                await loadDatabase(loadedDatabaseFile);
+                                await loadDatabase();
                                 setDialogImportBackupVisiable(false);
                             }}>Tak</Button>
                             <Button onPress={async () => {
-                                await loadDatabase(loadedDatabaseFile);
+                                await loadDatabase();
                                 setDialogImportBackupVisiable(false);
                             }}>Nie</Button>
                         </Dialog.Actions>

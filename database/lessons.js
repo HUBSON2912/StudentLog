@@ -144,7 +144,6 @@ export async function importL(array) {
             (id, student_id, subject, level, duration, price, date, hour, status, topic)
             VALUES ${items}`);
     } catch (error) {
-        // console.error(`Error while inserting a new student: ${JSON.stringify(error)}`);
         return error;
     }
 }

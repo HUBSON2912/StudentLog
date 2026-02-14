@@ -16,7 +16,6 @@ function LessonTile({ lesson, deleteAction = (id) => { }, editAction = (id) => {
 
     const __currentStatus = statuses[lesson.status];
     const [showStatusDialog, setShowStatusDialog] = useState(false);
-    console.log(__currentStatus);
 
     return (
         <>
