@@ -21,7 +21,7 @@ export default function EditStudentScreen({ navigation, route }) {
     const [nick, setNick] = useState("");
     const [city, setCity] = useState("");
     const [address, setAddress] = useState("");
-    const [active, setActive] = useState(true);
+    const [disabled, setDisabled] = useState(false);
 
 
     useEffect(() => {
@@ -41,7 +41,7 @@ export default function EditStudentScreen({ navigation, route }) {
         setNick(studentData.nick);
         setCity(studentData.city);
         setAddress(studentData.address);
-        setActive(!!(studentData.active));
+        setDisabled(!!(studentData.disabled));
     }, [])
 
     const [loading, setLoading] = useState(false);
@@ -97,7 +97,7 @@ export default function EditStudentScreen({ navigation, route }) {
             nick: nick,
             city: city,
             address: address,
-            active: (active ? 1 : 0)
+            disabled: (disabled ? 1 : 0)
         };
         await db.insert("students", newStudent);
         setLoading(false);
@@ -120,7 +120,7 @@ export default function EditStudentScreen({ navigation, route }) {
             nick: nick,
             city: city,
             address: address,
-            active: (active ? 1 : 0)
+            disabled: (disabled ? 1 : 0)
         };
         await db.update("students", newStudent, studentID);
         setLoading(false);
@@ -186,8 +186,8 @@ export default function EditStudentScreen({ navigation, route }) {
                 <Text style={styles.label} pointerEvents="none">Aktywny:</Text>
                 <View style={{justifyContent: "center", alignItems: "center", padding: 10, marginLeft: 10}}>
                     <Switch
-                        value={active}
-                        onChange={() => setActive(!active)}
+                        value={!disabled}
+                        onChange={() => setDisabled(!disabled)}
                         style={{transform: [{scale: 1.5}]}}
                     />
                 </View>

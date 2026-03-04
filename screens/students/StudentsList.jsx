@@ -7,7 +7,7 @@ import { possibleForms, remotelyForm, stationaryForm, studentsOrder } from "../.
 
 function StudentTile({ student, deleteAction = (id) => { }, editAction = (id) => { }, detailsAction = (id) => { } }) {
     const theme = useTheme();
-    const textColor = student.active ? theme.colors.onSurface : theme.colors.onSurfaceDisabled;
+    const textColor = !student.disabled ? theme.colors.onSurface : theme.colors.onSurfaceDisabled;
     const styles = StyleSheet.create({
         dataContainer: {
             flexDirection: "row",
@@ -271,7 +271,7 @@ export default function StudentsListScreen({ navigation }) {
                             </View>
                             <View style={styles.detailContainer}>
                                 <Text variant="bodyMedium">Aktywny: </Text>
-                                <Text variant="bodyMedium">{selectedStudent.active ? "TAK" : "NIE"}</Text>
+                                <Text variant="bodyMedium">{!selectedStudent.disabled ? "TAK" : "NIE"}</Text>
                             </View>
                             {
                                 remotelyForm.includes(selectedStudent.form) &&
