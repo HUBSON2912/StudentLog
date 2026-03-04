@@ -38,12 +38,12 @@ export const possibleStatuses = {
 export const studentsOrder = [
     {
         label: "Trafność ￬",
-        paramName: ["id"],
+        paramName: ["disabled", "id"],
         ascending: true
     },
     {
         label: "Trafność ￪",
-        paramName: ["id"],
+        paramName: ["disabled", "id"],
         ascending: false
     },
     {
@@ -143,4 +143,4 @@ export const lessonsOrder = [
 
 export const weekDays = ["Poniedziałek", "Wtorek", "Środa", "Czwartek", "Piątek", "Sobota", "Niedziela"];
 
-export const possibleLanguages=["Polski", "English"]
+export const possibleLanguages = ["Polski", "English"]

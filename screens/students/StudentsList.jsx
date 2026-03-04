@@ -7,6 +7,7 @@ import { possibleForms, remotelyForm, stationaryForm, studentsOrder } from "../.
 
 function StudentTile({ student, deleteAction = (id) => { }, editAction = (id) => { }, detailsAction = (id) => { } }) {
     const theme = useTheme();
+    const textColor = !student.disabled ? theme.colors.onSurface : theme.colors.onSurfaceDisabled;
     const styles = StyleSheet.create({
         dataContainer: {
             flexDirection: "row",
@@ -15,7 +16,8 @@ function StudentTile({ student, deleteAction = (id) => { }, editAction = (id) =>
             alignItems: "center"
         },
         text: {
-            fontSize: 15
+            fontSize: 15,
+            color: textColor
         },
         container: {
             marginVertical: 10,
@@ -23,23 +25,24 @@ function StudentTile({ student, deleteAction = (id) => { }, editAction = (id) =>
         }
     });
 
+
     return (
         <>
             <Card mode="contained" style={styles.container} theme={theme}>
                 <Card.Title title={student.name + " " + student.surname}
-                    titleStyle={{ fontSize: 22 }}
+                    titleStyle={{ fontSize: 22, color: textColor }}
                     right={() => <Icon size={50} source={possibleForms[student.form].icon}
                         color={theme.colors.primary} />}
                 />
                 <Card.Content>
                     <View style={styles.dataContainer}>
-                        <Icon size={16} source={"phone"} />
+                        <Icon size={16} source={"phone"} color={textColor} />
                         <Text style={styles.text}>{student.phone}</Text>
                     </View>
                     {
                         student.email &&
                         <View style={styles.dataContainer}>
-                            <Icon size={16} source={"email-outline"} />
+                            <Icon size={16} source={"email-outline"} color={textColor} />
                             <Text style={styles.text}>{student.email}</Text>
                         </View>
                     }
@@ -47,7 +50,7 @@ function StudentTile({ student, deleteAction = (id) => { }, editAction = (id) =>
                         remotelyForm.includes(student.form) &&
                         <>
                             <View style={styles.dataContainer}>
-                                <Icon size={16} source={"laptop"} />
+                                <Icon size={16} source={"laptop"} color={textColor} />
                                 <Text style={styles.text}>{student.platform} {"\u2022"} {student.nick}</Text>
                             </View>
                         </>
@@ -56,7 +59,7 @@ function StudentTile({ student, deleteAction = (id) => { }, editAction = (id) =>
                         stationaryForm.includes(student.form) &&
                         <>
                             <View style={styles.dataContainer}>
-                                <Icon size={16} source={"home"} />
+                                <Icon size={16} source={"home"} color={textColor} />
                                 <Text style={styles.text}>{student.city} {"\u2022"} {student.address}</Text>
                             </View>
                         </>
@@ -106,7 +109,7 @@ export default function StudentsListScreen({ navigation }) {
     });
 
     const doFilter = (_stud) => {
-        if(!_stud) {
+        if (!_stud) {
             return [];
         }
         _stud.sort((a, b) => {
@@ -265,6 +268,10 @@ export default function StudentsListScreen({ navigation }) {
                             <View style={styles.detailContainer}>
                                 <Text variant="bodyMedium">Forma: </Text>
                                 <Text variant="bodyMedium">{possibleForms[selectedStudent.form].label}</Text>
+                            </View>
+                            <View style={styles.detailContainer}>
+                                <Text variant="bodyMedium">Aktywny: </Text>
+                                <Text variant="bodyMedium">{!selectedStudent.disabled ? "TAK" : "NIE"}</Text>
                             </View>
                             {
                                 remotelyForm.includes(selectedStudent.form) &&

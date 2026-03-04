@@ -1,6 +1,6 @@
 import { StyleSheet, View } from "react-native";
-import { Button, HelperText, Text, TextInput, useTheme } from "react-native-paper";
-import { useContext, useEffect, useState } from "react";
+import { Button, HelperText, Switch, Text, TextInput, useTheme } from "react-native-paper";
+import { act, useContext, useEffect, useState } from "react";
 import { ToggleChipGroup } from "../../components/toggleChipGroup";
 import { AutocompleteTextInput } from '../../components/autocompleteTextInput';
 import { possibleForms, remotelyForm, stationaryForm, suggestedPlatforms } from "../../constants/const";
@@ -21,6 +21,7 @@ export default function EditStudentScreen({ navigation, route }) {
     const [nick, setNick] = useState("");
     const [city, setCity] = useState("");
     const [address, setAddress] = useState("");
+    const [disabled, setDisabled] = useState(false);
 
 
     useEffect(() => {
@@ -40,6 +41,7 @@ export default function EditStudentScreen({ navigation, route }) {
         setNick(studentData.nick);
         setCity(studentData.city);
         setAddress(studentData.address);
+        setDisabled(!!(studentData.disabled));
     }, [])
 
     const [loading, setLoading] = useState(false);
@@ -94,7 +96,8 @@ export default function EditStudentScreen({ navigation, route }) {
             platform: platform,
             nick: nick,
             city: city,
-            address: address
+            address: address,
+            disabled: (disabled ? 1 : 0)
         };
         await db.insert("students", newStudent);
         setLoading(false);
@@ -116,7 +119,8 @@ export default function EditStudentScreen({ navigation, route }) {
             platform: platform,
             nick: nick,
             city: city,
-            address: address
+            address: address,
+            disabled: (disabled ? 1 : 0)
         };
         await db.update("students", newStudent, studentID);
         setLoading(false);
@@ -177,6 +181,16 @@ export default function EditStudentScreen({ navigation, route }) {
                     onChangeText={setEmail}
                     keyboardType="email-address"
                 />
+            </View>
+            <View style={styles.row}>
+                <Text style={styles.label} pointerEvents="none">Aktywny:</Text>
+                <View style={{justifyContent: "center", alignItems: "center", padding: 10, marginLeft: 10}}>
+                    <Switch
+                        value={!disabled}
+                        onChange={() => setDisabled(!disabled)}
+                        style={{transform: [{scale: 1.5}]}}
+                    />
+                </View>
             </View>
             <View style={styles.row}>
                 <Text style={styles.label} pointerEvents="none">Forma:</Text>
