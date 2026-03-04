@@ -228,15 +228,18 @@ export default function EditLessonScreen({ navigation, route }) {
                 alignItems: "center",
                 alignContent: "center",
                 gap: 10
+            },
+            textColor: {
+                color: !item.disabled?theme.colors.onBackground:theme.colors.onSurfaceVariant
             }
         });
 
         return (
             <View style={styles.elementContainer}>
-                <Text>{item.id}</Text>
+                <Text style={styles.textColor}>{item.id}</Text>
                 <View style={{ flexDirection: "row", gap: 5 }}>
-                    <Text variant="bodyLarge">{item.name}</Text>
-                    <Text variant="bodyLarge">{item.surname}</Text>
+                    <Text variant="bodyLarge" style={styles.textColor}>{item.name}</Text>
+                    <Text variant="bodyLarge" style={styles.textColor}>{item.surname}</Text>
                 </View>
             </View>
         );
@@ -292,7 +295,13 @@ export default function EditLessonScreen({ navigation, route }) {
                     students.length != 0 &&
                     <View style={styles.input}>
                         <SelectDropdown
-                            data={students}
+                            data={students.sort((a,b)=>{
+                                if(a.disabled<b.disabled)
+                                    return -1;
+                                else if(a.disabled>b.disabled) 
+                                    return 1;
+                                return (a.id<b.id?-1:1);
+                            })}
                             onSelect={(sel) => { setSelectedStudentID(sel.id); setInputErrors({ ...inputErrors, student: !sel }) }}
                             renderButton={DropdownButton}
                             renderItem={DropdownItem}
