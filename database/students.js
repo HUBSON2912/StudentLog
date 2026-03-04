@@ -16,7 +16,8 @@ export async function createTableS() {
              platform TEXT,
              nick TEXT,
              city TEXT,
-             address TEXT
+             address TEXT,
+             active INTEGER
              );`
         );
     } catch (error) {
@@ -31,8 +32,8 @@ export async function insertS(student) {
 
         const insertRes = await db.executeSql(
             `INSERT INTO students 
-            (name, surname, phone, email, form, platform, nick, city, address)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            (name, surname, phone, email, form, platform, nick, city, address, active)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
                 student.name,
                 student.surname,
@@ -42,7 +43,8 @@ export async function insertS(student) {
                 student.platform,
                 student.nick,
                 student.city,
-                student.address
+                student.address,
+                student.active
             ]
         );
         return insertRes[0].insertId;
@@ -98,6 +100,7 @@ export async function updateS(student, id) {
                 platform="${student.platform}",
                 nick="${student.nick}",
                 city="${student.city}",
+                active=${student.active},
                 address="${student.address}"
             WHERE id=${id}`
         );
@@ -125,10 +128,10 @@ export async function importS(array) {
         await createTableS();
 
         const db = await SQLite.openDatabase({ name: 'studentlog.db', location: 'default' })
-        const items=array.map(x=>`(${x.id}, "${x.name}", "${x.surname}", "${x.phone}", "${x.email}", ${x.form}, "${x.platform}", "${x.nick}", "${x.city}", "${x.address}")`).join(",");
+        const items=array.map(x=>`(${x.id}, "${x.name}", "${x.surname}", "${x.phone}", "${x.email}", ${x.form}, "${x.platform}", "${x.nick}", "${x.city}", "${x.address}", ${x.active})`).join(",");
         const insertRes = await db.executeSql(
             `INSERT INTO students 
-            (id, name, surname, phone, email, form, platform, nick, city, address)
+            (id, name, surname, phone, email, form, platform, nick, city, address, active)
             VALUES ${items}`);
     } catch (error) {
         // console.error(`Error while inserting a new student: ${JSON.stringify(error)}`);
