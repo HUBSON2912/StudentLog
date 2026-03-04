@@ -106,3 +106,32 @@ export async function updateS(student, id) {
         return error;
     }
 }
+
+export async function dropTableS() {
+    try {
+        const db = await SQLite.openDatabase({ name: 'studentlog.db', location: 'default' })
+        db.executeSql(
+            `DROP TABLE IF EXISTS students;`
+        );
+    } catch (error) {
+        // console.error(`Cannot create the students table: ${JSON.stringify(error)}`);
+        return error;
+    }
+}
+
+export async function importS(array) {
+    try {
+        await dropTableS();
+        await createTableS();
+
+        const db = await SQLite.openDatabase({ name: 'studentlog.db', location: 'default' })
+        const items=array.map(x=>`(${x.id}, "${x.name}", "${x.surname}", "${x.phone}", "${x.email}", ${x.form}, "${x.platform}", "${x.nick}", "${x.city}", "${x.address}")`).join(",");
+        const insertRes = await db.executeSql(
+            `INSERT INTO students 
+            (id, name, surname, phone, email, form, platform, nick, city, address)
+            VALUES ${items}`);
+    } catch (error) {
+        // console.error(`Error while inserting a new student: ${JSON.stringify(error)}`);
+        return error;
+    }
+}

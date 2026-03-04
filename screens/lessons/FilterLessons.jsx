@@ -5,9 +5,8 @@ import { lessonsOrder, possibleForms, possibleStatuses, studentsOrder } from "..
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview'
 import SelectDropdown from "react-native-select-dropdown";
 import { DatabaseContext } from "../../App";
-import { AutocompleteTextInput } from "../../components/autocompleteTextInput";
 import { DatePickerModal } from "react-native-paper-dates";
-import { dateToDDMMYYYY } from "../../functions/misc/date";
+import { dateToDDMMYYYY } from "../../functions/date";
 
 export default function FilterLessonsScreen({ navigation, route }) {
     const theme = useTheme();
@@ -384,7 +383,7 @@ export default function FilterLessonsScreen({ navigation, route }) {
                             student: student ? student : null,
                             subject: subject ? subject : null,
                             level: level ? level : null,
-                            dateRange: { since: dateRange.since.getFullYear()==1970?null:dateRange.since, to: dateRange.to.getFullYear()==1970?null:dateRange.to },
+                            dateRange: { since: dateRange.since.getFullYear() == 1970 ? null : dateRange.since, to: dateRange.to.getFullYear() == 1970 ? null : dateRange.to },
                             priceRange: { min: priceRange.min ? parseInt(priceRange.min) : null, max: priceRange.max ? parseInt(priceRange.max) : null },
                             durationRange: { min: durationRange.min ? parseFloat(durationRange.min) : null, max: durationRange.max ? parseFloat(durationRange.max) : null },
                             status: selectedStatuses
