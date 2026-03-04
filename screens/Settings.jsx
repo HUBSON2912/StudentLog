@@ -52,8 +52,8 @@ export default function SettingsScreen() {
             let newContent = await JSON.parse(loadedDatabaseFile);
             db.students = newContent.students;
             db.lessons = newContent.lessons;
-            importS(newContent.students);
-            importL(newContent.lessons);
+            await importS(newContent.students);
+            await importL(newContent.lessons);
             RNRestart.restart();
         } catch (err) {
             setSnackbarMessage("Nie można zaimportować danych.");

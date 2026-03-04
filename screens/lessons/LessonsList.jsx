@@ -1,9 +1,9 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { Appbar, Button, Card, Chip, Dialog, FAB, Icon, IconButton, Portal, Text, useTheme } from "react-native-paper";
 import { DatabaseContext } from "../../App";
-import { FlatList, RefreshControl, StyleSheet, useColorScheme, View } from "react-native";
+import { FlatList, StyleSheet, useColorScheme, View } from "react-native";
 import { lessonsOrder, possibleStatuses } from "../../constants/const";
-import { DDMMYYYYToDate } from "../../functions/date";
+import { DDMMYYYYToDate, HHMMToHour } from "../../functions/date";
 import { StatusChip } from "../../components/statusChip";
 
 let db = null;
@@ -121,9 +121,35 @@ export default function LessonsListScreen({ navigation }) {
         _stud.sort((a, b) => {
             const params = filter.order.paramName;
             for (let i = 0; i < params.length; i++) {
-                if (a[params[i]] < b[params[i]]) {
+                let a_p = a[params[i]];
+                let b_p = b[params[i]];
+
+                // special case, date but after conversion it acts like a normal param
+                if (params[i] == "date") {
+                    a_p = DDMMYYYYToDate(a_p);
+                    b_p = DDMMYYYYToDate(b_p);
+                }
+
+                //special case, hour
+                if (params[i] == "hour") {
+                    a_p = HHMMToHour(a_p);
+                    b_p = HHMMToHour(b_p);
+                    if (a_p.hours < b_p.hours)
+                        return -1;
+                    else if (a_p.hours > b_p.hours)
+                        return 1;
+                    else {
+                        if (a_p.minutes < b_p.minutes)
+                            return -1;
+                        else if (a_p.minutes > b_p.minutes)
+                            return 1;
+                    }
+                }
+
+                // for normal parameters
+                if (a_p < b_p) {
                     return -1;
-                } else if (a[params[i]] > b[params[i]]) {
+                } else if (a_p > b_p) {
                     return 1;
                 }
             }
@@ -153,10 +179,10 @@ export default function LessonsListScreen({ navigation }) {
             _stud = _stud.filter(x => x.student_id == filter.student);
         }
         if (filter.dateRange.since) {
-            _stud = _stud.filter(x => DDMMYYYYToDate(x.date).valueOf() >= filter.dateRange.since.valueOf());
+            _stud = _stud.filter(x => DDMMYYYYToDate(x.date) >= filter.dateRange.since);
         }
         if (filter.dateRange.to) {
-            _stud = _stud.filter(x => DDMMYYYYToDate(x.date).valueOf() <= filter.dateRange.to.valueOf());
+            _stud = _stud.filter(x => DDMMYYYYToDate(x.date) <= filter.dateRange.to);
         }
         if (filter.priceRange.min) {
             _stud = _stud.filter(x => x.price >= filter.priceRange.min);
