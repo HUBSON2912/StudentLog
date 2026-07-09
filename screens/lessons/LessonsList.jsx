@@ -1,10 +1,11 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Appbar, Button, Card, Chip, Dialog, FAB, Icon, IconButton, Portal, Text, useTheme } from "react-native-paper";
-import { DatabaseContext } from "../../App";
+import { DatabaseContext, SettingsContext } from "../../App";
 import { FlatList, StyleSheet, useColorScheme, View } from "react-native";
 import { lessonsOrder, possibleStatuses } from "../../constants/const";
 import { DDMMYYYYToDate, HHMMToHour } from "../../functions/date";
 import { StatusChip } from "../../components/statusChip";
+import { SETTINGS_KEYS, settingsGet, settingsGetAll } from "../../database/settings";
 
 let db = null;
 let statuses = [];
@@ -201,10 +202,25 @@ export default function LessonsListScreen({ navigation }) {
         return _stud;
     }
 
+    const settings = useContext(SettingsContext);
+
     return (
         <>
             <Appbar style={{ backgroundColor: theme.colors.background }}>
-                <Appbar.Content title={`Zarobki: ${doFilter(db.lessons).reduce((prev, curr) => prev + (curr.status == 2 ? curr.price : 0), 0)} zł`} />
+                {
+                    (settings.settings[SETTINGS_KEYS.showIncomes]) === "true" &&
+                    <Appbar.Content title={`Zarobki: ${doFilter(db.lessons).reduce((prev, curr) => prev + (curr.status == 2 ? curr.price : 0), 0)} zł`} />
+                }
+                {
+                    (settings.settings[SETTINGS_KEYS.showIncomes]) !== "true" &&
+                    <Appbar.Content title={"Lekcje"} />
+                }
+                
+                {/* ------------------------- */}
+                {/* info delete it later */}
+                <Appbar.Action icon={"cog"} onPress={() => console.log(settings)} size={28} />
+                {/* ------------------------- */}
+                
                 <Appbar.Action icon={filter.active ? "filter-check" : "filter"} onPress={() => navigation.navigate("FilterLessons", { setFilter: setFilter, activeFilter: filter })} size={28} />
             </Appbar>
 

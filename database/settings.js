@@ -12,6 +12,7 @@ export const SETTINGS_KEYS={
     notifUnknownTopic: "notifUnknownTopic",
     notifUnpaidLesson: "notifUnpaidLesson",
     notifTodayLesson: "notifTodayLesson",
+    autocompleteInputs: "autocompleteInputs"
 }
 
 const DEFAULT_VALUES={
@@ -34,9 +35,10 @@ const DEFAULT_VALUES={
     notifUnknownTopic: "true",
     notifUnpaidLesson: "true",
     notifTodayLesson: "true",
+    autocompleteInputs: "true"
 }
 
-function correctSettingsKey(key) {
+export function correctSettingsKey(key) {
     return Object.values(SETTINGS_KEYS).includes(key);
 }
 

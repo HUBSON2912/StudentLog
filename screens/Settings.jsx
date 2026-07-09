@@ -8,7 +8,7 @@ import DismissKeyboard from "../components/dismissKeyboard";
 import { Button, Dialog, Portal, Snackbar, Text } from "react-native-paper";
 import { createFile, selectFile } from "../functions/manageFiles";
 import { dateUniqueString } from "../functions/date";
-import { DatabaseContext } from "../App";
+import { DatabaseContext, SettingsContext } from "../App";
 import { importS } from "../database/students";
 import { importL } from "../database/lessons";
 import RNRestart from 'react-native-restart';
@@ -16,12 +16,14 @@ import { SETTINGS_KEYS, settingsGet, settingsGetAll, settingsSet } from "../data
 
 export default function SettingsScreen() {
     const db = useContext(DatabaseContext);
+    const settings = useContext(SettingsContext);
     const currencies = Object.values(require("../constants/currency.json"));
 
     const [language, setLanguage] = useState(possibleLanguages[0]);
     const [currency, setCurrency] = useState(currencies[0]);
     const [showIncomes, setShowIncomes] = useState(true);
     const [showStudentNumber, setShowStudentNumber] = useState(true);
+    const [autocompleteInputs, setAutocompleteInputs] = useState(true);
 
     const [applyPriceList, setApplyPriceList] = useState(true);
     const [firstDiscount, setFirstDiscount] = useState("100");
@@ -34,22 +36,21 @@ export default function SettingsScreen() {
 
     // load saved settings
     useEffect(() => {
-        async function load() {
-            const settings = await settingsGetAll();
-            setLanguage(settings[SETTINGS_KEYS.language]);
-            setCurrency(JSON.parse(settings[SETTINGS_KEYS.currency]));
-            setShowIncomes(settings[SETTINGS_KEYS.showIncomes] === "true");
-            setShowStudentNumber(settings[SETTINGS_KEYS.showNumberStudents] === "true");
-            setApplyPriceList(settings[SETTINGS_KEYS.usePriceList] === "true");
-            setFirstDiscount(settings[SETTINGS_KEYS.discountForFirst]);
-            setRoundingMode(JSON.parse(settings[SETTINGS_KEYS.rounding]));
-            setApplyNotifications(settings[SETTINGS_KEYS.notificationsOn] === "true");
-            setNotifUnknowTopic(settings[SETTINGS_KEYS.notifUnknownTopic] === "true");
-            setNotifUnpaidLessons(settings[SETTINGS_KEYS.notifUnpaidLesson] === "true");
-            setNotifTodayLessons(settings[SETTINGS_KEYS.notifTodayLesson] === "true");
-        }
-
-        load();
+        // async function load() {
+        setLanguage(settings.settings[SETTINGS_KEYS.language]);
+        setCurrency(JSON.parse(settings.settings[SETTINGS_KEYS.currency]));
+        setShowIncomes(settings.settings[SETTINGS_KEYS.showIncomes] === "true");
+        setShowStudentNumber(settings.settings[SETTINGS_KEYS.showNumberStudents] === "true");
+        setApplyPriceList(settings.settings[SETTINGS_KEYS.usePriceList] === "true");
+        setFirstDiscount(settings.settings[SETTINGS_KEYS.discountForFirst]);
+        setRoundingMode(JSON.parse(settings.settings[SETTINGS_KEYS.rounding]));
+        setApplyNotifications(settings.settings[SETTINGS_KEYS.notificationsOn] === "true");
+        setNotifUnknowTopic(settings.settings[SETTINGS_KEYS.notifUnknownTopic] === "true");
+        setNotifUnpaidLessons(settings.settings[SETTINGS_KEYS.notifUnpaidLesson] === "true");
+        setNotifTodayLessons(settings.settings[SETTINGS_KEYS.notifTodayLesson] === "true");
+        setAutocompleteInputs(settings.settings[SETTINGS_KEYS.autocompleteInputs] === "true");
+        // }
+        // load();
     }, []);
 
     const [snackbarVisiable, setSnackbarVisiable] = useState(false);
@@ -91,6 +92,7 @@ export default function SettingsScreen() {
                 <ActionTile label="print settings" onPress={() => {
                     async function show() {
                         console.log(await settingsGetAll());
+                        console.log(settings);
                     }
                     show();
                 }} />
@@ -99,36 +101,40 @@ export default function SettingsScreen() {
                 <SectionWithIcon icon={"land-plots"} label={"Interfejs"}>
                     <ActionTile label={"Język"} type="select" selectData={possibleLanguages} value={language} onSelect={(value) => {
                         setLanguage(value);
-                        settingsSet(SETTINGS_KEYS.language, value);
+                        settings.set(SETTINGS_KEYS.language, value);
                     }} />
                     <ActionTile label={"Waluta"} type="select" selectData={currencies} value={currency} itemProperty={"code"} onSelect={(val) => {
                         setCurrency(val);
-                        settingsSet(SETTINGS_KEYS.currency, JSON.stringify(val));
+                        settings.set(SETTINGS_KEYS.currency, JSON.stringify(val));
                     }} />
                     <ActionTile label={"Pokaż zarobki"} type="switch" value={showIncomes} onPress={() => {
-                        settingsSet(SETTINGS_KEYS.showIncomes, (!showIncomes).toString());
+                        settings.set(SETTINGS_KEYS.showIncomes, (!showIncomes).toString());
                         setShowIncomes(prev => !prev);
                     }} />
-                    <ActionTile label={"Pokaż ilość uczniów"} type="switch" value={showStudentNumber} onPress={() => {
-                        settingsSet(SETTINGS_KEYS.showNumberStudents, (!showStudentNumber).toString());
-                        setShowStudentNumber(!showStudentNumber);
+                    <ActionTile label={"Pokaż ilość aktywnych uczniów"} type="switch" value={showStudentNumber} onPress={() => {
+                        settings.set(SETTINGS_KEYS.showNumberStudents, (!showStudentNumber).toString());
+                        setShowStudentNumber(prev => !prev);
+                    }} />
+                    <ActionTile label={"Autouzupełnianie pól"} type="switch" value={autocompleteInputs} onPress={() => {
+                        settings.set(SETTINGS_KEYS.autocompleteInputs, (!autocompleteInputs).toString());
+                        setAutocompleteInputs(prev => !prev);
                     }} />
                 </SectionWithIcon>
 
                 {/* cennik */}
                 <SectionWithIcon icon={"cash-multiple"} label={"Cennik"}>
                     <ActionTile label={"Zastosuj cennik"} type="switch" value={applyPriceList} onPress={() => {
-                        settingsSet(SETTINGS_KEYS.usePriceList, (!applyPriceList).toString());
+                        settings.set(SETTINGS_KEYS.usePriceList, (!applyPriceList).toString());
                         setApplyPriceList(!applyPriceList);
                     }} />
                     <ActionTile label={"Edytuj cennik"} onPress={() => { console.log("todo");/** todo navigate to pricelist */ }} active={applyPriceList} />
                     <ActionTile label={"Pierwsza zniżka"} type="text-input" active={applyPriceList} placeholder={"%"} value={firstDiscount} onChangeText={(val) => {
                         setFirstDiscount(val);
-                        settingsSet(SETTINGS_KEYS.discountForFirst, val);
+                        settings.set(SETTINGS_KEYS.discountForFirst, val);
                     }} />
                     <ActionTile label={"Sposób zaokrąglania"} type="select" active={applyPriceList} selectData={possibleRoundingMode} itemProperty={"label"} value={roundingMode} onSelect={(val) => {
                         setRoundingMode(val);
-                        settingsSet(SETTINGS_KEYS.rounding, JSON.stringify(val));
+                        settings.set(SETTINGS_KEYS.rounding, JSON.stringify(val));
                     }} />
                 </SectionWithIcon>
 
@@ -157,19 +163,19 @@ export default function SettingsScreen() {
                 {/* powiadomienia */}
                 <SectionWithIcon icon={"alert-circle"} label={"Powiadomienia"}>
                     <ActionTile label={"Włącz powiadomienia"} type="switch" value={applyNotifications} onPress={() => {
-                        settingsSet(SETTINGS_KEYS.notificationsOn, (!applyNotifications).toString());
+                        settings.set(SETTINGS_KEYS.notificationsOn, (!applyNotifications).toString());
                         setApplyNotifications(!applyNotifications);
                     }} />
                     <ActionTile label={"Nieznany temat"} type="switch" active={applyNotifications} value={notifUnknowTopic} onPress={() => {
-                        settingsSet(SETTINGS_KEYS.notifUnknownTopic, (!notifUnknowTopic).toString());
+                        settings.set(SETTINGS_KEYS.notifUnknownTopic, (!notifUnknowTopic).toString());
                         setNotifUnknowTopic(!notifUnknowTopic);
                     }} />
                     <ActionTile label={"Nieopłacone zajęcia"} type="switch" active={applyNotifications} value={notifUnpaidLessons} onPress={() => {
-                        settingsSet(SETTINGS_KEYS.notifUnpaidLesson, (!notifUnpaidLessons).toString());
+                        settings.set(SETTINGS_KEYS.notifUnpaidLesson, (!notifUnpaidLessons).toString());
                         setNotifUnpaidLessons(!notifUnpaidLessons);
                     }} />
                     <ActionTile label={"Dzisiejsze zajęcia"} type="switch" active={applyNotifications} value={notifTodayLessons} onPress={() => {
-                        settingsSet(SETTINGS_KEYS.notifTodayLesson, (!notifTodayLessons).toString());
+                        settings.set(SETTINGS_KEYS.notifTodayLesson, (!notifTodayLessons).toString());
                         setNotifTodayLessons(!notifTodayLessons);
                     }} />
                 </SectionWithIcon>

@@ -1,8 +1,9 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { Appbar, Avatar, Button, Card, Dialog, Divider, FAB, Icon, IconButton, Menu, Modal, Portal, Searchbar, Text, useTheme } from "react-native-paper";
-import { DatabaseContext } from "../../App";
+import { DatabaseContext, SettingsContext } from "../../App";
 import { Animated, FlatList, KeyboardAvoidingView, Platform, StatusBar, StyleSheet, TouchableWithoutFeedback, View } from "react-native";
 import { possibleForms, remotelyForm, stationaryForm, studentsOrder } from "../../constants/const";
+import { SETTINGS_KEYS } from "../../database/settings";
 
 
 function StudentTile({ student, deleteAction = (id) => { }, editAction = (id) => { }, detailsAction = (id) => { } }) {
@@ -24,7 +25,6 @@ function StudentTile({ student, deleteAction = (id) => { }, editAction = (id) =>
             paddingRight: 15
         }
     });
-
 
     return (
         <>
@@ -78,6 +78,7 @@ function StudentTile({ student, deleteAction = (id) => { }, editAction = (id) =>
 export default function StudentsListScreen({ navigation }) {
     const theme = useTheme();
     const db = useContext(DatabaseContext);
+    const settings = useContext(SettingsContext);
 
     const [selectedStudent, setSelectedStudent] = useState(null);
     const [isDeleteDialogVisiable, setDeleteDialogVisiable] = useState(false);
@@ -174,7 +175,20 @@ export default function StudentsListScreen({ navigation }) {
         <>
             {/* header */}
             <Appbar style={{ backgroundColor: theme.colors.background }}>
-                <Appbar.Content title={`Liczba uczniów: ${doFilter(db.students).length}`} />
+                {
+                    (settings.settings[SETTINGS_KEYS.showNumberStudents]) === "true" &&
+                    <Appbar.Content title={`Liczba uczniów: ${doFilter(db.students).length}`} />
+                }
+                {
+                    (settings.settings[SETTINGS_KEYS.showNumberStudents] !== "true") &&
+                    <Appbar.Content title={"Uczniowie"} />
+                }
+
+                {/* ------------------------- */}
+                {/* info delete it later */}
+                <Appbar.Action icon={"cog"} onPress={() => console.log(settings)} size={28} />
+                {/* ------------------------- */}
+                
                 <Appbar.Action icon={filter.active ? "filter-check" : "filter"} onPress={() => navigation.navigate("FilterStudents", { setFilter: setFilter, activeFilter: filter })} size={28} />
             </Appbar>
 
