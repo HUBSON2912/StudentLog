@@ -4,11 +4,10 @@ import { themeDark, themeLight } from "./theme";
 import { createContext, useState, useEffect } from "react";
 import { createTableS, deleteS, getAllS, insertS, updateS } from "./database/students";
 import { NavigationContainer } from "@react-navigation/native";
-import { createAsyncStorage } from "@react-native-async-storage/async-storage";
 import { createTableL, deleteL, deleteStudentsLessonL, getAllL, insertL, updateL } from "./database/lessons";
 import StudetnsScreen from "./screens/Students";
 import LessonsScreen from "./screens/Lessons";
-import { BottomTabBar, createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { possibleTableNames } from "./constants/const";
 import SettingsScreen from "./screens/Settings";
 
@@ -242,7 +241,6 @@ export default function App() {
             return error;
         }
     }
-
 
     const database = {
         students: students,

@@ -1,9 +1,9 @@
 import { ScrollView, View } from "react-native";
 import ActionTile from "../components/actionTile";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { getVersion } from "../functions/version";
 import SectionWithIcon from "../components/sectionWithIcon";
-import { possibleLanguages } from "../constants/const";
+import { possibleLanguages, possibleRoundingMode } from "../constants/const";
 import DismissKeyboard from "../components/dismissKeyboard";
 import { Button, Dialog, Portal, Snackbar, Text } from "react-native-paper";
 import { createFile, selectFile } from "../functions/manageFiles";
@@ -12,6 +12,7 @@ import { DatabaseContext } from "../App";
 import { importS } from "../database/students";
 import { importL } from "../database/lessons";
 import RNRestart from 'react-native-restart';
+import { SETTINGS_KEYS, settingsGet, settingsGetAll, settingsSet } from "../database/settings";
 
 export default function SettingsScreen() {
     const db = useContext(DatabaseContext);
@@ -22,8 +23,6 @@ export default function SettingsScreen() {
     const [showIncomes, setShowIncomes] = useState(true);
     const [showStudentNumber, setShowStudentNumber] = useState(true);
 
-    const possibleRoundingMode = [{ id: 0, label: "w górę" }, { id: 1, label: "w dół" }, { id: 2, label: "matematycznie" }, { id: 3, label: "nie zaokrąglaj" },]
-
     const [applyPriceList, setApplyPriceList] = useState(true);
     const [firstDiscount, setFirstDiscount] = useState("100");
     const [roundingMode, setRoundingMode] = useState(possibleRoundingMode[0])
@@ -32,6 +31,26 @@ export default function SettingsScreen() {
     const [notifUnknowTopic, setNotifUnknowTopic] = useState(true);
     const [notifUnpaidLessons, setNotifUnpaidLessons] = useState(true);
     const [notifTodayLessons, setNotifTodayLessons] = useState(true);
+
+    // load saved settings
+    useEffect(() => {
+        async function load() {
+            const settings = await settingsGetAll();
+            setLanguage(settings[SETTINGS_KEYS.language]);
+            setCurrency(JSON.parse(settings[SETTINGS_KEYS.currency]));
+            setShowIncomes(settings[SETTINGS_KEYS.showIncomes] === "true");
+            setShowStudentNumber(settings[SETTINGS_KEYS.showNumberStudents] === "true");
+            setApplyPriceList(settings[SETTINGS_KEYS.usePriceList] === "true");
+            setFirstDiscount(settings[SETTINGS_KEYS.discountForFirst]);
+            setRoundingMode(JSON.parse(settings[SETTINGS_KEYS.rounding]));
+            setApplyNotifications(settings[SETTINGS_KEYS.notificationsOn] === "true");
+            setNotifUnknowTopic(settings[SETTINGS_KEYS.notifUnknownTopic] === "true");
+            setNotifUnpaidLessons(settings[SETTINGS_KEYS.notifUnpaidLesson] === "true");
+            setNotifTodayLessons(settings[SETTINGS_KEYS.notifTodayLesson] === "true");
+        }
+
+        load();
+    }, []);
 
     const [snackbarVisiable, setSnackbarVisiable] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -61,25 +80,56 @@ export default function SettingsScreen() {
         }
     }
 
-
     return (
         <ScrollView>
             <DismissKeyboard style={{ flex: 1 }}>
 
                 {/* interface */}
+
+                {/* ------------------------- */}
+                {/* info delete it later */}
+                <ActionTile label="print settings" onPress={() => {
+                    async function show() {
+                        console.log(await settingsGetAll());
+                    }
+                    show();
+                }} />
+                {/* ------------------------- */}
+
                 <SectionWithIcon icon={"land-plots"} label={"Interfejs"}>
-                    <ActionTile label={"Język"} type="select" selectData={possibleLanguages} value={language} onSelect={(value) => setLanguage(value)} />
-                    <ActionTile label={"Waluta"} type="select" selectData={currencies} value={currency} itemProperty={"code"} onSelect={(val) => setCurrency(val)} />
-                    <ActionTile label={"Pokaż zarobki"} type="switch" value={showIncomes} onPress={() => setShowIncomes(!showIncomes)} />
-                    <ActionTile label={"Pokaż ilość uczniów"} type="switch" value={showStudentNumber} onPress={() => setShowStudentNumber(!showStudentNumber)} />
+                    <ActionTile label={"Język"} type="select" selectData={possibleLanguages} value={language} onSelect={(value) => {
+                        setLanguage(value);
+                        settingsSet(SETTINGS_KEYS.language, value);
+                    }} />
+                    <ActionTile label={"Waluta"} type="select" selectData={currencies} value={currency} itemProperty={"code"} onSelect={(val) => {
+                        setCurrency(val);
+                        settingsSet(SETTINGS_KEYS.currency, JSON.stringify(val));
+                    }} />
+                    <ActionTile label={"Pokaż zarobki"} type="switch" value={showIncomes} onPress={() => {
+                        settingsSet(SETTINGS_KEYS.showIncomes, (!showIncomes).toString());
+                        setShowIncomes(prev => !prev);
+                    }} />
+                    <ActionTile label={"Pokaż ilość uczniów"} type="switch" value={showStudentNumber} onPress={() => {
+                        settingsSet(SETTINGS_KEYS.showNumberStudents, (!showStudentNumber).toString());
+                        setShowStudentNumber(!showStudentNumber);
+                    }} />
                 </SectionWithIcon>
 
                 {/* cennik */}
                 <SectionWithIcon icon={"cash-multiple"} label={"Cennik"}>
-                    <ActionTile label={"Zastosuj cennik"} type="switch" value={applyPriceList} onPress={() => setApplyPriceList(!applyPriceList)} />
+                    <ActionTile label={"Zastosuj cennik"} type="switch" value={applyPriceList} onPress={() => {
+                        settingsSet(SETTINGS_KEYS.usePriceList, (!applyPriceList).toString());
+                        setApplyPriceList(!applyPriceList);
+                    }} />
                     <ActionTile label={"Edytuj cennik"} onPress={() => { console.log("todo");/** todo navigate to pricelist */ }} active={applyPriceList} />
-                    <ActionTile label={"Pierwsza zniżka"} type="text-input" active={applyPriceList} placeholder={"%"} onChangeText={(val) => setFirstDiscount(val)} value={firstDiscount} />
-                    <ActionTile label={"Sposób zaokrąglania"} type="select" active={applyPriceList} selectData={possibleRoundingMode} itemProperty={"label"} value={roundingMode} onSelect={(val) => setRoundingMode(val)} />
+                    <ActionTile label={"Pierwsza zniżka"} type="text-input" active={applyPriceList} placeholder={"%"} value={firstDiscount} onChangeText={(val) => {
+                        setFirstDiscount(val);
+                        settingsSet(SETTINGS_KEYS.discountForFirst, val);
+                    }} />
+                    <ActionTile label={"Sposób zaokrąglania"} type="select" active={applyPriceList} selectData={possibleRoundingMode} itemProperty={"label"} value={roundingMode} onSelect={(val) => {
+                        setRoundingMode(val);
+                        settingsSet(SETTINGS_KEYS.rounding, JSON.stringify(val));
+                    }} />
                 </SectionWithIcon>
 
                 {/* imprt i eksport */}
@@ -106,10 +156,22 @@ export default function SettingsScreen() {
 
                 {/* powiadomienia */}
                 <SectionWithIcon icon={"alert-circle"} label={"Powiadomienia"}>
-                    <ActionTile label={"Włącz powiadomienia"} type="switch" value={applyNotifications} onPress={() => setApplyNotifications(!applyNotifications)} />
-                    <ActionTile label={"Nieznany temat"} type="switch" active={applyNotifications} value={notifUnknowTopic} onPress={() => setNotifUnknowTopic(!notifUnknowTopic)} />
-                    <ActionTile label={"Nieopłacone zajęcia"} type="switch" active={applyNotifications} value={notifUnpaidLessons} onPress={() => setNotifUnpaidLessons(!notifUnpaidLessons)} />
-                    <ActionTile label={"Dzisiejsze zajęcia"} type="switch" active={applyNotifications} value={notifTodayLessons} onPress={() => setNotifTodayLessons(!notifTodayLessons)} />
+                    <ActionTile label={"Włącz powiadomienia"} type="switch" value={applyNotifications} onPress={() => {
+                        settingsSet(SETTINGS_KEYS.notificationsOn, (!applyNotifications).toString());
+                        setApplyNotifications(!applyNotifications);
+                    }} />
+                    <ActionTile label={"Nieznany temat"} type="switch" active={applyNotifications} value={notifUnknowTopic} onPress={() => {
+                        settingsSet(SETTINGS_KEYS.notifUnknownTopic, (!notifUnknowTopic).toString());
+                        setNotifUnknowTopic(!notifUnknowTopic);
+                    }} />
+                    <ActionTile label={"Nieopłacone zajęcia"} type="switch" active={applyNotifications} value={notifUnpaidLessons} onPress={() => {
+                        settingsSet(SETTINGS_KEYS.notifUnpaidLesson, (!notifUnpaidLessons).toString());
+                        setNotifUnpaidLessons(!notifUnpaidLessons);
+                    }} />
+                    <ActionTile label={"Dzisiejsze zajęcia"} type="switch" active={applyNotifications} value={notifTodayLessons} onPress={() => {
+                        settingsSet(SETTINGS_KEYS.notifTodayLesson, (!notifTodayLessons).toString());
+                        setNotifTodayLessons(!notifTodayLessons);
+                    }} />
                 </SectionWithIcon>
 
                 {/* inne */}

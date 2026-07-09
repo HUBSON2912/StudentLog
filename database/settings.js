@@ -1,3 +1,5 @@
+import { createAsyncStorage } from "@react-native-async-storage/async-storage";
+
 export const SETTINGS_KEYS={
     language: "language", 
     currency: "currency", 
@@ -12,32 +14,63 @@ export const SETTINGS_KEYS={
     notifTodayLesson: "notifTodayLesson",
 }
 
-function correctSettingsKey(key) {
-    return (key in Object.values(SETTINGS_KEYS))
+const DEFAULT_VALUES={
+    language: "Polski", 
+    currency: JSON.stringify({
+		"symbol": "zł",
+		"name": "Polish Zloty",
+		"symbol_native": "zł",
+		"decimal_digits": 2,
+		"rounding": 0,
+		"code": "PLN",
+		"name_plural": "Polish zlotys"
+	}), 
+    showIncomes: "true", 
+    showNumberStudents: "true", 
+    usePriceList: "true", 
+    discountForFirst: "100", 
+    rounding: JSON.stringify({ id: 0, label: "w górę" }),
+    notificationsOn: "true",
+    notifUnknownTopic: "true",
+    notifUnpaidLesson: "true",
+    notifTodayLesson: "true",
 }
 
-export function getStorage() {
-    return createAsyncStorage("settings");
+function correctSettingsKey(key) {
+    return Object.values(SETTINGS_KEYS).includes(key);
+}
+
+export async function settingsGetStorage() {
+    const storage=createAsyncStorage("settings");
+
+    for(let key in SETTINGS_KEYS) {
+        // if key is not saved yet
+        if(!(await storage.getItem(SETTINGS_KEYS[key]))) {
+            storage.setItem(SETTINGS_KEYS[key], DEFAULT_VALUES[key]);
+        }
+    }
+
+    return storage;
 }
 
 export async function settingsSet(key, value) {
     if(!correctSettingsKey(key))
         throw new Error(`Unknown settings key: ${key}`);
 
-    const storage=getStorage();
-    await storage.setItem(name, value);
+    const storage=await settingsGetStorage();
+    await storage.setItem(key, value);
 }
 
 export async function settingsGet(key) {
     if(!correctSettingsKey(key))
         throw new Error(`Unknown settings key: ${key}`);
 
-    const storage=getStorage();
+    const storage=await settingsGetStorage();
     const value=await storage.getItem(key);
     return value;
 }
 
 export async function settingsGetAll() {
-    const storage=getStorage();
+    const storage=await settingsGetStorage();
     return storage.getMany(Object.values(SETTINGS_KEYS));
 }
