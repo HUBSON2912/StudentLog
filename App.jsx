@@ -4,6 +4,7 @@ import { themeDark, themeLight } from "./theme";
 import { createContext, useState, useEffect } from "react";
 import { createTableS, deleteS, getAllS, insertS, updateS } from "./database/students";
 import { NavigationContainer } from "@react-navigation/native";
+import { createAsyncStorage } from "@react-native-async-storage/async-storage";
 import { createTableL, deleteL, deleteStudentsLessonL, getAllL, insertL, updateL } from "./database/lessons";
 import StudetnsScreen from "./screens/Students";
 import LessonsScreen from "./screens/Lessons";
