@@ -1,6 +1,6 @@
 import { StyleSheet, View } from "react-native";
 import { Button, HelperText, Switch, Text, TextInput, useTheme } from "react-native-paper";
-import { act, useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ToggleChipGroup } from "../../components/toggleChipGroup";
 import { AutocompleteTextInput } from '../../components/autocompleteTextInput';
 import { POSSIBLE_FORMS, REMOTELY_FORM, STATIONARY_FORM, SUGGESTED_PLATFORMS } from "../../constants/const";
