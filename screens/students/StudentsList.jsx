@@ -177,7 +177,7 @@ export default function StudentsListScreen({ navigation }) {
             <Appbar style={{ backgroundColor: theme.colors.background }}>
                 {
                     (settings.settings[SETTINGS_KEYS.showNumberStudents]) === "true" &&
-                    <Appbar.Content title={`Liczba uczniów: ${doFilter(db.students).length}`} />
+                    <Appbar.Content title={`Liczba uczniów: ${doFilter(db.students.filter(x => x.disabled == 0)).length}`} />
                 }
                 {
                     (settings.settings[SETTINGS_KEYS.showNumberStudents] !== "true") &&
@@ -186,9 +186,9 @@ export default function StudentsListScreen({ navigation }) {
 
                 {/* ------------------------- */}
                 {/* info delete it later */}
-                <Appbar.Action icon={"cog"} onPress={() => console.log(settings,db)} size={28} />
+                <Appbar.Action icon={"cog"} onPress={() => console.log(settings, db)} size={28} />
                 {/* ------------------------- */}
-                
+
                 <Appbar.Action icon={filter.active ? "filter-check" : "filter"} onPress={() => navigation.navigate("FilterStudents", { setFilter: setFilter, activeFilter: filter })} size={28} />
             </Appbar>
 
