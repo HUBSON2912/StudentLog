@@ -11,6 +11,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { POSSIBLE_TABLE_NAMES } from "./constants/const";
 import SettingsScreen from "./screens/Settings";
 import { correctSettingsKey, SETTINGS_KEYS, settingsGetAll, settingsSet } from "./database/settings";
+import { createTablePL, deletePL, getAllPL, insertPL, updatePL } from "./database/pricelist";
 
 export const DatabaseContext = createContext(null);
 export const SettingsContext = createContext(null);
@@ -35,6 +36,7 @@ export default function App() {
     // Database Context functions definition
     const [students, setStudents] = useState([]);
     const [lessons, setLessons] = useState([]);
+    const [pricelist, setPricelist] = useState([]);
 
     const createTable = async (name) => {
         try {
@@ -48,6 +50,9 @@ export default function App() {
                     break;
                 case "lessons":
                     createTableL();
+                    break;
+                case "pricelist":
+                    createTablePL();
                     break;
                 default:
                     break;
@@ -72,6 +77,10 @@ export default function App() {
                 case "lessons":
                     buf = await getAllL();
                     setLessons(buf);
+                    return buf;
+                case "pricelist":
+                    buf = await getAllPL();
+                    setPricelist(buf);
                     return buf;
                 default:
                     break;
@@ -99,6 +108,11 @@ export default function App() {
                     value.id = id;
                     setLessons(prev => [...prev, value]);
                     break;
+                case "pricelist":
+                    id = await insertPL(value);
+                    value.id = id;
+                    setPricelist(prev => [...prev, value]);
+                    break;
                 default:
                     break;
             }
@@ -125,7 +139,9 @@ export default function App() {
                     deleteL(id);
                     setLessons(prev => prev.filter(l => l.id != id));
                     break;
-
+                case "pricelist":
+                    deletePL(id);
+                    setPricelist(prev => prev.filter(pl => pl.id != id));
                 default:
                     break;
             }
@@ -146,7 +162,8 @@ export default function App() {
                     return students.filter(x => x.id == id)[0];
                 case "lessons":
                     return lessons.filter(x => x.id == id)[0];
-
+                case "pricelist":
+                    return pricelist.filter(x => x.id == id)[0];
                 default:
                     break;
             }
@@ -193,7 +210,19 @@ export default function App() {
                         return buff;
                     });
                     break;
-
+                case "pricelist":
+                    updatePL(value, id);
+                    setPricelist(prev => {
+                        buff = [...prev];
+                        for (let i = 0; i < buff.length; i++) {
+                            if (buff[i].id == id) {
+                                buff[i] = value;
+                                buff[i].id = id;
+                                break;
+                            }
+                        }
+                        return buff;
+                    });
                 default:
                     break;
             }
@@ -234,7 +263,8 @@ export default function App() {
                     }
                 case "lessons":
                     return res;
-
+                case "pricelist":
+                    return res;
                 default:
                     break;
             }
@@ -247,6 +277,7 @@ export default function App() {
     const database = {
         students: students,
         lessons: lessons,
+        pricelist: pricelist,
         insert: insert,
         getAll: getAll,
         get: get,
@@ -262,6 +293,9 @@ export default function App() {
         createTable("lessons")
             .then(() => getAll("lessons"))
             .then(setLessons);
+        createTable("pricelist")
+            .then(() => getAll("pricelist"))
+            .then(setPricelist);
     }, []);
 
 
@@ -275,8 +309,8 @@ export default function App() {
                 throw new Error(`Unknown settings key: ${key}`);
 
             setSettings(prev => {
-                let buff={...prev};
-                buff[key]=value;
+                let buff = { ...prev };
+                buff[key] = value;
                 return buff;
             });
             settingsSet(key, value);

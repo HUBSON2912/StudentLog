@@ -226,7 +226,7 @@ export default function LessonsListScreen({ navigation }) {
 
                 {/* ------------------------- */}
                 {/* info delete it later */}
-                <Appbar.Action icon={"cog"} onPress={() => console.log(settings)} size={28} />
+                <Appbar.Action icon={"cog"} onPress={() => console.log(settings, db)} size={28} />
                 {/* ------------------------- */}
 
                 <Appbar.Action icon={filter.active ? "filter-check" : "filter"} onPress={() => navigation.navigate("FilterLessons", { setFilter: setFilter, activeFilter: filter })} size={28} />

@@ -1,67 +1,41 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { Button, DataTable, Dialog, FAB, Snackbar, Text, TextInput, useTheme } from "react-native-paper";
+import { DatabaseContext } from "../../App";
 
 export default function PriceListScreen() {
     const theme = useTheme();
+    const db = useContext(DatabaseContext);
 
-    const [subjectLevelPrice, setSubjectLevelPrice] = useState([
-        {
-            key: 1,
-            subject: "Matematyka",
-            level: "Szkoła podstawowa",
-            price: 50
-        },
-        {
-            key: 2,
-            subject: "Matematyka",
-            level: "Szkoła średnia - PP",
-            price: 60
-        },
-        {
-            key: 3,
-            subject: "Matematyka",
-            level: "Szkoła średnia - PR",
-            price: 65
-        },
-        {
-            key: 4,
-            subject: "Fizyka",
-            level: "Szkoła podstawowa",
-            price: 55
-        },
-        {
-            key: 5,
-            subject: "Fizyka",
-            level: "Szkoła średnia - PP",
-            price: 65
-        },
-        {
-            key: 6,
-            subject: "Fizyka",
-            level: "Szkoła średnia - PR",
-            price: 70
-        },
-        {
-            key: 7,
-            subject: "Informatyka",
-            level: "Szkoła średnia - PP",
-            price: 65
-        },
-        {
-            key: 8,
-            subject: "Informatyka",
-            level: "Szkoła średnia - PR",
-            price: 70
-        },
-    ]);
+    // const [db.pricelist, setSubjectLevelPrice] = useState([]);
 
-    const [selectedRow, setSelectedRow] = useState({ key: undefined, subject: "", level: "", price: "" });
+    const [selectedRow, setSelectedRow] = useState({ id: undefined, subject: "", level: "", price: "" });
     const [dialogShown, setDialogShows] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
 
+    const styles = StyleSheet.create({
+        container: {
+            flex: 1
+        },
+        scrollContainer: {
+            gap: 20
+        },
+        dialogContainer: {
+            gap: 5
+        },
+        addNewButton: {
+            position: 'absolute',
+            margin: 16,
+            right: 0,
+            bottom: 0,
+        },
+        dialogTextInput: {
+            backgroundColor: theme.colors.elevation.level3
+        }
+    });
+
     function clearSelectedRow() {
-        setSelectedRow({ key: undefined, subject: "", level: "", price: "" });
+        setSelectedRow({ id: undefined, subject: "", level: "", price: "" });
     }
 
     function dialogDismiss() {
@@ -84,7 +58,7 @@ export default function PriceListScreen() {
         function isDuplicate() {
             const subject = selectedRow.subject;
             const level = selectedRow.level;
-            let buff = subjectLevelPrice;
+            let buff = db.pricelist;
             return (buff.filter(x => x.subject == subject && x.level == level).length != 0);
         }
 
@@ -94,39 +68,39 @@ export default function PriceListScreen() {
             return;
         }
 
-        if (isDuplicate()) {
-            setSnackbarMessage("Już istnieje taki wpis.");
-            dialogDismiss();
-            return;
-        }
 
-        if (selectedRow.key === undefined) {
-            let buff = selectedRow;
-            buff.key = subjectLevelPrice[subjectLevelPrice.length - 1].key + 1;
-            setSubjectLevelPrice(prev => [...prev, buff]);
+        if (selectedRow.id === undefined) {
+            if (isDuplicate()) {
+                setSnackbarMessage("Już istnieje taki wpis.");
+                dialogDismiss();
+                return;
+            }
+            // let buff = selectedRow;
+            // buff.id = db.pricelist[db.pricelist.length - 1].id + 1;
+            // setSubjectLevelPrice(prev => [...prev, buff]);
+            db.insert("pricelist", selectedRow);
         }
         else {
-            let buff = subjectLevelPrice;
-            buff = buff.map(x => {
-                if (x.key != selectedRow.key)
-                    return x;
+            // let buff = db.pricelist;
+            // buff = buff.map(x => {
+            //     if (x.id != selectedRow.id)
+            //         return x;
 
-                x.subject = selectedRow.subject;
-                x.level = selectedRow.level;
-                x.price = (selectedRow.price == "") ? 0 : parseInt(selectedRow.price);
-                return x;
-            });
-            setSubjectLevelPrice(buff);
+            //     x.subject = selectedRow.subject;
+            //     x.level = selectedRow.level;
+            //     x.price = (selectedRow.price == "") ? 0 : parseInt(selectedRow.price);
+            //     return x;
+            // });
+            // setSubjectLevelPrice(buff);
+            db.update("pricelist", selectedRow, selectedRow.id)
         }
         dialogDismiss();
     }
 
     function dialogDelete() {
-        if (selectedRow.key === undefined)
+        if (selectedRow.id === undefined)
             return;
-        let buff = subjectLevelPrice;
-        buff = buff.filter(x => x.key != selectedRow.key);
-        setSubjectLevelPrice(buff);
+        db.remove("pricelist", selectedRow.id);
         dialogDismiss();
     }
 
@@ -141,9 +115,9 @@ export default function PriceListScreen() {
                     </DataTable.Header>
 
                     {
-                        subjectLevelPrice.map(({ key, subject, level, price }) => (
-                            <DataTable.Row key={key} onPress={() => {
-                                setSelectedRow({ key: key, subject: subject, level: level, price: price.toString() });
+                        db.pricelist.map(({ id, subject, level, price }) => (
+                            <DataTable.Row key={id} onPress={() => {
+                                setSelectedRow({ id: id, subject: subject, level: level, price: price.toString() });
                                 setDialogShows(true);
                             }}>
                                 <DataTable.Cell>{subject}</DataTable.Cell>
@@ -171,25 +145,28 @@ export default function PriceListScreen() {
                         value={selectedRow.subject}
                         mode="outlined"
                         onChangeText={(value) => setSelectedRow(prev => { return { ...prev, subject: value } })}
+                        style={styles.dialogTextInput}
                     />
                     <TextInput
                         label={"Poziom"}
                         value={selectedRow.level}
                         mode="outlined"
                         onChangeText={(value) => setSelectedRow(prev => { return { ...prev, level: value } })}
+                        style={styles.dialogTextInput}
                     />
                     <TextInput
                         label={"Cena"}
                         value={selectedRow.price.toString()}
                         mode="outlined"
                         onChangeText={(value) => setSelectedRow(prev => { return { ...prev, price: value } })}
-                        keyboardType="number-pad"
+                        idboardType="number-pad"
+                        style={styles.dialogTextInput}
                     />
                 </Dialog.Content>
                 <Dialog.Actions>
                     <Button onPress={dialogDismiss}>Anuluj</Button>
                     {
-                        !(selectedRow.key === undefined) &&
+                        !(selectedRow.id === undefined) &&
                         <Button onPress={dialogDelete}>Usuń</Button>
                     }
 
@@ -202,21 +179,3 @@ export default function PriceListScreen() {
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1
-    },
-    scrollContainer: {
-        gap: 20
-    },
-    dialogContainer: {
-        gap: 5
-    },
-    addNewButton: {
-        position: 'absolute',
-        margin: 16,
-        right: 0,
-        bottom: 0,
-    }
-});
