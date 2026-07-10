@@ -31,7 +31,12 @@ export default function PriceListScreen() {
         },
         dialogTextInput: {
             backgroundColor: theme.colors.elevation.level3
-        }
+        },
+        noDataText: {
+            flex: 1,
+            textAlign: "center",
+            marginVertical: 50
+        },
     });
 
     function clearSelectedRow() {
@@ -46,6 +51,7 @@ export default function PriceListScreen() {
 
     function dialogSave() {
         // new values are stored in selectedRow
+
         function isInt(val) {
             const regex = /^[0-9]*$/gm
             let matched = val.match(regex);
@@ -75,23 +81,9 @@ export default function PriceListScreen() {
                 dialogDismiss();
                 return;
             }
-            // let buff = selectedRow;
-            // buff.id = db.pricelist[db.pricelist.length - 1].id + 1;
-            // setSubjectLevelPrice(prev => [...prev, buff]);
             db.insert("pricelist", selectedRow);
         }
         else {
-            // let buff = db.pricelist;
-            // buff = buff.map(x => {
-            //     if (x.id != selectedRow.id)
-            //         return x;
-
-            //     x.subject = selectedRow.subject;
-            //     x.level = selectedRow.level;
-            //     x.price = (selectedRow.price == "") ? 0 : parseInt(selectedRow.price);
-            //     return x;
-            // });
-            // setSubjectLevelPrice(buff);
             db.update("pricelist", selectedRow, selectedRow.id)
         }
         dialogDismiss();
@@ -106,28 +98,35 @@ export default function PriceListScreen() {
 
     return (
         <View style={styles.container}>
-            <ScrollView contentContainerStyle={styles.scrollContainer}>
-                <DataTable>
-                    <DataTable.Header>
-                        <DataTable.Title>Przedmiot</DataTable.Title>
-                        <DataTable.Title>Poziom</DataTable.Title>
-                        <DataTable.Title numeric>Cena /h</DataTable.Title>
-                    </DataTable.Header>
+            {
+                db.pricelist.length == 0 &&
+                <Text variant="displaySmall" style={styles.noDataText}>Brak danych</Text>
+            }
+            {
+                db.pricelist.length != 0 &&
+                <ScrollView contentContainerStyle={styles.scrollContainer}>
+                    <DataTable>
+                        <DataTable.Header>
+                            <DataTable.Title>Przedmiot</DataTable.Title>
+                            <DataTable.Title>Poziom</DataTable.Title>
+                            <DataTable.Title numeric>Cena /h</DataTable.Title>
+                        </DataTable.Header>
 
-                    {
-                        db.pricelist.map(({ id, subject, level, price }) => (
-                            <DataTable.Row key={id} onPress={() => {
-                                setSelectedRow({ id: id, subject: subject, level: level, price: price.toString() });
-                                setDialogShows(true);
-                            }}>
-                                <DataTable.Cell>{subject}</DataTable.Cell>
-                                <DataTable.Cell>{level}</DataTable.Cell>
-                                <DataTable.Cell numeric>{price}</DataTable.Cell>
-                            </DataTable.Row>
-                        ))
-                    }
-                </DataTable>
-            </ScrollView>
+                        {
+                            db.pricelist.map(({ id, subject, level, price }) => (
+                                <DataTable.Row key={id} onPress={() => {
+                                    setSelectedRow({ id: id, subject: subject, level: level, price: price.toString() });
+                                    setDialogShows(true);
+                                }}>
+                                    <DataTable.Cell>{subject}</DataTable.Cell>
+                                    <DataTable.Cell>{level}</DataTable.Cell>
+                                    <DataTable.Cell numeric>{price}</DataTable.Cell>
+                                </DataTable.Row>
+                            ))
+                        }
+                    </DataTable>
+                </ScrollView>
+            }
 
             <FAB
                 icon={"plus"}
@@ -155,7 +154,7 @@ export default function PriceListScreen() {
                         style={styles.dialogTextInput}
                     />
                     <TextInput
-                        label={"Cena"}
+                        label={"Cena /h"}
                         value={selectedRow.price.toString()}
                         mode="outlined"
                         onChangeText={(value) => setSelectedRow(prev => { return { ...prev, price: value } })}

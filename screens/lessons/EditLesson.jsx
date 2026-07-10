@@ -122,6 +122,12 @@ export default function EditLessonScreen({ navigation, route }) {
         return true;
     }
 
+    //replace ',' -> '.' in floats
+    useEffect(()=>{
+        setDuration(prev=> prev.replace(",", "."));
+        setPrice(prev=> prev.replace(",", "."));
+    }, [duration, price]);
+
     const handleSaveInsert_oneLesson = async () => {
         setLoading(true);
         const newLesson = {
@@ -129,7 +135,7 @@ export default function EditLessonScreen({ navigation, route }) {
             subject: subject,
             level: level,
             duration: parseFloat(duration),
-            price: parseInt(price),
+            price: parseFloat(price),
             date: dateToDDMMYYYY(date_oneLess),
             hour: hourToHHMM(hour_oneLess),
             status: status,
@@ -148,7 +154,7 @@ export default function EditLessonScreen({ navigation, route }) {
             subject: subject,
             level: level,
             duration: parseFloat(duration.replace(',', '.')),
-            price: parseInt(price),
+            price: parseFloat(price),
             date: dateToDDMMYYYY(date_oneLess),
             hour: hourToHHMM(hour_oneLess),
             status: status,
@@ -158,7 +164,7 @@ export default function EditLessonScreen({ navigation, route }) {
         setLoading(false);
         navigation.pop();
     }
-
+    //todo uwzględnij pierwszą zniżkę
     const handleSaveInsert_regulary = async () => {
         setLoading(true);
         let newLessons = [];
@@ -181,7 +187,7 @@ export default function EditLessonScreen({ navigation, route }) {
                     subject: subject,
                     level: level,
                     duration: parseFloat(duration.replace(',', '.')),
-                    price: parseInt(price),
+                    price: parseFloat(price),
                     date: dateToDDMMYYYY(day),
                     hour: hourToHHMM(timesPerDay_regulary[dayofweek][i]),
                     status: 0,  // defaultly planned
@@ -215,6 +221,37 @@ export default function EditLessonScreen({ navigation, route }) {
         else {
             handleSaveInsert_regulary();
             return;
+        }
+    }
+
+    function autocompletePrice() {
+        if (subject == "" || level == "") {
+            return;
+        }
+
+        const pricelistItems = db.pricelist.filter(x => x.subject == subject && x.level == level);
+        if (pricelistItems.length == 0) {
+            setPrice("0")
+        }
+        else {
+            let price = pricelistItems[0].price * parseFloat(duration.replace(",", "."));  // 1,5 -> 1.5
+
+            // const.js -> ROUNDING_MODE
+            const roundingMode=JSON.parse(settings.settings[SETTINGS_KEYS.rounding]);
+            switch(roundingMode.id) {
+                case 0:
+                    price=Math.ceil(price);
+                    break;
+                case 1:
+                    price=Math.floor(price);
+                    break;
+                case 2:
+                    price=Math.round(price);
+                    break;
+                default:
+                    break;
+            }
+            setPrice(price.toString());
         }
     }
 
@@ -323,7 +360,8 @@ export default function EditLessonScreen({ navigation, route }) {
                         label="Przedmiot"
                         containerStyle={styles.input}
                         onChangeText={(value) => { setSubject(value); setInputErrors({ ...inputErrors, subject: !value }) }}
-                        suggestions={(settings.settings[SETTINGS_KEYS.autocompleteInputs] === "true") ? ["Matematyka", "Fizyka", "Informatyka"] : []}
+                        // suggestions are taken from pricelist
+                        suggestions={(settings.settings[SETTINGS_KEYS.autocompleteInputs] === "true") ? ([...new Set(db.pricelist.map(x => x.subject))]) : []}
                         value={subject}
                         renderSuggestion={(item, index) => {
                             return (
@@ -342,7 +380,8 @@ export default function EditLessonScreen({ navigation, route }) {
                         label="Poziom"
                         containerStyle={styles.input}
                         onChangeText={(value) => { setLevel(value); setInputErrors({ ...inputErrors, level: !value }) }}
-                        suggestions={(settings.settings[SETTINGS_KEYS.autocompleteInputs] === "true") ? ["Szkoła podstawowa", "Szkoła średnia - PP", "Szkoła średnia - PR"] : []}
+                        // suggestions are taken from pricelist
+                        suggestions={(settings.settings[SETTINGS_KEYS.autocompleteInputs] === "true") ? ([...new Set(db.pricelist.filter(x => x.subject == subject).map(x => x.level))]) : []}
                         value={level}
                         renderSuggestion={(item, index) => {
                             return (
@@ -379,7 +418,11 @@ export default function EditLessonScreen({ navigation, route }) {
                         label="Cena"
                         value={price}
                         onChangeText={(value) => { setPrice(value); setInputErrors({ ...inputErrors, price: !value }) }}
-                        right={<TextInput.Affix text={JSON.parse(settings.settings[SETTINGS_KEYS.currency]).symbol} />}
+                        right={
+                            (settings.settings[SETTINGS_KEYS.usePriceList] === "true") ?
+                                <TextInput.Icon icon={"auto-fix"} onPress={autocompletePrice} /> :
+                                <TextInput.Affix text={JSON.parse(settings.settings[SETTINGS_KEYS.currency]).symbol} />
+                        }
                         keyboardType="decimal-pad"
                     />
                     <HelperText visible={inputErrors.price} type="error" style={{ display: inputErrors.price ? "flex" : "none" }}>To pole jest wymagane.</HelperText>

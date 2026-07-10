@@ -2,16 +2,16 @@ import { Platform, SafeAreaView, StatusBar, StyleSheet, useColorScheme } from "r
 import { Icon, PaperProvider, } from "react-native-paper";
 import { themeDark, themeLight } from "./theme";
 import { createContext, useState, useEffect } from "react";
-import { createTableS, deleteS, getAllS, insertS, updateS } from "./database/students";
+import { createTableS, deleteS, dropTableS, getAllS, insertS, updateS } from "./database/students";
 import { NavigationContainer } from "@react-navigation/native";
-import { createTableL, deleteL, deleteStudentsLessonL, getAllL, insertL, updateL } from "./database/lessons";
+import { createTableL, deleteL, deleteStudentsLessonL, dropTableL, getAllL, insertL, updateL } from "./database/lessons";
 import StudetnsScreen from "./screens/Students";
 import LessonsScreen from "./screens/Lessons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { POSSIBLE_TABLE_NAMES } from "./constants/const";
 import SettingsScreen from "./screens/Settings";
 import { correctSettingsKey, SETTINGS_KEYS, settingsGetAll, settingsSet } from "./database/settings";
-import { createTablePL, deletePL, getAllPL, insertPL, updatePL } from "./database/pricelist";
+import { createTablePL, deletePL, dropTablePL, getAllPL, insertPL, updatePL } from "./database/pricelist";
 
 export const DatabaseContext = createContext(null);
 export const SettingsContext = createContext(null);

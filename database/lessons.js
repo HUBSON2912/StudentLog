@@ -13,7 +13,7 @@ export async function createTableL() {
              subject TEXT,
              level TEXT,
              duration REAL,
-             price INTEGER,
+             price REAL,
              date TEXT,
              hour TEXT,
              status INTEGER,
