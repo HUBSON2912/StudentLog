@@ -1,14 +1,16 @@
-import { useEffect, useState } from "react";
-import { ScrollView, View } from "react-native";
-import { Button, DataTable, Dialog, Snackbar, Text, TextInput } from "react-native-paper";
+import { useState } from "react";
+import { ScrollView, StyleSheet, View } from "react-native";
+import { Button, DataTable, Dialog, FAB, Snackbar, Text, TextInput, useTheme } from "react-native-paper";
 
 export default function PriceListScreen() {
+    const theme = useTheme();
+
     const [subjectLevelPrice, setSubjectLevelPrice] = useState([
         {
             key: 1,
             subject: "Matematyka",
             level: "Szkoła podstawowa",
-            price: 55
+            price: 50
         },
         {
             key: 2,
@@ -24,39 +26,39 @@ export default function PriceListScreen() {
         },
         {
             key: 4,
-            subject: "Matematyka",
+            subject: "Fizyka",
             level: "Szkoła podstawowa",
             price: 55
         },
         {
             key: 5,
-            subject: "Matematyka",
+            subject: "Fizyka",
             level: "Szkoła średnia - PP",
-            price: 60
+            price: 65
         },
         {
             key: 6,
-            subject: "Matematyka",
+            subject: "Fizyka",
             level: "Szkoła średnia - PR",
-            price: 65
+            price: 70
         },
         {
             key: 7,
             subject: "Informatyka",
-            level: "Szkoła podstawowa",
-            price: 55
+            level: "Szkoła średnia - PP",
+            price: 65
         },
         {
             key: 8,
-            subject: "Matematyka",
-            level: "Szkoła średnia - PP",
-            price: 60
+            subject: "Informatyka",
+            level: "Szkoła średnia - PR",
+            price: 70
         },
     ]);
 
     const [selectedRow, setSelectedRow] = useState({ key: undefined, subject: "", level: "", price: "" });
     const [dialogShown, setDialogShows] = useState(false);
-    const [snackbarMessage, setSnackbarMessage]=useState("");
+    const [snackbarMessage, setSnackbarMessage] = useState("");
 
     function clearSelectedRow() {
         setSelectedRow({ key: undefined, subject: "", level: "", price: "" });
@@ -67,24 +69,40 @@ export default function PriceListScreen() {
         clearSelectedRow();
     }
 
-    function validateInt(val) {
-        const regex=/^[0-9]*$/gm
-        let matched=val.match(regex);
-        return !(!(matched))
-    }
 
     function dialogSave() {
         // new values are stored in selectedRow
+        function isInt(val) {
+            const regex = /^[0-9]*$/gm
+            let matched = val.match(regex);
+            return !(!(matched))
+        }
+        function isInputCorrect() {
+            return !(selectedRow.subject == "" || selectedRow.level == "" || selectedRow.price == "" || !isInt(selectedRow.price));
+        }
 
-        if (selectedRow.subject=="" || selectedRow.level=="" || selectedRow.price=="" || !validateInt(selectedRow.price)) {
-            setSnackbarMessage("Uzupełnij wszystkie dane");
+        function isDuplicate() {
+            const subject = selectedRow.subject;
+            const level = selectedRow.level;
+            let buff = subjectLevelPrice;
+            return (buff.filter(x => x.subject == subject && x.level == level).length != 0);
+        }
+
+        if (!isInputCorrect()) {
+            setSnackbarMessage("Uzupełnij wszystkie dane. Cena może zawierać wyłącznie cyfry.");
+            dialogDismiss();
+            return;
+        }
+
+        if (isDuplicate()) {
+            setSnackbarMessage("Już istnieje taki wpis.");
             dialogDismiss();
             return;
         }
 
         if (selectedRow.key === undefined) {
-            let buff=selectedRow;
-            buff.key=subjectLevelPrice[subjectLevelPrice.length-1].key+1;
+            let buff = selectedRow;
+            buff.key = subjectLevelPrice[subjectLevelPrice.length - 1].key + 1;
             setSubjectLevelPrice(prev => [...prev, buff]);
         }
         else {
@@ -113,8 +131,8 @@ export default function PriceListScreen() {
     }
 
     return (
-        <View style={{flex: 1}}>
-            <ScrollView>
+        <View style={styles.container}>
+            <ScrollView contentContainerStyle={styles.scrollContainer}>
                 <DataTable>
                     <DataTable.Header>
                         <DataTable.Title>Przedmiot</DataTable.Title>
@@ -134,17 +152,20 @@ export default function PriceListScreen() {
                             </DataTable.Row>
                         ))
                     }
-
-                    <DataTable.Row>
-                        <Button mode="contained" onPress={() => setDialogShows(true)}>
-                            <Text>Press to add new</Text>
-                        </Button>
-                    </DataTable.Row>
                 </DataTable>
             </ScrollView>
 
+            <FAB
+                icon={"plus"}
+                style={styles.addNewButton}
+                customSize={48}
+                onPress={() => setDialogShows(true)}
+            />
+
+
+            {/* dialog for editing and add new */}
             <Dialog visible={dialogShown} dismissable onDismiss={dialogDismiss} >
-                <Dialog.Content style={{ gap: 5 }}>
+                <Dialog.Content style={styles.dialogContainer}>
                     <TextInput
                         label={"Przedmiot"}
                         value={selectedRow.subject}
@@ -175,9 +196,27 @@ export default function PriceListScreen() {
                     <Button onPress={dialogSave}>Zapisz</Button>
                 </Dialog.Actions>
             </Dialog>
-            <Snackbar visible={snackbarMessage.length!=0} onDismiss={()=>setSnackbarMessage("")}>
-                <Text>{snackbarMessage}</Text>
+            <Snackbar visible={snackbarMessage.length != 0} onDismiss={() => setSnackbarMessage("")}>
+                <Text style={{ color: theme.colors.inverseOnSurface }}>{snackbarMessage}</Text>
             </Snackbar>
         </View>
     );
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1
+    },
+    scrollContainer: {
+        gap: 20
+    },
+    dialogContainer: {
+        gap: 5
+    },
+    addNewButton: {
+        position: 'absolute',
+        margin: 16,
+        right: 0,
+        bottom: 0,
+    }
+});
