@@ -2,7 +2,7 @@ import { themeDark, themeLight } from "../theme";
 
 export const POSSIBLE_TABLE_NAMES = ["students", "lessons", "status", "pricelist"];
 
-export const SUGGESTED_PLATFORMS = ["Discord", "Google Meet", "Messenger", "Microsoft Teams", "Skype", "Zoom"];
+export const SUGGESTED_PLATFORMS = ["Discord", "Google Meet", "Microsoft Teams", "Skype", "Zoom"];
 
 // value is a kind of ID
 export const POSSIBLE_FORMS = [

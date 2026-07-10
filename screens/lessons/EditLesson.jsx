@@ -218,7 +218,7 @@ export default function EditLessonScreen({ navigation, route }) {
         }
     }
 
-    const DropdownItem = (item, index, isSelected) => {
+    function DropdownItem(item, index, isSelected) {
         const styles = StyleSheet.create({
             elementContainer: {
                 backgroundColor: isSelected ? theme.colors.surface : "black",
@@ -232,7 +232,7 @@ export default function EditLessonScreen({ navigation, route }) {
                 gap: 10
             },
             textColor: {
-                color: !item.disabled?theme.colors.onBackground:theme.colors.onSurfaceVariant
+                color: !item.disabled ? theme.colors.onBackground : theme.colors.onSurfaceVariant
             }
         });
 
@@ -297,12 +297,12 @@ export default function EditLessonScreen({ navigation, route }) {
                     students.length != 0 &&
                     <View style={styles.input}>
                         <SelectDropdown
-                            data={students.sort((a,b)=>{
-                                if(a.disabled<b.disabled)
+                            data={students.sort((a, b) => {
+                                if (a.disabled < b.disabled)
                                     return -1;
-                                else if(a.disabled>b.disabled) 
+                                else if (a.disabled > b.disabled)
                                     return 1;
-                                return (a.id<b.id?-1:1);
+                                return (a.id < b.id ? -1 : 1);
                             })}
                             onSelect={(sel) => { setSelectedStudentID(sel.id); setInputErrors({ ...inputErrors, student: !sel }) }}
                             renderButton={DropdownButton}
@@ -323,7 +323,7 @@ export default function EditLessonScreen({ navigation, route }) {
                         label="Przedmiot"
                         containerStyle={styles.input}
                         onChangeText={(value) => { setSubject(value); setInputErrors({ ...inputErrors, subject: !value }) }}
-                        suggestions={["Matematyka", "Fizyka", "Informatyka"]}
+                        suggestions={(settings.settings[SETTINGS_KEYS.autocompleteInputs] === "true") ? ["Matematyka", "Fizyka", "Informatyka"] : []}
                         value={subject}
                         renderSuggestion={(item, index) => {
                             return (
@@ -342,7 +342,7 @@ export default function EditLessonScreen({ navigation, route }) {
                         label="Poziom"
                         containerStyle={styles.input}
                         onChangeText={(value) => { setLevel(value); setInputErrors({ ...inputErrors, level: !value }) }}
-                        suggestions={["Szkoła podstawowa", "Szkoła średnia - PP", "Szkoła średnia - PR"]}
+                        suggestions={(settings.settings[SETTINGS_KEYS.autocompleteInputs] === "true") ? ["Szkoła podstawowa", "Szkoła średnia - PP", "Szkoła średnia - PR"] : []}
                         value={level}
                         renderSuggestion={(item, index) => {
                             return (

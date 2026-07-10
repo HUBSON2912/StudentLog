@@ -129,10 +129,18 @@ export default function EditStudentScreen({ navigation, route }) {
         navigation.pop();
     };
 
+    const [suggPlatforms, setSuggPlatforms] = useState([]);
 
     useEffect(() => {
+        let buff = [];
+        buff = db.students.map(st => st.platform);
+        buff = [...SUGGESTED_PLATFORMS, ...buff];
+        buff = [...(new Set(buff))]
+        let posOfEmpty = buff.indexOf("");
+        buff = [...buff.slice(0, posOfEmpty), ...buff.slice(posOfEmpty + 1)];
+        setSuggPlatforms(buff);
+    }, [db]);
 
-    }, []);
 
     return (
         <KeyboardAwareScrollView style={styles.container} keyboardShouldPersistTaps="handled">
@@ -219,7 +227,7 @@ export default function EditStudentScreen({ navigation, route }) {
                                 containerStyle={styles.input}
                                 textInputStyle={styles.input}
                                 label="Platforma"
-                                suggestions={(settings.settings[SETTINGS_KEYS.autocompleteInputs] === "true") ? SUGGESTED_PLATFORMS : []}
+                                suggestions={(settings.settings[SETTINGS_KEYS.autocompleteInputs] === "true") ? suggPlatforms : []}
                                 value={platform}
                                 onChangeText={(value) => { setPlatform(value); setInputErrors({ ...inputErrors, platform: !value }); }}
                                 error={inputErrors.platform}
