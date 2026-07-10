@@ -8,10 +8,18 @@ import { StatusChip } from "../../components/statusChip";
 import { SETTINGS_KEYS, settingsGet, settingsGetAll } from "../../database/settings";
 
 let db = null;
+let settings = null;
 let statuses = [];
 
 function LessonTile({ lesson, deleteAction = (id) => { }, editAction = (id) => { }, detailsAction = (id) => { } }) {
     const theme = useTheme();
+    let currency=null;
+    try {
+        currency=JSON.parse(settings.settings[SETTINGS_KEYS.currency]);
+    }
+    catch(error){
+        currency={symbol: "none"}; // dummy currency
+    }
 
     const student = db.get("students", lesson.student_id);
 
@@ -35,7 +43,7 @@ function LessonTile({ lesson, deleteAction = (id) => { }, editAction = (id) => {
                 <Card.Content>
                     <View style={styles.dataContainer}>
                         <Icon size={16} source={"cash"} />
-                        <Text style={styles.text}>{lesson.price} zł</Text>
+                        <Text style={styles.text}>{lesson.price} {currency.symbol}</Text>
                     </View>
                     <View style={styles.dataContainer}>
                         <Icon size={16} source={"clock"} />
@@ -85,6 +93,7 @@ export default function LessonsListScreen({ navigation }) {
     const theme = useTheme();
     db = useContext(DatabaseContext);
     statuses = useColorScheme() == "dark" ? possibleStatuses.dark : possibleStatuses.light;
+    settings = useContext(SettingsContext);
 
     const [selectedLesson, setSelectedLesson] = useState(null);
     const [isDeleteDialogVisiable, setDeleteDialogVisiable] = useState(false);
@@ -202,25 +211,24 @@ export default function LessonsListScreen({ navigation }) {
         return _stud;
     }
 
-    const settings = useContext(SettingsContext);
 
     return (
         <>
             <Appbar style={{ backgroundColor: theme.colors.background }}>
                 {
                     (settings.settings[SETTINGS_KEYS.showIncomes]) === "true" &&
-                    <Appbar.Content title={`Zarobki: ${doFilter(db.lessons).reduce((prev, curr) => prev + (curr.status == 2 ? curr.price : 0), 0)} zł`} />
+                    <Appbar.Content title={`Zarobki: ${doFilter(db.lessons).reduce((prev, curr) => prev + (curr.status == 2 ? curr.price : 0), 0)} ${JSON.parse(settings.settings[SETTINGS_KEYS.currency]).symbol}`} />
                 }
                 {
                     (settings.settings[SETTINGS_KEYS.showIncomes]) !== "true" &&
                     <Appbar.Content title={"Lekcje"} />
                 }
-                
+
                 {/* ------------------------- */}
                 {/* info delete it later */}
                 <Appbar.Action icon={"cog"} onPress={() => console.log(settings)} size={28} />
                 {/* ------------------------- */}
-                
+
                 <Appbar.Action icon={filter.active ? "filter-check" : "filter"} onPress={() => navigation.navigate("FilterLessons", { setFilter: setFilter, activeFilter: filter })} size={28} />
             </Appbar>
 

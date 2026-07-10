@@ -1,11 +1,14 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Button, Chip, Icon, Searchbar, Switch, Text, TextInput, useTheme } from "react-native-paper";
 import { possibleForms, studentsOrder } from "../../constants/const";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview'
 import SelectDropdown from "react-native-select-dropdown";
+import { SettingsContext } from "../../App";
 
 export default function FilterStudentsScreen({ navigation, route }) {
+    const settings=useContext(SettingsContext);
+
     const theme = useTheme();
     const { setFilter, activeFilter } = route.params;
 
@@ -166,7 +169,7 @@ export default function FilterStudentsScreen({ navigation, route }) {
                         onChangeText={(val) => setIncomes({ ...incomes, max: val })}
                         keyboardType="decimal-pad"
                     />
-                    <Text style={{ width: 30, textAlign: "center" }}>zł</Text>
+                    <Text style={{ width: 30, textAlign: "center" }}>{JSON.parse(settings.settings[SETTINGS_KEYS.currency]).symbol}</Text>
                 </View>
             </View>
             <View style={styles.row}>

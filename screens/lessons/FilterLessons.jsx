@@ -4,15 +4,17 @@ import { Button, Chip, Icon, Searchbar, Switch, Text, TextInput, useTheme } from
 import { lessonsOrder, possibleForms, possibleStatuses, studentsOrder } from "../../constants/const";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview'
 import SelectDropdown from "react-native-select-dropdown";
-import { DatabaseContext } from "../../App";
+import { DatabaseContext, SettingsContext } from "../../App";
 import { DatePickerModal } from "react-native-paper-dates";
 import { dateToDDMMYYYY } from "../../functions/date";
+import { SETTINGS_KEYS } from "../../database/settings";
 
 export default function FilterLessonsScreen({ navigation, route }) {
     const theme = useTheme();
     const { setFilter, activeFilter } = route.params;
     const lessonStatuses = useColorScheme() == "dark" ? possibleStatuses.dark : possibleStatuses.light;
     const db = useContext(DatabaseContext);
+    const settings=useContext(SettingsContext);
 
     const [order, setOrder] = useState(lessonsOrder[0]);
     const [contain, setContain] = useState("");
@@ -285,7 +287,7 @@ export default function FilterLessonsScreen({ navigation, route }) {
                         onChangeText={(val) => setPriceRange({ ...priceRange, min: val })}
                         keyboardType="decimal-pad"
                     />
-                    <Text style={{ width: 50, textAlign: "center" }}>{"\u2014"}</Text>
+                    <Text style={{ width: 40, textAlign: "center" }}>{"\u2014"}</Text>
                     <TextInput
                         mode="outlined"
                         style={{ flex: 1 }}
@@ -294,7 +296,7 @@ export default function FilterLessonsScreen({ navigation, route }) {
                         onChangeText={(val) => setPriceRange({ ...priceRange, max: val })}
                         keyboardType="decimal-pad"
                     />
-                    <Text style={{ width: 30, textAlign: "center" }}>zł</Text>
+                    <Text style={{ width: 40, textAlign: "center"}}>{JSON.parse(settings.settings[SETTINGS_KEYS.currency]).symbol}</Text>
                 </View>
             </View>
             <View style={styles.row}>
@@ -308,7 +310,7 @@ export default function FilterLessonsScreen({ navigation, route }) {
                         onChangeText={(val) => setDurationRange({ ...durationRange, min: val })}
                         keyboardType="decimal-pad"
                     />
-                    <Text style={{ width: 50, textAlign: "center" }}>{"\u2014"}</Text>
+                    <Text style={{ width: 40, textAlign: "center" }}>{"\u2014"}</Text>
                     <TextInput
                         mode="outlined"
                         style={{ flex: 1 }}
@@ -317,7 +319,7 @@ export default function FilterLessonsScreen({ navigation, route }) {
                         onChangeText={(val) => setDurationRange({ ...durationRange, max: val })}
                         keyboardType="decimal-pad"
                     />
-                    <Text style={{ width: 30, textAlign: "center" }}>h</Text>
+                    <Text style={{ width: 40, textAlign: "center" }}>h</Text>
                 </View>
             </View>
             <View style={styles.row}>

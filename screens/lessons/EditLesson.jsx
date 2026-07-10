@@ -3,16 +3,18 @@ import { AnimatedFAB, Button, Chip, HelperText, Icon, SegmentedButtons, Snackbar
 import { ToggleChipGroup } from "../../components/toggleChipGroup";
 import { possibleLessonsAddMode, possibleStatuses, weekDays } from "../../constants/const";
 import { useContext, useEffect, useState } from "react";
-import { DatabaseContext } from "../../App";
+import { DatabaseContext, SettingsContext } from "../../App";
 import SelectDropdown from "react-native-select-dropdown";
 import { AutocompleteTextInput } from "../../components/autocompleteTextInput";
 import { DatePickerModal, TimePickerModal } from "react-native-paper-dates";
 import { dateToDDMMYYYY, DDMMYYYYToDate, HHMMToHour, hourToHHMM } from "../../functions/date";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
+import { SETTINGS_KEYS } from "../../database/settings";
 
 export default function EditLessonScreen({ navigation, route }) {
     const theme = useTheme();
     const db = useContext(DatabaseContext);
+    const settings = useContext(SettingsContext);
     const statuses = useColorScheme() == "dark" ? possibleStatuses.dark : possibleStatuses.light;
     const { lessonID } = route.params ?? { lessonID: null };
 
@@ -377,7 +379,7 @@ export default function EditLessonScreen({ navigation, route }) {
                         label="Cena"
                         value={price}
                         onChangeText={(value) => { setPrice(value); setInputErrors({ ...inputErrors, price: !value }) }}
-                        right={<TextInput.Affix text="zł" />}
+                        right={<TextInput.Affix text={JSON.parse(settings.settings[SETTINGS_KEYS.currency]).symbol} />}
                         keyboardType="decimal-pad"
                     />
                     <HelperText visible={inputErrors.price} type="error" style={{ display: inputErrors.price ? "flex" : "none" }}>To pole jest wymagane.</HelperText>
