@@ -3,13 +3,15 @@ import { Button, HelperText, Switch, Text, TextInput, useTheme } from "react-nat
 import { act, useContext, useEffect, useState } from "react";
 import { ToggleChipGroup } from "../../components/toggleChipGroup";
 import { AutocompleteTextInput } from '../../components/autocompleteTextInput';
-import { possibleForms, remotelyForm, stationaryForm, suggestedPlatforms } from "../../constants/const";
-import { DatabaseContext } from "../../App";
+import { POSSIBLE_FORMS, REMOTELY_FORM, STATIONARY_FORM, SUGGESTED_PLATFORMS } from "../../constants/const";
+import { DatabaseContext, SettingsContext } from "../../App";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
+import { SETTINGS_KEYS } from "../../database/settings";
 
 export default function EditStudentScreen({ navigation, route }) {
     const theme = useTheme();
     const db = useContext(DatabaseContext);
+    const settings = useContext(SettingsContext);
     const { studentID } = route.params ?? { studentID: null };
 
     const [name, setName] = useState("");
@@ -64,11 +66,11 @@ export default function EditStudentScreen({ navigation, route }) {
             surname: !surname,
             phone: !phoneNumber,
         };
-        if (remotelyForm.includes(form)) {
+        if (REMOTELY_FORM.includes(form)) {
             errors.platform = !platform;
             errors.nick = !nick;
         }
-        if (stationaryForm.includes(form)) {
+        if (STATIONARY_FORM.includes(form)) {
             errors.city = !city;
             errors.address = !address;
         }
@@ -127,6 +129,11 @@ export default function EditStudentScreen({ navigation, route }) {
         navigation.pop();
     };
 
+
+    useEffect(() => {
+
+    }, []);
+
     return (
         <KeyboardAwareScrollView style={styles.container} keyboardShouldPersistTaps="handled">
             <View style={styles.row}>
@@ -184,11 +191,11 @@ export default function EditStudentScreen({ navigation, route }) {
             </View>
             <View style={styles.row}>
                 <Text style={styles.label} pointerEvents="none">Aktywny:</Text>
-                <View style={{justifyContent: "center", alignItems: "center", padding: 10, marginLeft: 10}}>
+                <View style={{ justifyContent: "center", alignItems: "center", padding: 10, marginLeft: 10 }}>
                     <Switch
                         value={!disabled}
                         onChange={() => setDisabled(!disabled)}
-                        style={{transform: [{scale: 1.5}]}}
+                        style={{ transform: [{ scale: 1.5 }] }}
                     />
                 </View>
             </View>
@@ -198,7 +205,7 @@ export default function EditStudentScreen({ navigation, route }) {
                     style={styles.chipContainer}
                     value={form}
                     onSelect={setForm}
-                    chips={possibleForms}
+                    chips={POSSIBLE_FORMS}
                 />
             </View>
 
@@ -212,7 +219,7 @@ export default function EditStudentScreen({ navigation, route }) {
                                 containerStyle={styles.input}
                                 textInputStyle={styles.input}
                                 label="Platforma"
-                                suggestions={suggestedPlatforms}
+                                suggestions={(settings.settings[SETTINGS_KEYS.autocompleteInputs] === "true") ? SUGGESTED_PLATFORMS : []}
                                 value={platform}
                                 onChangeText={(value) => { setPlatform(value); setInputErrors({ ...inputErrors, platform: !value }); }}
                                 error={inputErrors.platform}

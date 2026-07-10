@@ -1,10 +1,10 @@
 import { useColorScheme, View } from "react-native";
 import { Chip, Text, useTheme } from "react-native-paper";
-import { possibleStatuses } from "../constants/const";
+import { POSSIBLE_STATUSES } from "../constants/const";
 
 export function StatusChip({ value, onPress = () => { }, style = {}, selected = false }) {
     const theme = useTheme();
-    const __possStatuses = useColorScheme() == "dark" ? possibleStatuses.dark : possibleStatuses.light;
+    const __possStatuses = useColorScheme() == "dark" ? POSSIBLE_STATUSES.dark : POSSIBLE_STATUSES.light;
     const thisStatus = __possStatuses[value];
     return (
         <View style={style}>

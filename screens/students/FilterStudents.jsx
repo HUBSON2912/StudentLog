@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Button, Chip, Icon, Searchbar, Switch, Text, TextInput, useTheme } from "react-native-paper";
-import { possibleForms, studentsOrder } from "../../constants/const";
+import { POSSIBLE_FORMS, STUDENTS_ORDER } from "../../constants/const";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview'
 import SelectDropdown from "react-native-select-dropdown";
 import { SettingsContext } from "../../App";
@@ -12,7 +12,7 @@ export default function FilterStudentsScreen({ navigation, route }) {
     const theme = useTheme();
     const { setFilter, activeFilter } = route.params;
 
-    const [order, setOrder] = useState(studentsOrder[0]);
+    const [order, setOrder] = useState(STUDENTS_ORDER[0]);
     const [contain, setContain] = useState("");
     const [selectedForms, setSelectedForms] = useState([]);
     const [platform, setPlatform] = useState("");
@@ -112,7 +112,7 @@ export default function FilterStudentsScreen({ navigation, route }) {
             <View style={styles.row}>
                 <Text style={styles.label} pointerEvents="none">Sortuj:</Text>
                 <SelectDropdown
-                    data={studentsOrder}
+                    data={STUDENTS_ORDER}
                     onSelect={(sel) => setOrder(sel)}
                     renderButton={DropdownButton}
                     renderItem={DropdownItem}
@@ -216,7 +216,7 @@ export default function FilterStudentsScreen({ navigation, route }) {
                 <View style={{ flex: 1, alignItems: "center" }}>
 
                     {
-                        possibleForms.map(({ value, label, icon }) => {
+                        POSSIBLE_FORMS.map(({ value, label, icon }) => {
                             const selected = selectedForms.includes(value);
                             return (
                                 <Chip key={`chip${value}`}
@@ -243,7 +243,7 @@ export default function FilterStudentsScreen({ navigation, route }) {
                     onPress={() => {
                         setFilter({
                             active: false,
-                            order: studentsOrder[0],
+                            order: STUDENTS_ORDER[0],
                             contain: null,
                             forms: [],
                             platform: null,

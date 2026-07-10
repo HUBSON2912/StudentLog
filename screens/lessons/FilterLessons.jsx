@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { StyleSheet, useColorScheme, View } from "react-native";
 import { Button, Chip, Icon, Searchbar, Switch, Text, TextInput, useTheme } from "react-native-paper";
-import { lessonsOrder, possibleForms, possibleStatuses, studentsOrder } from "../../constants/const";
+import { LESSONS_ORDER, POSSIBLE_FORMS, POSSIBLE_STATUSES, STUDENTS_ORDER } from "../../constants/const";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview'
 import SelectDropdown from "react-native-select-dropdown";
 import { DatabaseContext, SettingsContext } from "../../App";
@@ -12,11 +12,11 @@ import { SETTINGS_KEYS } from "../../database/settings";
 export default function FilterLessonsScreen({ navigation, route }) {
     const theme = useTheme();
     const { setFilter, activeFilter } = route.params;
-    const lessonStatuses = useColorScheme() == "dark" ? possibleStatuses.dark : possibleStatuses.light;
+    const lessonStatuses = useColorScheme() == "dark" ? POSSIBLE_STATUSES.dark : POSSIBLE_STATUSES.light;
     const db = useContext(DatabaseContext);
     const settings=useContext(SettingsContext);
 
-    const [order, setOrder] = useState(lessonsOrder[0]);
+    const [order, setOrder] = useState(LESSONS_ORDER[0]);
     const [contain, setContain] = useState("");
 
     const [student, setStudent] = useState("");
@@ -195,7 +195,7 @@ export default function FilterLessonsScreen({ navigation, route }) {
             <View style={styles.row}>
                 <Text style={styles.label} pointerEvents="none">Sortuj:</Text>
                 <SelectDropdown
-                    data={lessonsOrder}
+                    data={LESSONS_ORDER}
                     onSelect={(sel) => setOrder(sel)}
                     renderButton={DropdownButtonSort}
                     renderItem={DropdownItemSort}
@@ -356,7 +356,7 @@ export default function FilterLessonsScreen({ navigation, route }) {
                     onPress={() => {
                         setFilter({
                             active: false,
-                            order: lessonsOrder[0],
+                            order: LESSONS_ORDER[0],
                             contain: null,
                             student: null,
                             subject: null,

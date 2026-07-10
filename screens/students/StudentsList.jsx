@@ -2,7 +2,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { Appbar, Avatar, Button, Card, Dialog, Divider, FAB, Icon, IconButton, Menu, Modal, Portal, Searchbar, Text, useTheme } from "react-native-paper";
 import { DatabaseContext, SettingsContext } from "../../App";
 import { Animated, FlatList, KeyboardAvoidingView, Platform, StatusBar, StyleSheet, TouchableWithoutFeedback, View } from "react-native";
-import { possibleForms, remotelyForm, stationaryForm, studentsOrder } from "../../constants/const";
+import { POSSIBLE_FORMS, REMOTELY_FORM, STATIONARY_FORM, STUDENTS_ORDER } from "../../constants/const";
 import { SETTINGS_KEYS } from "../../database/settings";
 
 
@@ -31,7 +31,7 @@ function StudentTile({ student, deleteAction = (id) => { }, editAction = (id) =>
             <Card mode="contained" style={styles.container} theme={theme}>
                 <Card.Title title={student.name + " " + student.surname}
                     titleStyle={{ fontSize: 22, color: textColor }}
-                    right={() => <Icon size={50} source={possibleForms[student.form].icon}
+                    right={() => <Icon size={50} source={POSSIBLE_FORMS[student.form].icon}
                         color={theme.colors.primary} />}
                 />
                 <Card.Content>
@@ -47,7 +47,7 @@ function StudentTile({ student, deleteAction = (id) => { }, editAction = (id) =>
                         </View>
                     }
                     {
-                        remotelyForm.includes(student.form) &&
+                        REMOTELY_FORM.includes(student.form) &&
                         <>
                             <View style={styles.dataContainer}>
                                 <Icon size={16} source={"laptop"} color={textColor} />
@@ -56,7 +56,7 @@ function StudentTile({ student, deleteAction = (id) => { }, editAction = (id) =>
                         </>
                     }
                     {
-                        stationaryForm.includes(student.form) &&
+                        STATIONARY_FORM.includes(student.form) &&
                         <>
                             <View style={styles.dataContainer}>
                                 <Icon size={16} source={"home"} color={textColor} />
@@ -98,7 +98,7 @@ export default function StudentsListScreen({ navigation }) {
     // filters
     const [filter, setFilter] = useState({
         active: false,
-        order: studentsOrder[0],
+        order: STUDENTS_ORDER[0],
         contain: null,
         forms: [],
         platform: null,
@@ -281,14 +281,14 @@ export default function StudentsListScreen({ navigation }) {
                             </View>
                             <View style={styles.detailContainer}>
                                 <Text variant="bodyMedium">Forma: </Text>
-                                <Text variant="bodyMedium">{possibleForms[selectedStudent.form].label}</Text>
+                                <Text variant="bodyMedium">{POSSIBLE_FORMS[selectedStudent.form].label}</Text>
                             </View>
                             <View style={styles.detailContainer}>
                                 <Text variant="bodyMedium">Aktywny: </Text>
                                 <Text variant="bodyMedium">{!selectedStudent.disabled ? "TAK" : "NIE"}</Text>
                             </View>
                             {
-                                remotelyForm.includes(selectedStudent.form) &&
+                                REMOTELY_FORM.includes(selectedStudent.form) &&
                                 <>
                                     <View style={styles.detailContainer}>
                                         <Text variant="bodyMedium">Platforma:</Text>
@@ -301,7 +301,7 @@ export default function StudentsListScreen({ navigation }) {
                                 </>
                             }
                             {
-                                stationaryForm.includes(selectedStudent.form) &&
+                                STATIONARY_FORM.includes(selectedStudent.form) &&
                                 <>
                                     <View style={styles.detailContainer}>
                                         <Text variant="bodyMedium">Miejscowość:</Text>

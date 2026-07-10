@@ -1,7 +1,7 @@
 import { KeyboardAvoidingView, ScrollView, StatusBar, StyleSheet, useColorScheme, View } from "react-native";
 import { AnimatedFAB, Button, Chip, HelperText, Icon, SegmentedButtons, Snackbar, Text, TextInput, useTheme } from "react-native-paper";
 import { ToggleChipGroup } from "../../components/toggleChipGroup";
-import { possibleLessonsAddMode, possibleStatuses, weekDays } from "../../constants/const";
+import { POSSIBLE_LESSONS_ADD_MODE, POSSIBLE_STATUSES, WEEK_DAYS } from "../../constants/const";
 import { useContext, useEffect, useState } from "react";
 import { DatabaseContext, SettingsContext } from "../../App";
 import SelectDropdown from "react-native-select-dropdown";
@@ -15,7 +15,7 @@ export default function EditLessonScreen({ navigation, route }) {
     const theme = useTheme();
     const db = useContext(DatabaseContext);
     const settings = useContext(SettingsContext);
-    const statuses = useColorScheme() == "dark" ? possibleStatuses.dark : possibleStatuses.light;
+    const statuses = useColorScheme() == "dark" ? POSSIBLE_STATUSES.dark : POSSIBLE_STATUSES.light;
     const { lessonID } = route.params ?? { lessonID: null };
 
     const styles = StyleSheet.create({
@@ -41,7 +41,7 @@ export default function EditLessonScreen({ navigation, route }) {
         input: {
             flex: 1
         },
-        chipHoursWeekDays: {
+        chipHoursWEEK_DAYS: {
             flexDirection: "row",
             gap: 5,
             flexWrap: "wrap",
@@ -395,7 +395,7 @@ export default function EditLessonScreen({ navigation, route }) {
                         style={styles.chipContainer}
                         value={mode}
                         onSelect={setMode}
-                        chips={possibleLessonsAddMode}
+                        chips={POSSIBLE_LESSONS_ADD_MODE}
                     />
                 </View>
             }
@@ -504,11 +504,11 @@ export default function EditLessonScreen({ navigation, route }) {
                     </View>
                     <View style={styles.input}>
                         {
-                            weekDays.map((value, dayIndex) => {
+                            WEEK_DAYS.map((value, dayIndex) => {
                                 return (
                                     <View style={styles.row} key={`d${dayIndex}`}>
                                         <Text style={styles.label} pointerEvents="none">{value}:</Text>
-                                        <View style={styles.chipHoursWeekDays}>
+                                        <View style={styles.chipHoursWEEK_DAYS}>
                                             <Chip onPress={() => {
                                                 setShowTimeWeekDay(true);
                                                 setPressedDayIndex(dayIndex);
@@ -550,7 +550,7 @@ export default function EditLessonScreen({ navigation, route }) {
                             setInputErrors({ ...inputErrors, timesPerDay_regulary: (buf.filter(x => x.length == 0).length == 7) })  // every array is empty
                         }}
                         onDismiss={() => setShowTimeWeekDay(false)}
-                        label={`Wybierz godzinę (${weekDays[pressedDayIndex]})`}
+                        label={`Wybierz godzinę (${WEEK_DAYS[pressedDayIndex]})`}
                         locale="pl"
                         hours={12}
                         minutes={0}

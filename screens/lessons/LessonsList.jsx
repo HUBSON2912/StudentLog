@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { Appbar, Button, Card, Chip, Dialog, FAB, Icon, IconButton, Portal, Text, useTheme } from "react-native-paper";
 import { DatabaseContext, SettingsContext } from "../../App";
 import { FlatList, StyleSheet, useColorScheme, View } from "react-native";
-import { lessonsOrder, possibleStatuses } from "../../constants/const";
+import { LESSONS_ORDER, POSSIBLE_STATUSES } from "../../constants/const";
 import { DDMMYYYYToDate, HHMMToHour } from "../../functions/date";
 import { StatusChip } from "../../components/statusChip";
 import { SETTINGS_KEYS, settingsGet, settingsGetAll } from "../../database/settings";
@@ -92,7 +92,7 @@ function LessonTile({ lesson, deleteAction = (id) => { }, editAction = (id) => {
 export default function LessonsListScreen({ navigation }) {
     const theme = useTheme();
     db = useContext(DatabaseContext);
-    statuses = useColorScheme() == "dark" ? possibleStatuses.dark : possibleStatuses.light;
+    statuses = useColorScheme() == "dark" ? POSSIBLE_STATUSES.dark : POSSIBLE_STATUSES.light;
     settings = useContext(SettingsContext);
 
     const [selectedLesson, setSelectedLesson] = useState(null);
@@ -112,7 +112,7 @@ export default function LessonsListScreen({ navigation }) {
 
     const [filter, setFilter] = useState({
         active: false,
-        order: lessonsOrder[0],
+        order: LESSONS_ORDER[0],
         contain: null,
         student: null,
         subject: null,

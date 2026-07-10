@@ -8,7 +8,7 @@ import { createTableL, deleteL, deleteStudentsLessonL, getAllL, insertL, updateL
 import StudetnsScreen from "./screens/Students";
 import LessonsScreen from "./screens/Lessons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { possibleTableNames } from "./constants/const";
+import { POSSIBLE_TABLE_NAMES } from "./constants/const";
 import SettingsScreen from "./screens/Settings";
 import { correctSettingsKey, SETTINGS_KEYS, settingsGetAll, settingsSet } from "./database/settings";
 
@@ -38,7 +38,7 @@ export default function App() {
 
     const createTable = async (name) => {
         try {
-            if (!(possibleTableNames.includes(name))) {
+            if (!(POSSIBLE_TABLE_NAMES.includes(name))) {
                 throw new Error(`Unknow table name: '${name}'`);
             }
 
@@ -60,7 +60,7 @@ export default function App() {
 
     const getAll = async (name) => {
         try {
-            if (!(possibleTableNames.includes(name))) {
+            if (!(POSSIBLE_TABLE_NAMES.includes(name))) {
                 throw new Error(`Unknow table name: '${name}'`);
             }
             let buf = [];
@@ -84,7 +84,7 @@ export default function App() {
 
     const insert = async (name, value) => {
         try {
-            if (!(possibleTableNames.includes(name))) {
+            if (!(POSSIBLE_TABLE_NAMES.includes(name))) {
                 throw new Error(`Unknow table name: '${name}'`);
             }
             let id;
@@ -110,7 +110,7 @@ export default function App() {
 
     const remove = async (name, id) => {
         try {
-            if (!(possibleTableNames.includes(name))) {
+            if (!(POSSIBLE_TABLE_NAMES.includes(name))) {
                 throw new Error(`Unknow table name: '${name}'`);
             }
 
@@ -137,7 +137,7 @@ export default function App() {
 
     const get = (name, id) => {
         try {
-            if (!(possibleTableNames.includes(name))) {
+            if (!(POSSIBLE_TABLE_NAMES.includes(name))) {
                 throw new Error(`Unknow table name: '${name}'`);
             }
 
@@ -158,7 +158,7 @@ export default function App() {
 
     const update = (name, value, id) => {
         try {
-            if (!(possibleTableNames.includes(name))) {
+            if (!(POSSIBLE_TABLE_NAMES.includes(name))) {
                 throw new Error(`Unknow table name: '${name}'`);
             }
 
@@ -205,7 +205,7 @@ export default function App() {
 
     const getDetails = (name, id) => {
         try {
-            if (!(possibleTableNames.includes(name))) {
+            if (!(POSSIBLE_TABLE_NAMES.includes(name))) {
                 throw new Error(`Unknow table name: '${name}'`);
             }
             let res = get(name, id);

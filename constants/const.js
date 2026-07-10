@@ -1,28 +1,28 @@
 import { themeDark, themeLight } from "../theme";
 
-export const possibleTableNames = ["students", "lessons", "status", "pricelist"];
+export const POSSIBLE_TABLE_NAMES = ["students", "lessons", "status", "pricelist"];
 
-export const suggestedPlatforms = ["Discord", "Google Meet", "Messenger", "Microsoft Teams", "Skype", "Zoom"];
+export const SUGGESTED_PLATFORMS = ["Discord", "Google Meet", "Messenger", "Microsoft Teams", "Skype", "Zoom"];
 
 // value is a kind of ID
-export const possibleForms = [
+export const POSSIBLE_FORMS = [
     { value: 0, icon: "laptop", label: "Zdalnie" },
     { value: 1, icon: "home", label: "Stacjonarnie" },
     { value: 2, icon: "shuffle-variant", label: "Mieszanie" }
 ];
 
 // form id where it's necessary to use remotely form data (platform and nick) 
-export const remotelyForm = [0, 2];
+export const REMOTELY_FORM = [0, 2];
 
 // form id where it's necessary to use stationary form data (address) 
-export const stationaryForm = [1, 2];
+export const STATIONARY_FORM = [1, 2];
 
-export const possibleLessonsAddMode = [
+export const POSSIBLE_LESSONS_ADD_MODE = [
     { value: 0, icon: "numeric-1-circle", label: "Jedna lekcja" },
     { value: 1, icon: "calendar", label: "Regularnie" }
 ];
 
-export const possibleStatuses = {
+export const POSSIBLE_STATUSES = {
     dark: [
         { value: 0, label: "Zaplanowane", colors: themeDark.colors.status[0] },
         { value: 1, label: "Wykonane", colors: themeDark.colors.status[1] },
@@ -35,7 +35,7 @@ export const possibleStatuses = {
     ]
 };
 
-export const studentsOrder = [
+export const STUDENTS_ORDER = [
     {
         label: "Trafność ￬",
         paramName: ["disabled", "id"],
@@ -78,7 +78,7 @@ export const studentsOrder = [
     },
 ];
 
-export const lessonsOrder = [
+export const LESSONS_ORDER = [
     {
         label: "Trafność ￬",
         paramName: ["status", "date", "hour", "id"],
@@ -141,8 +141,8 @@ export const lessonsOrder = [
     },
 ];
 
-export const weekDays = ["Poniedziałek", "Wtorek", "Środa", "Czwartek", "Piątek", "Sobota", "Niedziela"];
+export const WEEK_DAYS = ["Poniedziałek", "Wtorek", "Środa", "Czwartek", "Piątek", "Sobota", "Niedziela"];
 
-export const possibleLanguages = ["Polski", "English"]
+export const POSSIBLE_LANGUAGES = ["Polski", "English"]
 
-export const possibleRoundingMode = [{ id: 0, label: "w górę" }, { id: 1, label: "w dół" }, { id: 2, label: "matematycznie" }, { id: 3, label: "nie zaokrąglaj" },]
+export const POSSIBLE_ROUNDING_MODE = [{ id: 0, label: "w górę" }, { id: 1, label: "w dół" }, { id: 2, label: "matematycznie" }, { id: 3, label: "nie zaokrąglaj" },]

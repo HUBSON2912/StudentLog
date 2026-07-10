@@ -3,7 +3,7 @@ import ActionTile from "../components/actionTile";
 import { useContext, useEffect, useState } from "react";
 import { getVersion } from "../functions/version";
 import SectionWithIcon from "../components/sectionWithIcon";
-import { possibleLanguages, possibleRoundingMode } from "../constants/const";
+import { POSSIBLE_LANGUAGES, POSSIBLE_ROUNDING_MODE } from "../constants/const";
 import DismissKeyboard from "../components/dismissKeyboard";
 import { Button, Dialog, Portal, Snackbar, Text } from "react-native-paper";
 import { createFile, selectFile } from "../functions/manageFiles";
@@ -19,7 +19,7 @@ export default function SettingsScreen() {
     const settings = useContext(SettingsContext);
     const currencies = Object.values(require("../constants/currency.json"));
 
-    const [language, setLanguage] = useState(possibleLanguages[0]);
+    const [language, setLanguage] = useState(POSSIBLE_LANGUAGES[0]);
     const [currency, setCurrency] = useState(currencies[0]);
     const [showIncomes, setShowIncomes] = useState(true);
     const [showStudentNumber, setShowStudentNumber] = useState(true);
@@ -27,7 +27,7 @@ export default function SettingsScreen() {
 
     const [applyPriceList, setApplyPriceList] = useState(true);
     const [firstDiscount, setFirstDiscount] = useState("100");
-    const [roundingMode, setRoundingMode] = useState(possibleRoundingMode[0])
+    const [roundingMode, setRoundingMode] = useState(POSSIBLE_ROUNDING_MODE[0])
 
     const [applyNotifications, setApplyNotifications] = useState(true);
     const [notifUnknowTopic, setNotifUnknowTopic] = useState(true);
@@ -99,7 +99,7 @@ export default function SettingsScreen() {
                 {/* ------------------------- */}
 
                 <SectionWithIcon icon={"land-plots"} label={"Interfejs"}>
-                    <ActionTile label={"Język"} type="select" selectData={possibleLanguages} value={language} onSelect={(value) => {
+                    <ActionTile label={"Język"} type="select" selectData={POSSIBLE_LANGUAGES} value={language} onSelect={(value) => {
                         setLanguage(value);
                         settings.set(SETTINGS_KEYS.language, value);
                     }} />
@@ -132,7 +132,7 @@ export default function SettingsScreen() {
                         setFirstDiscount(val);
                         settings.set(SETTINGS_KEYS.discountForFirst, val);
                     }} />
-                    <ActionTile label={"Sposób zaokrąglania"} type="select" active={applyPriceList} selectData={possibleRoundingMode} itemProperty={"label"} value={roundingMode} onSelect={(val) => {
+                    <ActionTile label={"Sposób zaokrąglania"} type="select" active={applyPriceList} selectData={POSSIBLE_ROUNDING_MODE} itemProperty={"label"} value={roundingMode} onSelect={(val) => {
                         setRoundingMode(val);
                         settings.set(SETTINGS_KEYS.rounding, JSON.stringify(val));
                     }} />
