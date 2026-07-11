@@ -344,6 +344,14 @@ export default function EditLessonScreen({ navigation, route }) {
         );
     }
 
+    // check if all data necessary to calculate price are valid
+    function autopriceAreDataTypedIn() {
+        return (
+            selectedStudentID && subject && level && duration &&
+            !inputErrors.student && !inputErrors.subject && !inputErrors.level && !inputErrors.duration
+        );
+    }
+
     return (
         <KeyboardAwareScrollView style={styles.container} keyboardShouldPersistTaps="handled">
 
@@ -453,7 +461,7 @@ export default function EditLessonScreen({ navigation, route }) {
                             setInputErrors({ ...inputErrors, price: !isLikePositiveFloat(value) });
                         }}
                         right={
-                            (settings.settings[SETTINGS_KEYS.usePriceList] === "true") ?
+                            (settings.settings[SETTINGS_KEYS.usePriceList] === "true" && autopriceAreDataTypedIn()) ?
                                 <TextInput.Icon icon={"auto-fix"} onPress={autocompletePrice} /> :
                                 <TextInput.Affix text={JSON.parse(settings.settings[SETTINGS_KEYS.currency]).symbol} />
                         }
