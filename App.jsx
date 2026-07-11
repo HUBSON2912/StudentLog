@@ -304,7 +304,7 @@ export default function App() {
 
     const settingsAPI = {
         settings: settings,
-        set: (key, value) => {
+        set: async(key, value) => {
             if (!correctSettingsKey(key))
                 throw new Error(`Unknown settings key: ${key}`);
 
@@ -313,7 +313,7 @@ export default function App() {
                 buff[key] = value;
                 return buff;
             });
-            settingsSet(key, value);
+            await settingsSet(key, value);
         }
     }
 

@@ -14,6 +14,7 @@ import { importL } from "../../database/lessons";
 import RNRestart from 'react-native-restart';
 import { SETTINGS_KEYS, settingsGetAll } from "../../database/settings";
 import { convertFloatPoint, isLikePositiveFloat } from "../../functions/validationInputs";
+import { importPL } from "../../database/pricelist";
 
 export default function ConfigurationScreen({ navigation }) {
     const db = useContext(DatabaseContext);
@@ -37,24 +38,41 @@ export default function ConfigurationScreen({ navigation }) {
 
     // export and import stuff
     const handleExport = async () => {
-        const res = await createFile(`studentlog_db_${dateUniqueString(new Date())}`, "stldb", JSON.stringify(db), "text/stldb");
+        const saveObject = { database: db, settings: settings.settings };
+        const res = await createFile(`studentlog_db_${dateUniqueString(new Date())}`, "stldb", JSON.stringify(saveObject), "text/stldb");
         setSnackbarMessage(res.message);
         setSnackbarVisiable(true);
     }
-    const [loadedDatabaseFile, setLoadedDatabaseFile] = useState("");
+    const [loadedDataFromFile, setLoadedDataFromFile] = useState("");
 
-    const loadDatabase = async () => {
+    const loadImportedData = async () => {
         try {
 
-            let newContent = await JSON.parse(loadedDatabaseFile);
-            db.students = newContent.students;
-            db.lessons = newContent.lessons;
-            await importS(newContent.students);
-            await importL(newContent.lessons);
+            let loadObject = await JSON.parse(loadedDataFromFile);
+
+            async function loadDatabase() {
+                db.students = loadObject.database.students;
+                db.lessons = loadObject.database.lessons;
+                db.pricelist = loadObject.database.pricelist;
+                await importS(loadObject.database.students);
+                await importL(loadObject.database.lessons);
+                await importPL(loadObject.database.pricelist);
+            }
+
+            async function loadSettings() {
+                const keys=Object.values(SETTINGS_KEYS);
+                for (let i=0; i<keys.length; i++) {
+                    await settings.set(keys[i], loadObject.settings[keys[i]]);
+                }
+            }
+            await loadDatabase();
+            await loadSettings();
+
             RNRestart.restart();
         } catch (err) {
             setSnackbarMessage("Nie można zaimportować danych.");
             setSnackbarVisiable(true);
+            console.log(err);
         }
     }
 
@@ -74,8 +92,8 @@ export default function ConfigurationScreen({ navigation }) {
         setAutocompleteInputs(settings.settings[SETTINGS_KEYS.autocompleteInputs] === "true");
     }, []);
 
-    const [discountError, setDiscountError] = useState(false);
 
+    const [discountError, setDiscountError] = useState(false);
     function validateDiscount() {
         setFirstDiscount(prev => convertFloatPoint(prev));
         if (!isLikePositiveFloat(firstDiscount) || firstDiscount == "") {
@@ -94,7 +112,7 @@ export default function ConfigurationScreen({ navigation }) {
     // validate and save the discount
     useEffect(() => {
         if (validateDiscount()) {
-            settings.settings[SETTINGS_KEYS.discountForFirst] = firstDiscount;
+            settings.set(SETTINGS_KEYS.discountForFirst, firstDiscount);
         }
     }, [firstDiscount]);
 
@@ -182,7 +200,7 @@ export default function ConfigurationScreen({ navigation }) {
                             return;
                         }
 
-                        setLoadedDatabaseFile(selected.content.slice(5));
+                        setLoadedDataFromFile(selected.content.slice(5));
                         setDialogImportBackupVisiable(true);
                     }} />
                 </SectionWithIcon>
@@ -233,11 +251,11 @@ export default function ConfigurationScreen({ navigation }) {
                         <Dialog.Actions>
                             <Button onPress={async () => {
                                 await handleExport();
-                                await loadDatabase();
+                                await loadImportedData();
                                 setDialogImportBackupVisiable(false);
                             }}>Tak</Button>
                             <Button onPress={async () => {
-                                await loadDatabase();
+                                await loadImportedData();
                                 setDialogImportBackupVisiable(false);
                             }}>Nie</Button>
                         </Dialog.Actions>
