@@ -1,7 +1,7 @@
-import { KeyboardAvoidingView, ScrollView, StatusBar, StyleSheet, useColorScheme, View } from "react-native";
-import { AnimatedFAB, Button, Chip, HelperText, Icon, SegmentedButtons, Snackbar, Text, TextInput, useTheme } from "react-native-paper";
+import { StyleSheet, useColorScheme, View } from "react-native";
+import { Button, Chip, HelperText, Icon, Text, TextInput, useTheme } from "react-native-paper";
 import { ToggleChipGroup } from "../../components/toggleChipGroup";
-import { POSSIBLE_LESSONS_ADD_MODE, POSSIBLE_STATUSES, WEEK_DAYS } from "../../constants/const";
+import { POSSIBLE_LESSONS_ADD_MODE, POSSIBLE_STATUSES, ROUNDING_MODE_ID_DICT, WEEK_DAYS } from "../../constants/const";
 import { useContext, useEffect, useState } from "react";
 import { DatabaseContext, SettingsContext } from "../../App";
 import SelectDropdown from "react-native-select-dropdown";
@@ -10,6 +10,7 @@ import { DatePickerModal, TimePickerModal } from "react-native-paper-dates";
 import { dateToDDMMYYYY, DDMMYYYYToDate, HHMMToHour, hourToHHMM } from "../../functions/date";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
 import { SETTINGS_KEYS } from "../../database/settings";
+import { convertFloatPoint, isLikePositiveFloat } from "../../functions/validationInputs";
 
 export default function EditLessonScreen({ navigation, route }) {
     const theme = useTheme();
@@ -70,6 +71,8 @@ export default function EditLessonScreen({ navigation, route }) {
     const [pressedDayIndex, setPressedDayIndex] = useState(null);
     const [showTimeWeekDay, setShowTimeWeekDay] = useState(false);
 
+    // load data from selected lesson
+    // only for editing
     useEffect(() => {
         if (!lessonID) {
             return;
@@ -101,7 +104,7 @@ export default function EditLessonScreen({ navigation, route }) {
         timesPerDay_regulary: false
     });
 
-    const areInputsGood = () => {
+    const areInputsValid = () => {
         let errors = {
             student: !selectedStudentID,
             subject: !subject,
@@ -123,9 +126,14 @@ export default function EditLessonScreen({ navigation, route }) {
     }
 
     //replace ',' -> '.' in floats
-    useEffect(()=>{
-        setDuration(prev=> prev.replace(",", "."));
-        setPrice(prev=> prev.replace(",", "."));
+    useEffect(() => {
+        setDuration(prev => convertFloatPoint(prev));
+        setPrice(prev => convertFloatPoint(prev));
+        setInputErrors({
+            ...inputErrors,
+            duration: !isLikePositiveFloat(duration),
+            price: !isLikePositiveFloat(price)
+        });
     }, [duration, price]);
 
     const handleSaveInsert_oneLesson = async () => {
@@ -153,7 +161,7 @@ export default function EditLessonScreen({ navigation, route }) {
             student_id: selectedStudentID,
             subject: subject,
             level: level,
-            duration: parseFloat(duration.replace(',', '.')),
+            duration: parseFloat(duration),
             price: parseFloat(price),
             date: dateToDDMMYYYY(date_oneLess),
             hour: hourToHHMM(hour_oneLess),
@@ -164,7 +172,7 @@ export default function EditLessonScreen({ navigation, route }) {
         setLoading(false);
         navigation.pop();
     }
-    //todo uwzględnij pierwszą zniżkę
+
     const handleSaveInsert_regulary = async () => {
         setLoading(true);
         let newLessons = [];
@@ -186,7 +194,7 @@ export default function EditLessonScreen({ navigation, route }) {
                     student_id: selectedStudentID,
                     subject: subject,
                     level: level,
-                    duration: parseFloat(duration.replace(',', '.')),
+                    duration: parseFloat(duration),
                     price: parseFloat(price),
                     date: dateToDDMMYYYY(day),
                     hour: hourToHHMM(timesPerDay_regulary[dayofweek][i]),
@@ -204,7 +212,7 @@ export default function EditLessonScreen({ navigation, route }) {
     }
 
     const chooseSaveMone = () => {
-        if (!areInputsGood()) {
+        if (!areInputsValid()) {
             return;
         }
 
@@ -234,19 +242,30 @@ export default function EditLessonScreen({ navigation, route }) {
             setPrice("0")
         }
         else {
-            let price = pricelistItems[0].price * parseFloat(duration.replace(",", "."));  // 1,5 -> 1.5
+            let price = pricelistItems[0].price;
+            let discount = parseFloat(settings.settings[SETTINGS_KEYS.discountForFirst]);
 
-            // const.js -> ROUNDING_MODE
-            const roundingMode=JSON.parse(settings.settings[SETTINGS_KEYS.rounding]);
-            switch(roundingMode.id) {
-                case 0:
-                    price=Math.ceil(price);
+            let totalTime = db.lessons
+                .filter(less => less.student_id == selectedStudentID)
+                .reduce((sumTime, currLesson) => sumTime += currLesson.duration, 0);
+
+            // discount is already taken or there is 1h-timeSpent left
+            let timeWithDiscountLeft = Math.max(1 - totalTime, 0);
+            let timeWithDiscountThisLesson = Math.min(timeWithDiscountLeft, parseFloat(duration));
+            let priceForTimeWithDiscount = timeWithDiscountThisLesson * price * (1 - parseFloat(discount) / 100);
+            let priceForTimeWithoutDiscount = (parseFloat(duration) - timeWithDiscountThisLesson) * price;
+            price = priceForTimeWithDiscount + priceForTimeWithoutDiscount;
+
+            const roundingMode = JSON.parse(settings.settings[SETTINGS_KEYS.rounding]);
+            switch (roundingMode.id) {
+                case ROUNDING_MODE_ID_DICT.down:
+                    price = Math.floor(price);
                     break;
-                case 1:
-                    price=Math.floor(price);
+                case ROUNDING_MODE_ID_DICT.up:
+                    price = Math.ceil(price);
                     break;
-                case 2:
-                    price=Math.round(price);
+                case ROUNDING_MODE_ID_DICT.math:
+                    price = Math.round(price);
                     break;
                 default:
                     break;
@@ -328,6 +347,7 @@ export default function EditLessonScreen({ navigation, route }) {
     return (
         <KeyboardAwareScrollView style={styles.container} keyboardShouldPersistTaps="handled">
 
+            {/* select student */}
             <View style={styles.row}>
                 <Text style={styles.label} pointerEvents="none">Uczeń:</Text>
                 {
@@ -353,6 +373,8 @@ export default function EditLessonScreen({ navigation, route }) {
                     <Text style={{ fontSize: 16, borderRadius: theme.roundness, ...styles.input, borderWidth: 1, borderColor: theme.colors.outline, paddingVertical: 10, paddingHorizontal: 15 }}>Brak uczniów</Text>
                 }
             </View>
+
+            {/* subject */}
             <View style={styles.row}>
                 <Text style={styles.label} pointerEvents="none">Przedmiot:</Text>
                 <View style={styles.input}>
@@ -373,6 +395,8 @@ export default function EditLessonScreen({ navigation, route }) {
                     <HelperText visible={inputErrors.subject} type="error" style={{ display: inputErrors.subject ? "flex" : "none" }}>To pole jest wymagane.</HelperText>
                 </View>
             </View>
+
+            {/* level */}
             <View style={styles.row}>
                 <Text style={styles.label} pointerEvents="none">Poziom:</Text>
                 <View style={styles.input}>
@@ -393,6 +417,8 @@ export default function EditLessonScreen({ navigation, route }) {
                     <HelperText visible={inputErrors.level} type="error" style={{ display: inputErrors.level ? "flex" : "none" }}>To pole jest wymagane.</HelperText>
                 </View>
             </View>
+
+            {/* duration */}
             <View style={styles.row}>
                 <Text style={styles.label} pointerEvents="none">Czas trwania:</Text>
                 <View style={styles.input}>
@@ -401,7 +427,10 @@ export default function EditLessonScreen({ navigation, route }) {
                         style={styles.input}
                         label="Czas trwania"
                         value={duration}
-                        onChangeText={(value) => { setDuration(value); setInputErrors({ ...inputErrors, duration: !value }) }}
+                        onChangeText={(value) => {
+                            setDuration(value);
+                            setInputErrors({ ...inputErrors, duration: !isLikePositiveFloat(value) })
+                        }}
                         right={<TextInput.Affix text="h" />}
                         keyboardType="decimal-pad"
                         error={inputErrors.duration}
@@ -409,6 +438,8 @@ export default function EditLessonScreen({ navigation, route }) {
                     <HelperText visible={inputErrors.duration} type="error" style={{ display: inputErrors.duration ? "flex" : "none" }}>To pole jest wymagane.</HelperText>
                 </View>
             </View>
+
+            {/* price */}
             <View style={styles.row}>
                 <Text style={styles.label} pointerEvents="none">Cena:</Text>
                 <View style={styles.input}>
@@ -417,7 +448,10 @@ export default function EditLessonScreen({ navigation, route }) {
                         style={styles.input}
                         label="Cena"
                         value={price}
-                        onChangeText={(value) => { setPrice(value); setInputErrors({ ...inputErrors, price: !value }) }}
+                        onChangeText={(value) => {
+                            setPrice(value);
+                            setInputErrors({ ...inputErrors, price: !isLikePositiveFloat(value) });
+                        }}
                         right={
                             (settings.settings[SETTINGS_KEYS.usePriceList] === "true") ?
                                 <TextInput.Icon icon={"auto-fix"} onPress={autocompletePrice} /> :
@@ -429,9 +463,9 @@ export default function EditLessonScreen({ navigation, route }) {
                 </View>
             </View>
 
-            {/* one lesson or regulary */}
+            {/* add mode: one lesson or regulary */}
             {
-                !lessonID &&
+                !lessonID && // only if you add a new lesson and not editing
                 <View style={styles.row}>
                     <Text style={styles.label} pointerEvents="none">Tryb:</Text>
                     <ToggleChipGroup
@@ -447,6 +481,7 @@ export default function EditLessonScreen({ navigation, route }) {
             {
                 mode == 0 &&  // one-lesson
                 <>
+                    {/* select date */}
                     <View style={styles.row}>
                         <Text style={styles.label} pointerEvents="none">Data:</Text>
                         <Button
@@ -470,6 +505,7 @@ export default function EditLessonScreen({ navigation, route }) {
                         />
                     </View>
 
+                    {/* select time */}
                     <View style={styles.row}>
                         <Text style={styles.label} pointerEvents="none">Godzina:</Text>
                         <Button
@@ -493,6 +529,8 @@ export default function EditLessonScreen({ navigation, route }) {
                             cancelLabel="Anuluj"
                         />
                     </View>
+
+                    {/* select status */}
                     <View style={styles.row}>
                         <Text style={styles.label} pointerEvents="none">Status:</Text>
                         <ToggleChipGroup
@@ -503,6 +541,7 @@ export default function EditLessonScreen({ navigation, route }) {
                         />
                     </View>
 
+                    {/* topic */}
                     <View style={styles.row}>
                         <Text style={styles.label} pointerEvents="none">Temat:</Text>
                         <TextInput
@@ -517,8 +556,9 @@ export default function EditLessonScreen({ navigation, route }) {
             }
 
             {
-                mode == 1 &&
+                mode == 1 &&  // regulary
                 <>
+                    {/* select date range */}
                     <View style={styles.row}>
                         <Text style={styles.label} pointerEvents="none">Data:</Text>
                         <Button
@@ -545,6 +585,8 @@ export default function EditLessonScreen({ navigation, route }) {
                             saveLabel="Zapisz"
                         />
                     </View>
+
+                    {/* buttons for adding meetings for every day of the week */}
                     <View style={styles.input}>
                         {
                             WEEK_DAYS.map((value, dayIndex) => {

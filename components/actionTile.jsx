@@ -1,5 +1,5 @@
 import { StyleSheet, View } from "react-native";
-import { Card, Icon, Switch, Text, TextInput, useTheme } from "react-native-paper";
+import { Card, HelperText, Icon, Switch, Text, TextInput, useTheme } from "react-native-paper";
 import SelectDropdown from "react-native-select-dropdown";
 
 const possibleTypes = [
@@ -20,6 +20,10 @@ export default function ActionTile({
 
     keyboardType = "default",
     placeholder = null,
+    helperText = "",
+    helperTextVisiable = false,
+    helperTextStyle = null,
+    helperTextType = null,
 
     text = null,
 
@@ -137,17 +141,20 @@ export default function ActionTile({
 
                     {
                         type == "text-input" &&
-                        <View style={{ borderColor: theme.colors.outline, borderWidth: 1, borderRadius: theme.roundness }}>
-                            <TextInput
-                                value={value}
-                                onChangeText={onChangeText}
-                                mode="outlined"
-                                disabled={!active}
-                                outlineColor={theme.colors.outlineVariant}
-                                placeholder={placeholder}
-                                keyboardType={keyboardType}
-                                style={{ backgroundColor: theme.colors.surfaceVariant, minWidth: 100 }}
-                            />
+                        <View style={{ flexDirection: "column" }}>
+                            <View style={{ borderColor: theme.colors.outline, borderWidth: 1, borderRadius: theme.roundness }}>
+                                <TextInput
+                                    value={value}
+                                    onChangeText={onChangeText}
+                                    mode="outlined"
+                                    disabled={!active}
+                                    outlineColor={theme.colors.outlineVariant}
+                                    placeholder={placeholder}
+                                    keyboardType={keyboardType}
+                                    style={{ backgroundColor: theme.colors.surfaceVariant, minWidth: 100 }}
+                                />
+                            </View>
+                            <HelperText style={{ ...helperTextStyle, display: (helperTextVisiable ? "flex" : "none") }} visible={helperTextVisiable} type={helperTextType}>{helperText}</HelperText>
                         </View>
                     }
                 </View>

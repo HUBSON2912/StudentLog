@@ -1,11 +1,11 @@
-import { ScrollView } from "react-native";
+import { ScrollView, View } from "react-native";
 import ActionTile from "../../components/actionTile";
 import { useContext, useEffect, useState } from "react";
 import { getVersion } from "../../functions/version";
 import SectionWithIcon from "../../components/sectionWithIcon";
 import { POSSIBLE_LANGUAGES, POSSIBLE_ROUNDING_MODE } from "../../constants/const";
 import DismissKeyboard from "../../components/dismissKeyboard";
-import { Button, Dialog, Portal, Snackbar, Text } from "react-native-paper";
+import { Button, Dialog, HelperText, Portal, Snackbar, Text } from "react-native-paper";
 import { createFile, selectFile } from "../../functions/manageFiles";
 import { dateUniqueString } from "../../functions/date";
 import { DatabaseContext, SettingsContext } from "../../App";
@@ -13,6 +13,7 @@ import { importS } from "../../database/students";
 import { importL } from "../../database/lessons";
 import RNRestart from 'react-native-restart';
 import { SETTINGS_KEYS, settingsGetAll } from "../../database/settings";
+import { convertFloatPoint, isLikePositiveFloat } from "../../functions/validationInputs";
 
 export default function ConfigurationScreen({ navigation }) {
     const db = useContext(DatabaseContext);
@@ -33,30 +34,6 @@ export default function ConfigurationScreen({ navigation }) {
     const [notifUnknowTopic, setNotifUnknowTopic] = useState(true);
     const [notifUnpaidLessons, setNotifUnpaidLessons] = useState(true);
     const [notifTodayLessons, setNotifTodayLessons] = useState(true);
-
-    // load saved settings
-    useEffect(() => {
-        // async function load() {
-        setLanguage(settings.settings[SETTINGS_KEYS.language]);
-        setCurrency(JSON.parse(settings.settings[SETTINGS_KEYS.currency]));
-        setShowIncomes(settings.settings[SETTINGS_KEYS.showIncomes] === "true");
-        setShowStudentNumber(settings.settings[SETTINGS_KEYS.showNumberStudents] === "true");
-        setApplyPriceList(settings.settings[SETTINGS_KEYS.usePriceList] === "true");
-        setFirstDiscount(settings.settings[SETTINGS_KEYS.discountForFirst]);
-        setRoundingMode(JSON.parse(settings.settings[SETTINGS_KEYS.rounding]));
-        setApplyNotifications(settings.settings[SETTINGS_KEYS.notificationsOn] === "true");
-        setNotifUnknowTopic(settings.settings[SETTINGS_KEYS.notifUnknownTopic] === "true");
-        setNotifUnpaidLessons(settings.settings[SETTINGS_KEYS.notifUnpaidLesson] === "true");
-        setNotifTodayLessons(settings.settings[SETTINGS_KEYS.notifTodayLesson] === "true");
-        setAutocompleteInputs(settings.settings[SETTINGS_KEYS.autocompleteInputs] === "true");
-        // }
-        // load();
-    }, []);
-
-    const [snackbarVisiable, setSnackbarVisiable] = useState(false);
-    const [snackbarMessage, setSnackbarMessage] = useState("");
-
-    const [dialogImportBackupVisiable, setDialogImportBackupVisiable] = useState(false);
 
     // export and import stuff
     const handleExport = async () => {
@@ -81,11 +58,55 @@ export default function ConfigurationScreen({ navigation }) {
         }
     }
 
+    // load saved settings
+    useEffect(() => {
+        setLanguage(settings.settings[SETTINGS_KEYS.language]);
+        setCurrency(JSON.parse(settings.settings[SETTINGS_KEYS.currency]));
+        setShowIncomes(settings.settings[SETTINGS_KEYS.showIncomes] === "true");
+        setShowStudentNumber(settings.settings[SETTINGS_KEYS.showNumberStudents] === "true");
+        setApplyPriceList(settings.settings[SETTINGS_KEYS.usePriceList] === "true");
+        setFirstDiscount(settings.settings[SETTINGS_KEYS.discountForFirst]);
+        setRoundingMode(JSON.parse(settings.settings[SETTINGS_KEYS.rounding]));
+        setApplyNotifications(settings.settings[SETTINGS_KEYS.notificationsOn] === "true");
+        setNotifUnknowTopic(settings.settings[SETTINGS_KEYS.notifUnknownTopic] === "true");
+        setNotifUnpaidLessons(settings.settings[SETTINGS_KEYS.notifUnpaidLesson] === "true");
+        setNotifTodayLessons(settings.settings[SETTINGS_KEYS.notifTodayLesson] === "true");
+        setAutocompleteInputs(settings.settings[SETTINGS_KEYS.autocompleteInputs] === "true");
+    }, []);
+
+    const [discountError, setDiscountError] = useState(false);
+
+    function validateDiscount() {
+        setFirstDiscount(prev => convertFloatPoint(prev));
+        if (!isLikePositiveFloat(firstDiscount) || firstDiscount == "") {
+            setDiscountError(true);
+            return false;
+        }
+        else {
+            setDiscountError(false);
+            if (parseFloat(firstDiscount) > 100) {
+                setFirstDiscount("100");
+            }
+            return true;
+        }
+    }
+
+    // validate and save the discount
+    useEffect(() => {
+        if (validateDiscount()) {
+            settings.settings[SETTINGS_KEYS.discountForFirst] = firstDiscount;
+        }
+    }, [firstDiscount]);
+
+    const [snackbarVisiable, setSnackbarVisiable] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState("");
+
+    const [dialogImportBackupVisiable, setDialogImportBackupVisiable] = useState(false);
+
+
     return (
         <ScrollView>
             <DismissKeyboard style={{ flex: 1 }}>
-
-                {/* interface */}
 
                 {/* ------------------------- */}
                 {/* info delete it later */}
@@ -98,6 +119,7 @@ export default function ConfigurationScreen({ navigation }) {
                 }} />
                 {/* ------------------------- */}
 
+                {/* interface */}
                 <SectionWithIcon icon={"land-plots"} label={"Interfejs"}>
                     <ActionTile label={"Język"} type="select" selectData={POSSIBLE_LANGUAGES} value={language} onSelect={(value) => {
                         setLanguage(value);
@@ -128,10 +150,15 @@ export default function ConfigurationScreen({ navigation }) {
                         setApplyPriceList(!applyPriceList);
                     }} />
                     <ActionTile label={"Edytuj cennik"} onPress={() => { navigation.navigate("PriceList") }} />
-                    <ActionTile label={"Pierwsza zniżka"} type="text-input" active={applyPriceList} placeholder={"%"} value={firstDiscount} onChangeText={(val) => {
-                        setFirstDiscount(val);
-                        settings.set(SETTINGS_KEYS.discountForFirst, val);
-                    }} />
+                    <ActionTile label={"Pierwsza zniżka"} type="text-input"
+                        active={applyPriceList}
+                        placeholder={"0 - 100%"}
+                        value={firstDiscount}
+                        onChangeText={(val) => { setFirstDiscount(val); }}
+                        helperTextVisiable={discountError}
+                        helperText="Niepoprawne dane."
+                        helperTextType="error"
+                    />
                     <ActionTile label={"Sposób zaokrąglania"} type="select" active={applyPriceList} selectData={POSSIBLE_ROUNDING_MODE} itemProperty={"label"} value={roundingMode} onSelect={(val) => {
                         setRoundingMode(val);
                         settings.set(SETTINGS_KEYS.rounding, JSON.stringify(val));
@@ -189,7 +216,7 @@ export default function ConfigurationScreen({ navigation }) {
                 </SectionWithIcon>
 
 
-
+                {/* dialog box and snackbar */}
                 <Portal>
                     <Snackbar visible={snackbarVisiable} onDismiss={() => setSnackbarVisiable(false)}>
                         {snackbarMessage}

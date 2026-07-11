@@ -145,4 +145,6 @@ export const WEEK_DAYS = ["Poniedziałek", "Wtorek", "Środa", "Czwartek", "Pią
 
 export const POSSIBLE_LANGUAGES = ["Polski", "English"]
 
-export const POSSIBLE_ROUNDING_MODE = [{ id: 0, label: "w górę" }, { id: 1, label: "w dół" }, { id: 2, label: "matematycznie" }, { id: 3, label: "nie zaokrąglaj" },]
+export const ROUNDING_MODE_ID_DICT={down: 0, up: 1, math: 2, none: 3};
+
+export const POSSIBLE_ROUNDING_MODE = [{ id: 0, label: "w dół" }, { id: 1, label: "w górę" }, { id: 2, label: "matematycznie" }, { id: 3, label: "nie zaokrąglaj" },]
