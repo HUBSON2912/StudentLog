@@ -605,9 +605,8 @@ export default function EditLessonScreen({ navigation, route }) {
                                             <Chip onPress={() => {
                                                 setShowTimeWeekDay(true);
                                                 setPressedDayIndex(dayIndex);
-                                            }}>
-                                                <Text>+</Text>
-                                            </Chip>
+                                            }}
+                                            >+</Chip>
                                             {
                                                 timesPerDay_regulary[dayIndex].map((item, index) => {
                                                     return (

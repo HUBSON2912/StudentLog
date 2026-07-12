@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import { Chip, Text, useTheme } from "react-native-paper";
+import { Avatar, Chip, Icon, Text, useTheme } from "react-native-paper";
 
 export function ToggleChipGroup({ onSelect = () => { }, style = {}, chips = [], value = 0 }) {
     const theme = useTheme();

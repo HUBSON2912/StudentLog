@@ -5,6 +5,7 @@ import { POSSIBLE_FORMS, STUDENTS_ORDER } from "../../constants/const";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview'
 import SelectDropdown from "react-native-select-dropdown";
 import { SettingsContext } from "../../App";
+import { SETTINGS_KEYS } from "../../database/settings";
 
 export default function FilterStudentsScreen({ navigation, route }) {
     const settings=useContext(SettingsContext);
