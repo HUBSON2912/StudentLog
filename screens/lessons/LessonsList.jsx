@@ -1,3 +1,4 @@
+import notifee, { RepeatFrequency, TriggerType } from '@notifee/react-native';
 import { useContext, useEffect, useState } from "react";
 import { Appbar, Button, Card, Chip, Dialog, FAB, Icon, IconButton, Portal, Text, useTheme } from "react-native-paper";
 import { DatabaseContext, SettingsContext } from "../../App";
@@ -13,12 +14,12 @@ let statuses = [];
 
 function LessonTile({ lesson, deleteAction = (id) => { }, editAction = (id) => { }, detailsAction = (id) => { } }) {
     const theme = useTheme();
-    let currency=null;
+    let currency = null;
     try {
-        currency=JSON.parse(settings.settings[SETTINGS_KEYS.currency]);
+        currency = JSON.parse(settings.settings[SETTINGS_KEYS.currency]);
     }
-    catch(error){
-        currency={symbol: "none"}; // dummy currency
+    catch (error) {
+        currency = { symbol: "none" }; // dummy currency
     }
 
     const student = db.get("students", lesson.student_id);
@@ -211,7 +212,6 @@ export default function LessonsListScreen({ navigation }) {
         return _stud;
     }
 
-
     return (
         <>
             <Appbar style={{ backgroundColor: theme.colors.background }}>
@@ -226,7 +226,7 @@ export default function LessonsListScreen({ navigation }) {
 
                 {/* ------------------------- */}
                 {/* info delete it later */}
-                <Appbar.Action icon={"cog"} onPress={() => console.log(settings, db)} size={28} />
+                <Appbar.Action icon={"cog"} onPress={() => { console.log("debug") }} size={28} />
                 {/* ------------------------- */}
 
                 <Appbar.Action icon={filter.active ? "filter-check" : "filter"} onPress={() => navigation.navigate("FilterLessons", { setFilter: setFilter, activeFilter: filter })} size={28} />

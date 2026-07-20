@@ -2,16 +2,18 @@ import { Platform, SafeAreaView, StatusBar, StyleSheet, useColorScheme } from "r
 import { Icon, PaperProvider, } from "react-native-paper";
 import { themeDark, themeLight } from "./theme";
 import { createContext, useState, useEffect } from "react";
-import { createTableS, deleteS, dropTableS, getAllS, insertS, updateS } from "./database/students";
+import { createTableS, deleteS, getAllS, insertS, updateS } from "./database/students";
 import { NavigationContainer } from "@react-navigation/native";
-import { createTableL, deleteL, deleteStudentsLessonL, dropTableL, getAllL, insertL, updateL } from "./database/lessons";
+import { createTableL, deleteL, deleteStudentsLessonL, getAllL, insertL, updateL } from "./database/lessons";
 import StudetnsScreen from "./screens/Students";
 import LessonsScreen from "./screens/Lessons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { POSSIBLE_TABLE_NAMES } from "./constants/const";
 import SettingsScreen from "./screens/Settings";
-import { correctSettingsKey, SETTINGS_KEYS, settingsGetAll, settingsSet } from "./database/settings";
-import { createTablePL, deletePL, dropTablePL, getAllPL, insertPL, updatePL } from "./database/pricelist";
+import { correctSettingsKey, settingsGetAll, settingsSet } from "./database/settings";
+import { createTablePL, deletePL, getAllPL, insertPL, updatePL } from "./database/pricelist";
+import BackgroundFetch from "react-native-background-fetch";
+import notifee, { AuthorizationStatus } from '@notifee/react-native';
 
 export const DatabaseContext = createContext(null);
 export const SettingsContext = createContext(null);
@@ -19,6 +21,76 @@ export const SettingsContext = createContext(null);
 const Tab = createBottomTabNavigator();
 
 export default function App() {
+
+    // info delete it later
+    // ---------------------
+    useEffect(() => {
+        async function displayNotification(taskId) {
+            try {
+                const settings = await notifee.getNotificationSettings();
+
+                if (settings.authorizationStatus >= AuthorizationStatus.AUTHORIZED) {
+                    console.log('Permission settings:', settings);
+                } else {
+                    console.log('User declined permissions');
+                    BackgroundFetch.finish(taskId);
+                    return;
+                }
+
+                console.log("displayNotification()");
+                // Create a channel
+                const channelId = await notifee.createChannel({
+                    id: 'default',
+                    name: 'Default Channel',
+                });
+
+                // Display a notification
+                await notifee.displayNotification({
+                    title: 'Notification Title',
+                    body: 'Main body content of the notification',
+                    android: {
+                        channelId,
+                        smallIcon: 'ic_launcher',
+                        pressAction: {
+                            id: 'default',
+                        },
+                    },
+                });
+            }
+            catch (error) {
+                console.log("Error in displayNotification", error);
+            }
+        }
+
+        // displayNotification();
+
+        BackgroundFetch.configure({
+            minimumFetchInterval: 15,
+            stopOnTerminate: false,
+            startOnBoot: true,
+            enableHeadless: true,
+        },
+            // async (taskId) => {
+            //     console.log("HEADLESS START");
+            //     // console.log(JSON.stringify(taskId));
+
+            //     BackgroundFetch.finish(taskId);
+            // },
+            // (taskId)=>{
+            //     console.log("Timeout");
+            //     BackgroundFetch.finish(taskId);
+            // }
+            async (taskId) => {
+                displayNotification();
+                BackgroundFetch.finish(taskId);
+            }, (taskId) => {
+                BackgroundFetch.finish(taskId);
+            }
+        );
+    }, []);
+    // ---------------------
+
+
     const systemTheme = useColorScheme();
     const theme = systemTheme == "dark" ? themeDark : themeLight;
 
@@ -304,7 +376,7 @@ export default function App() {
 
     const settingsAPI = {
         settings: settings,
-        set: async(key, value) => {
+        set: async (key, value) => {
             if (!correctSettingsKey(key))
                 throw new Error(`Unknown settings key: ${key}`);
 
