@@ -1,11 +1,11 @@
-import { ScrollView, View } from "react-native";
+import { ScrollView } from "react-native";
 import ActionTile from "../../components/actionTile";
 import { useContext, useEffect, useState } from "react";
 import { getVersion } from "../../functions/version";
 import SectionWithIcon from "../../components/sectionWithIcon";
-import { POSSIBLE_LANGUAGES, POSSIBLE_ROUNDING_MODE } from "../../constants/const";
+import { /*POSSIBLE_LANGUAGES,*/ POSSIBLE_ROUNDING_MODE } from "../../constants/const";
 import DismissKeyboard from "../../components/dismissKeyboard";
-import { Button, Dialog, HelperText, Portal, Snackbar, Text } from "react-native-paper";
+import { Button, Dialog, Portal, Snackbar, Text } from "react-native-paper";
 import { createFile, selectFile } from "../../functions/manageFiles";
 import { dateUniqueString } from "../../functions/date";
 import { DatabaseContext, SettingsContext } from "../../App";
@@ -21,7 +21,7 @@ export default function ConfigurationScreen({ navigation }) {
     const settings = useContext(SettingsContext);
     const currencies = Object.values(require("../../constants/currency.json"));
 
-    const [language, setLanguage] = useState(POSSIBLE_LANGUAGES[0]);
+    // const [language, setLanguage] = useState(POSSIBLE_LANGUAGES[0]);
     const [currency, setCurrency] = useState(currencies[0]);
     const [showIncomes, setShowIncomes] = useState(true);
     const [showStudentNumber, setShowStudentNumber] = useState(true);
@@ -35,6 +35,7 @@ export default function ConfigurationScreen({ navigation }) {
     const [notifUnknowTopic, setNotifUnknowTopic] = useState(true);
     const [notifUnpaidLessons, setNotifUnpaidLessons] = useState(true);
     const [notifTodayLessons, setNotifTodayLessons] = useState(true);
+    const [notifWrongStatus, setNotifWrongStatus] = useState(true);
 
     // export and import stuff
     const handleExport = async () => {
@@ -60,8 +61,8 @@ export default function ConfigurationScreen({ navigation }) {
             }
 
             async function loadSettings() {
-                const keys=Object.values(SETTINGS_KEYS);
-                for (let i=0; i<keys.length; i++) {
+                const keys = Object.values(SETTINGS_KEYS);
+                for (let i = 0; i < keys.length; i++) {
                     await settings.set(keys[i], loadObject.settings[keys[i]]);
                 }
             }
@@ -78,7 +79,7 @@ export default function ConfigurationScreen({ navigation }) {
 
     // load saved settings
     useEffect(() => {
-        setLanguage(settings.settings[SETTINGS_KEYS.language]);
+        // setLanguage(settings.settings[SETTINGS_KEYS.language]);
         setCurrency(JSON.parse(settings.settings[SETTINGS_KEYS.currency]));
         setShowIncomes(settings.settings[SETTINGS_KEYS.showIncomes] === "true");
         setShowStudentNumber(settings.settings[SETTINGS_KEYS.showNumberStudents] === "true");
@@ -90,6 +91,7 @@ export default function ConfigurationScreen({ navigation }) {
         setNotifUnpaidLessons(settings.settings[SETTINGS_KEYS.notifUnpaidLesson] === "true");
         setNotifTodayLessons(settings.settings[SETTINGS_KEYS.notifTodayLesson] === "true");
         setAutocompleteInputs(settings.settings[SETTINGS_KEYS.autocompleteInputs] === "true");
+        setNotifWrongStatus(settings.settings[SETTINGS_KEYS.notifWrongStatus] === "true");
     }, []);
 
 
@@ -139,10 +141,10 @@ export default function ConfigurationScreen({ navigation }) {
 
                 {/* interface */}
                 <SectionWithIcon icon={"land-plots"} label={"Interfejs"}>
-                    <ActionTile label={"Język"} type="select" selectData={POSSIBLE_LANGUAGES} value={language} onSelect={(value) => {
-                        setLanguage(value);
-                        settings.set(SETTINGS_KEYS.language, value);
-                    }} />
+                    {/* <ActionTile label={"Język"} type="select" selectData={POSSIBLE_LANGUAGES} value={language} onSelect={(value) => {
+                         setLanguage(value);
+                         settings.set(SETTINGS_KEYS.language, value);
+                     }} /> */}
                     <ActionTile label={"Waluta"} type="select" selectData={currencies} value={currency} itemProperty={"code"} onSelect={(val) => {
                         setCurrency(val);
                         settings.set(SETTINGS_KEYS.currency, JSON.stringify(val));
@@ -167,7 +169,7 @@ export default function ConfigurationScreen({ navigation }) {
                         settings.set(SETTINGS_KEYS.usePriceList, (!applyPriceList).toString());
                         setApplyPriceList(!applyPriceList);
                     }} />
-                    <ActionTile label={"Edytuj cennik"} onPress={() => { navigation.navigate("PriceList") }} />
+                    <ActionTile active={applyPriceList} label={"Edytuj cennik"} onPress={() => { navigation.navigate("PriceList") }} />
                     <ActionTile label={"Pierwsza zniżka"} type="text-input"
                         active={applyPriceList}
                         placeholder={"0 - 100%"}
@@ -222,6 +224,10 @@ export default function ConfigurationScreen({ navigation }) {
                     <ActionTile label={"Dzisiejsze zajęcia"} type="switch" active={applyNotifications} value={notifTodayLessons} onPress={() => {
                         settings.set(SETTINGS_KEYS.notifTodayLesson, (!notifTodayLessons).toString());
                         setNotifTodayLessons(!notifTodayLessons);
+                    }} />
+                    <ActionTile label={"Nieaktualny status"} type="switch" active={applyNotifications} value={notifWrongStatus} onPress={() => {
+                        settings.set(SETTINGS_KEYS.notifWrongStatus, (!notifWrongStatus).toString());
+                        setNotifWrongStatus(!notifWrongStatus);
                     }} />
                 </SectionWithIcon>
 

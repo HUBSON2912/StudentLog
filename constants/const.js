@@ -143,7 +143,7 @@ export const LESSONS_ORDER = [
 
 export const WEEK_DAYS = ["Poniedziałek", "Wtorek", "Środa", "Czwartek", "Piątek", "Sobota", "Niedziela"];
 
-export const POSSIBLE_LANGUAGES = ["Polski", "English"]
+// export const POSSIBLE_LANGUAGES = ["Polski", "English"]
 
 export const ROUNDING_MODE_ID_DICT={down: 0, up: 1, math: 2, none: 3};
 

@@ -1,7 +1,7 @@
 import { createAsyncStorage } from "@react-native-async-storage/async-storage";
 
 export const SETTINGS_KEYS={
-    language: "language", 
+    // language: "language", 
     currency: "currency", 
     showIncomes: "showIncomes", 
     showNumberStudents: "showNumberStudents", 
@@ -12,11 +12,12 @@ export const SETTINGS_KEYS={
     notifUnknownTopic: "notifUnknownTopic",
     notifUnpaidLesson: "notifUnpaidLesson",
     notifTodayLesson: "notifTodayLesson",
-    autocompleteInputs: "autocompleteInputs"
+    autocompleteInputs: "autocompleteInputs",
+    notifWrongStatus: "notifWrongStatus"
 }
 
 const DEFAULT_VALUES={
-    language: "Polski", 
+    // language: "Polski", 
     currency: JSON.stringify({
 		"symbol": "zł",
 		"name": "Polish Zloty",
@@ -30,12 +31,13 @@ const DEFAULT_VALUES={
     showNumberStudents: "true", 
     usePriceList: "true", 
     discountForFirst: "100", 
-    rounding: JSON.stringify({ id: 0, label: "w górę" }),
+    rounding: JSON.stringify({ id: 0, label: "w dół" }),
     notificationsOn: "true",
     notifUnknownTopic: "true",
     notifUnpaidLesson: "true",
     notifTodayLesson: "true",
-    autocompleteInputs: "true"
+    autocompleteInputs: "true",
+    notifWrongStatus: "true"
 }
 
 export function correctSettingsKey(key) {
