@@ -14,7 +14,7 @@ export default function FilterLessonsScreen({ navigation, route }) {
     const { setFilter, activeFilter } = route.params;
     const lessonStatuses = useColorScheme() == "dark" ? POSSIBLE_STATUSES.dark : POSSIBLE_STATUSES.light;
     const db = useContext(DatabaseContext);
-    const settings=useContext(SettingsContext);
+    const settings = useContext(SettingsContext);
 
     const [order, setOrder] = useState(LESSONS_ORDER[0]);
     const [contain, setContain] = useState("");
@@ -22,7 +22,7 @@ export default function FilterLessonsScreen({ navigation, route }) {
     const [student, setStudent] = useState("");
     const [subject, setSubject] = useState("");
     const [level, setLevel] = useState("");
-    const [dateRange, setDateRange] = useState({ since: new Date(0), to: new Date(0) });
+    const [dateRange, setDateRange] = useState({ since: null, to: null });
     const [priceRange, setPriceRange] = useState({ min: null, max: null });
     const [durationRange, setDurationRange] = useState({ min: null, max: null });
     const [selectedStatuses, setSelectedStatuses] = useState([]);
@@ -48,8 +48,8 @@ export default function FilterLessonsScreen({ navigation, route }) {
         setSubject(activeFilter.subject);
         setLevel(activeFilter.level);
         setDateRange({
-            since: activeFilter.dateRange.since ? activeFilter.dateRange.since : new Date(0),
-            to: activeFilter.dateRange.to ? activeFilter.dateRange.to : new Date(0)
+            since: activeFilter.dateRange.since ? activeFilter.dateRange.since : null,
+            to: activeFilter.dateRange.to ? activeFilter.dateRange.to : null
         });
         setPriceRange({
             min: activeFilter.priceRange.min ?
@@ -66,10 +66,10 @@ export default function FilterLessonsScreen({ navigation, route }) {
     }, [activeFilter]);
 
     const setStartDate = (value) => {
-        setDateRange(prev => setDateRange({ ...prev, since: value }));
+        setDateRange(prev => { return { ...prev, since: value } });
     };
     const setEndDate = (value) => {
-        setDateRange(prev => setDateRange({ ...prev, to: value }));
+        setDateRange(prev => { return { ...prev, to: value } });
     };
 
     const DropdownItemSort = (item, index, isSelected) => {
@@ -188,7 +188,16 @@ export default function FilterLessonsScreen({ navigation, route }) {
         );
     }
 
-    const [showCalendar, setShowCalendar] = useState(false);
+    const [showCalendar, setShowCalendar] = useState(false);  // false - hidden, since|to - shown and edit only one side of range
+    // swap dates if end is lower than start
+    useEffect(() => {
+        if (dateRange.since == null || dateRange.to == null)
+            return;
+
+        if (dateRange.since > dateRange.to) {
+            setDateRange({ since: dateRange.to, to: dateRange.since });
+        }
+    }, [dateRange])
 
     return (
         <KeyboardAwareScrollView style={styles.container}>
@@ -241,40 +250,55 @@ export default function FilterLessonsScreen({ navigation, route }) {
                 />
             </View>
             <View style={styles.row}>
-                <Text style={styles.label} pointerEvents="none">Data:</Text>
-
+                <Text style={styles.label} pointerEvents="none">Od:</Text>
                 <View style={{ ...styles.input, flexDirection: "row", alignItems: "center" }}>
-
                     <Button
                         mode="outlined"
                         style={{ flex: 1 }}
-                        onPress={() => setShowCalendar(true)}
-                        onLongPress={() => setDateRange({ since: new Date(0), to: new Date(0) })}
+                        onPress={() => setShowCalendar("since")}
+                        onLongPress={() => setStartDate(null)}
                     >
-                        {(dateRange.since.getFullYear() == 1970 || dateRange.to.getFullYear() == 1970) ?
-                            "Ustaw zakres" :
-                            (dateToDDMMYYYY(dateRange.since) + " - " + dateToDDMMYYYY(dateRange.to))}
+                        {dateRange.since ? dateToDDMMYYYY(dateRange.since) : "Ustaw datę początkową"}
                     </Button>
-
-                    {/* since */}
-                    <DatePickerModal
-                        locale="pl"
-                        mode="range"
-                        animationType="slide"
-                        startDate={dateRange.since.getFullYear() == 1970 ? new Date() : dateRange.since}
-                        endDate={dateRange.to.getFullYear() == 1970 ? new Date() : dateRange.to}
-                        startWeekOnMonday={true}
-                        visible={showCalendar}
-                        onDismiss={() => setShowCalendar(false)}
-                        onConfirm={({ startDate, endDate }) => {
-                            setDateRange({ since: startDate, to: endDate });
-                            setShowCalendar(false);
-                        }}
-                        label="Wybierz datę"
-                        saveLabel="Zapisz"
-                    />
                 </View>
             </View>
+            <View style={styles.row}>
+                <Text style={styles.label} pointerEvents="none">Do:</Text>
+                <View style={{ ...styles.input, flexDirection: "row", alignItems: "center" }}>
+                    <Button
+                        mode="outlined"
+                        style={{ flex: 1 }}
+                        onPress={() => setShowCalendar("to")}
+                        onLongPress={() => setEndDate(null)}
+                    >
+                        {dateRange.to ? dateToDDMMYYYY(dateRange.to) : "Ustaw datę końcową"}
+                    </Button>
+
+                </View>
+            </View>
+
+            <DatePickerModal
+                locale="pl"
+                mode="single"
+                animationType="slide"
+                date={showCalendar == "since" ? dateRange.since : dateRange.to}
+                dateMode={showCalendar == "since" ? "start" : "end"}
+                startWeekOnMonday={true}
+                visible={!!showCalendar}
+                onDismiss={() => setShowCalendar(false)}
+                onConfirm={({ date }) => {
+                    if (showCalendar == "since") {
+                        setStartDate(date);
+                    }
+                    else if (showCalendar == "to") {
+                        setEndDate(date);
+                    }
+
+                    setShowCalendar(false);
+                }}
+                label="Wybierz datę"
+                saveLabel="Zapisz"
+            />
             <View style={styles.row}>
                 <Text style={styles.label} pointerEvents="none">Cena:</Text>
 
@@ -296,7 +320,7 @@ export default function FilterLessonsScreen({ navigation, route }) {
                         onChangeText={(val) => setPriceRange({ ...priceRange, max: val })}
                         keyboardType="decimal-pad"
                     />
-                    <Text style={{ width: 40, textAlign: "center"}}>{JSON.parse(settings.settings[SETTINGS_KEYS.currency]).symbol}</Text>
+                    <Text style={{ width: 40, textAlign: "center" }}>{JSON.parse(settings.settings[SETTINGS_KEYS.currency]).symbol}</Text>
                 </View>
             </View>
             <View style={styles.row}>
@@ -376,8 +400,7 @@ export default function FilterLessonsScreen({ navigation, route }) {
                     onPress={() => {
                         setFilter({
                             active: !!(contain || selectedStatuses.length != 0 || student ||
-                                subject || (dateRange.since.toISOString() != (new Date(0)).toISOString()) ||
-                                (dateRange.to.toISOString() != (new Date(0)).toISOString()) ||
+                                subject || dateRange.since || dateRange.to ||
                                 level || priceRange.min || priceRange.max ||
                                 durationRange.max || durationRange.min),
                             order: order,
@@ -385,7 +408,7 @@ export default function FilterLessonsScreen({ navigation, route }) {
                             student: student ? student : null,
                             subject: subject ? subject : null,
                             level: level ? level : null,
-                            dateRange: { since: dateRange.since.getFullYear() == 1970 ? null : dateRange.since, to: dateRange.to.getFullYear() == 1970 ? null : dateRange.to },
+                            dateRange: dateRange,
                             priceRange: { min: priceRange.min ? parseInt(priceRange.min) : null, max: priceRange.max ? parseInt(priceRange.max) : null },
                             durationRange: { min: durationRange.min ? parseFloat(durationRange.min) : null, max: durationRange.max ? parseFloat(durationRange.max) : null },
                             status: selectedStatuses

@@ -8,6 +8,7 @@ export const SETTINGS_KEYS={
     usePriceList: "usePriceList", 
     discountForFirst: "discountForFirst", 
     rounding: "rounding",
+    autocompleteInputs: "autocompleteInputs",
 }
 
 const DEFAULT_VALUES={
@@ -26,7 +27,7 @@ const DEFAULT_VALUES={
     usePriceList: "true", 
     discountForFirst: "100", 
     rounding: JSON.stringify({ id: 0, label: "w dół" }),
-
+    autocompleteInputs: "true",
 }
 
 export function correctSettingsKey(key) {

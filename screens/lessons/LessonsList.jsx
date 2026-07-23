@@ -189,10 +189,22 @@ export default function LessonsListScreen({ navigation }) {
             _stud = _stud.filter(x => x.student_id == filter.student);
         }
         if (filter.dateRange.since) {
-            _stud = _stud.filter(x => DDMMYYYYToDate(x.date) >= filter.dateRange.since);
+            _stud = _stud.filter(x => {
+                let x_date = DDMMYYYYToDate(x.date);
+                x_date.setHours(1, 0, 0);  // hour isnt important
+                let since = filter.dateRange.since;
+                since.setHours(0, 0, 0);
+                return since <= x_date;
+            });
         }
         if (filter.dateRange.to) {
-            _stud = _stud.filter(x => DDMMYYYYToDate(x.date) <= filter.dateRange.to);
+            _stud = _stud.filter(x => {
+                let x_date = DDMMYYYYToDate(x.date);
+                x_date.setHours(1, 0, 0); // hour isnt important
+                let to = filter.dateRange.to;
+                to.setHours(2, 0, 0);
+                return to >= x_date;
+            });
         }
         if (filter.priceRange.min) {
             _stud = _stud.filter(x => x.price >= filter.priceRange.min);
