@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { KeyboardAvoidingView, StyleSheet, View } from "react-native";
 import { Button, HelperText, Switch, Text, TextInput, useTheme } from "react-native-paper";
 import { useContext, useEffect, useState } from "react";
 import { ToggleChipGroup } from "../../components/toggleChipGroup";

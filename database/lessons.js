@@ -147,3 +147,43 @@ export async function importL(array) {
         return error;
     }
 }
+
+export async function getUnpaidL() {
+    try {
+        const db = await SQLite.openDatabase({ name: 'studentlog.db', location: 'default' })
+
+        const lessons = await db.executeSql(
+            `SELECT * FROM lessons WHERE status=1`
+        );
+
+        let results = [];
+        for (let i = 0; i < lessons[0].rows.length; i++) {
+            results.push({ ...lessons[0].rows.item(i) });
+        }
+
+        return results;
+    } catch (error) {
+        // console.error(`Error while selecting all students: ${JSON.stringify(error)}`);
+        return error;
+    }
+}
+
+export async function getPlannedL() {
+    try {
+        const db = await SQLite.openDatabase({ name: 'studentlog.db', location: 'default' })
+
+        const lessons = await db.executeSql(
+            `SELECT * FROM lessons WHERE status=0`
+        );
+
+        let results = [];
+        for (let i = 0; i < lessons[0].rows.length; i++) {
+            results.push({ ...lessons[0].rows.item(i) });
+        }
+
+        return results;
+    } catch (error) {
+        // console.error(`Error while selecting all students: ${JSON.stringify(error)}`);
+        return error;
+    }
+}

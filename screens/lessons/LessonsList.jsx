@@ -1,4 +1,3 @@
-import notifee, { RepeatFrequency, TriggerType } from '@notifee/react-native';
 import { useContext, useEffect, useState } from "react";
 import { Appbar, Button, Card, Chip, Dialog, FAB, Icon, IconButton, Portal, Text, useTheme } from "react-native-paper";
 import { DatabaseContext, SettingsContext } from "../../App";

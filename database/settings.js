@@ -8,12 +8,6 @@ export const SETTINGS_KEYS={
     usePriceList: "usePriceList", 
     discountForFirst: "discountForFirst", 
     rounding: "rounding",
-    notificationsOn: "notificationsOn",
-    notifUnknownTopic: "notifUnknownTopic",
-    notifUnpaidLesson: "notifUnpaidLesson",
-    notifTodayLesson: "notifTodayLesson",
-    autocompleteInputs: "autocompleteInputs",
-    notifWrongStatus: "notifWrongStatus"
 }
 
 const DEFAULT_VALUES={
@@ -32,12 +26,7 @@ const DEFAULT_VALUES={
     usePriceList: "true", 
     discountForFirst: "100", 
     rounding: JSON.stringify({ id: 0, label: "w dół" }),
-    notificationsOn: "true",
-    notifUnknownTopic: "true",
-    notifUnpaidLesson: "true",
-    notifTodayLesson: "true",
-    autocompleteInputs: "true",
-    notifWrongStatus: "true"
+
 }
 
 export function correctSettingsKey(key) {

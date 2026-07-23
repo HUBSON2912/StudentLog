@@ -12,8 +12,6 @@ import { POSSIBLE_TABLE_NAMES } from "./constants/const";
 import SettingsScreen from "./screens/Settings";
 import { correctSettingsKey, settingsGetAll, settingsSet } from "./database/settings";
 import { createTablePL, deletePL, getAllPL, insertPL, updatePL } from "./database/pricelist";
-import BackgroundFetch from "react-native-background-fetch";
-import notifee, { AuthorizationStatus } from '@notifee/react-native';
 
 export const DatabaseContext = createContext(null);
 export const SettingsContext = createContext(null);
@@ -21,75 +19,6 @@ export const SettingsContext = createContext(null);
 const Tab = createBottomTabNavigator();
 
 export default function App() {
-
-    // info delete it later
-    // ---------------------
-    useEffect(() => {
-        async function displayNotification(taskId) {
-            try {
-                const settings = await notifee.getNotificationSettings();
-
-                if (settings.authorizationStatus >= AuthorizationStatus.AUTHORIZED) {
-                    console.log('Permission settings:', settings);
-                } else {
-                    console.log('User declined permissions');
-                    BackgroundFetch.finish(taskId);
-                    return;
-                }
-
-                console.log("displayNotification()");
-                // Create a channel
-                const channelId = await notifee.createChannel({
-                    id: 'default',
-                    name: 'Default Channel',
-                });
-
-                // Display a notification
-                await notifee.displayNotification({
-                    title: 'Notification Title',
-                    body: 'Main body content of the notification',
-                    android: {
-                        channelId,
-                        smallIcon: 'ic_launcher',
-                        pressAction: {
-                            id: 'default',
-                        },
-                    },
-                });
-            }
-            catch (error) {
-                console.log("Error in displayNotification", error);
-            }
-        }
-
-        // displayNotification();
-
-        BackgroundFetch.configure({
-            minimumFetchInterval: 15,
-            stopOnTerminate: false,
-            startOnBoot: true,
-            enableHeadless: true,
-        },
-            // async (taskId) => {
-            //     console.log("HEADLESS START");
-            //     // console.log(JSON.stringify(taskId));
-
-            //     BackgroundFetch.finish(taskId);
-            // },
-            // (taskId)=>{
-            //     console.log("Timeout");
-            //     BackgroundFetch.finish(taskId);
-            // }
-            async (taskId) => {
-                displayNotification();
-                BackgroundFetch.finish(taskId);
-            }, (taskId) => {
-                BackgroundFetch.finish(taskId);
-            }
-        );
-    }, []);
-    // ---------------------
-
 
     const systemTheme = useColorScheme();
     const theme = systemTheme == "dark" ? themeDark : themeLight;

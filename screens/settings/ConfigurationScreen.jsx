@@ -31,11 +31,11 @@ export default function ConfigurationScreen({ navigation }) {
     const [firstDiscount, setFirstDiscount] = useState("100");
     const [roundingMode, setRoundingMode] = useState(POSSIBLE_ROUNDING_MODE[0])
 
-    const [applyNotifications, setApplyNotifications] = useState(true);
-    const [notifUnknowTopic, setNotifUnknowTopic] = useState(true);
-    const [notifUnpaidLessons, setNotifUnpaidLessons] = useState(true);
-    const [notifTodayLessons, setNotifTodayLessons] = useState(true);
-    const [notifWrongStatus, setNotifWrongStatus] = useState(true);
+    // const [applyNotifications, setApplyNotifications] = useState(true);
+    // const [notifUnknowTopic, setNotifUnknowTopic] = useState(true);
+    // const [notifUnpaidLessons, setNotifUnpaidLessons] = useState(true);
+    // const [notifTodayLessons, setNotifTodayLessons] = useState(true);
+    // const [notifWrongStatus, setNotifWrongStatus] = useState(true);
 
     // export and import stuff
     const handleExport = async () => {
@@ -86,12 +86,12 @@ export default function ConfigurationScreen({ navigation }) {
         setApplyPriceList(settings.settings[SETTINGS_KEYS.usePriceList] === "true");
         setFirstDiscount(settings.settings[SETTINGS_KEYS.discountForFirst]);
         setRoundingMode(JSON.parse(settings.settings[SETTINGS_KEYS.rounding]));
-        setApplyNotifications(settings.settings[SETTINGS_KEYS.notificationsOn] === "true");
-        setNotifUnknowTopic(settings.settings[SETTINGS_KEYS.notifUnknownTopic] === "true");
-        setNotifUnpaidLessons(settings.settings[SETTINGS_KEYS.notifUnpaidLesson] === "true");
-        setNotifTodayLessons(settings.settings[SETTINGS_KEYS.notifTodayLesson] === "true");
         setAutocompleteInputs(settings.settings[SETTINGS_KEYS.autocompleteInputs] === "true");
-        setNotifWrongStatus(settings.settings[SETTINGS_KEYS.notifWrongStatus] === "true");
+        // setApplyNotifications(settings.settings[SETTINGS_KEYS.notificationsOn] === "true");
+        // setNotifUnknowTopic(settings.settings[SETTINGS_KEYS.notifUnknownTopic] === "true");
+        // setNotifUnpaidLessons(settings.settings[SETTINGS_KEYS.notifUnpaidLesson] === "true");
+        // setNotifTodayLessons(settings.settings[SETTINGS_KEYS.notifTodayLesson] === "true");
+        // setNotifWrongStatus(settings.settings[SETTINGS_KEYS.notifWrongStatus] === "true");
     }, []);
 
 
@@ -208,7 +208,7 @@ export default function ConfigurationScreen({ navigation }) {
                 </SectionWithIcon>
 
                 {/* powiadomienia */}
-                <SectionWithIcon icon={"alert-circle"} label={"Powiadomienia"}>
+                {/* <SectionWithIcon icon={"alert-circle"} label={"Powiadomienia"}>
                     <ActionTile label={"Włącz powiadomienia"} type="switch" value={applyNotifications} onPress={() => {
                         settings.set(SETTINGS_KEYS.notificationsOn, (!applyNotifications).toString());
                         setApplyNotifications(!applyNotifications);
@@ -229,7 +229,7 @@ export default function ConfigurationScreen({ navigation }) {
                         settings.set(SETTINGS_KEYS.notifWrongStatus, (!notifWrongStatus).toString());
                         setNotifWrongStatus(!notifWrongStatus);
                     }} />
-                </SectionWithIcon>
+                </SectionWithIcon> */}
 
                 {/* inne */}
                 <SectionWithIcon icon={"dots-horizontal"} label={"Inne"}>
