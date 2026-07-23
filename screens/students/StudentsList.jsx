@@ -184,11 +184,6 @@ export default function StudentsListScreen({ navigation }) {
                     <Appbar.Content title={"Uczniowie"} />
                 }
 
-                {/* ------------------------- */}
-                {/* info delete it later */}
-                <Appbar.Action icon={"cog"} onPress={() => console.log(settings, db)} size={28} />
-                {/* ------------------------- */}
-
                 <Appbar.Action icon={filter.active ? "filter-check" : "filter"} onPress={() => navigation.navigate("FilterStudents", { setFilter: setFilter, activeFilter: filter })} size={28} />
             </Appbar>
 

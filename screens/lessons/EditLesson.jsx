@@ -391,7 +391,7 @@ export default function EditLessonScreen({ navigation, route }) {
                         containerStyle={styles.input}
                         onChangeText={(value) => { setSubject(value); setInputErrors({ ...inputErrors, subject: !value }) }}
                         // suggestions are taken from pricelist
-                        suggestions={(settings.settings[SETTINGS_KEYS.autocompleteInputs] === "true") ? ([...new Set(db.pricelist.map(x => x.subject))]) : []}
+                        suggestions={(settings.settings[SETTINGS_KEYS.autocompleteInputs] === "true" && settings.settings[SETTINGS_KEYS.usePriceList] === "true") ? ([...new Set(db.pricelist.map(x => x.subject))]) : []}
                         value={subject}
                         renderSuggestion={(item, index) => {
                             return (
@@ -413,7 +413,7 @@ export default function EditLessonScreen({ navigation, route }) {
                         containerStyle={styles.input}
                         onChangeText={(value) => { setLevel(value); setInputErrors({ ...inputErrors, level: !value }) }}
                         // suggestions are taken from pricelist
-                        suggestions={(settings.settings[SETTINGS_KEYS.autocompleteInputs] === "true") ? ([...new Set(db.pricelist.filter(x => x.subject == subject).map(x => x.level))]) : []}
+                        suggestions={(settings.settings[SETTINGS_KEYS.autocompleteInputs] === "true" && settings.settings[SETTINGS_KEYS.usePriceList] === "true") ? ([...new Set(db.pricelist.filter(x => x.subject == subject).map(x => x.level))]) : []}
                         value={level}
                         renderSuggestion={(item, index) => {
                             return (

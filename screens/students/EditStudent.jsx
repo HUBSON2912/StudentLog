@@ -134,10 +134,8 @@ export default function EditStudentScreen({ navigation, route }) {
     useEffect(() => {
         let buff = [];
         buff = db.students.map(st => st.platform);
-        buff = [...SUGGESTED_PLATFORMS, ...buff];
-        buff = [...(new Set(buff))]
-        let posOfEmpty = buff.indexOf("");
-        buff = [...buff.slice(0, posOfEmpty), ...buff.slice(posOfEmpty + 1)];
+        buff = buff.concat(SUGGESTED_PLATFORMS);
+        buff = [...(new Set(buff))];
         setSuggPlatforms(buff);
     }, [db]);
 
