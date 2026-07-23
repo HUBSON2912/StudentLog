@@ -7,7 +7,6 @@ export async function createFile(fileName, extension, textContent, mimeType = "t
         const tempFile = `${RNFS.CachesDirectoryPath}/temp_${fileName}.${extension}`;
         
         fileName = `${fileName}.${extension}`;
-        // todo: delete tempFile
         await RNFS.writeFile(tempFile, textContent, "utf8");
         const res = await saveDocuments({
             sourceUris: [`file://${tempFile}`],
@@ -15,6 +14,7 @@ export async function createFile(fileName, extension, textContent, mimeType = "t
             copy: false,
             fileName: fileName
         });
+        await RNFS.unlink(tempFile);
         return { success: true, message: "Zapisano pomyślnie" };
     } catch (e) {
         return { success: false, message: "Wystąpił nieoczekiwany błąd" }

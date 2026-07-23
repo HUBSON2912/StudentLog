@@ -144,7 +144,7 @@ export default function ConfigurationScreen({ navigation }) {
     const [snackbarMessage, setSnackbarMessage] = useState("");
 
     const [dialogImportBackupVisiable, setDialogImportBackupVisiable] = useState(false);
-
+    const [dialogAboutVisiable, setDialogAboutVisiable]=useState(false);
 
     return (
         <ScrollView>
@@ -228,9 +228,8 @@ export default function ConfigurationScreen({ navigation }) {
 
                 {/* inne */}
                 <SectionWithIcon icon={"dots-horizontal"} label={"Inne"}>
-                    <ActionTile label={"O aplikacji"} onPress={() => {/**todo as alert */ }} />
-                    <ActionTile label={"O autorze"} onPress={() => {/**todo as alert */ }} />
-                    <ActionTile label={"Licencja"} onPress={() => {/**todo as text */ }} />
+                    <ActionTile label={"O aplikacji"} onPress={() => setDialogAboutVisiable(true)} />
+                    <ActionTile label={"Licencja"} type="text" text="MIT" />
                     <ActionTile label={"Wersja"} type="text" text={getVersion()} />
                 </SectionWithIcon>
 
@@ -242,6 +241,8 @@ export default function ConfigurationScreen({ navigation }) {
                     </Snackbar>
 
                     {/* all necessary dialogs */}
+
+                    {/* import dialog */}
                     <Dialog visible={dialogImportBackupVisiable} onDismiss={() => setDialogImportBackupVisiable(false)} dismissable>
                         <Dialog.Title>Czy zapisać dane?</Dialog.Title>
                         <Dialog.Content>
@@ -259,6 +260,22 @@ export default function ConfigurationScreen({ navigation }) {
                                 await loadImportedData();
                                 setDialogImportBackupVisiable(false);
                             }}>Nie</Button>
+                        </Dialog.Actions>
+                    </Dialog>
+
+                    {/* about the app dialog */}
+                    <Dialog visible={dialogAboutVisiable} onDismiss={() => setDialogAboutVisiable(false)} dismissable>
+                        <Dialog.Title>StudentLog</Dialog.Title>
+                        <Dialog.Content>
+                            <Text>
+                                StudentLog to aplikacja dla korepetytorów, której celem jest zapisywanie informacji o lekcjach. Dane są zapisywane lokalnie i nie ma opcji (automatycznej) synchronizacji danych między urządzeniami. StudentLog posiada funkcje, które były potrzebne jej autorowi, natomiast nie posiada funkcji automatycznego powiadamiania uczniów o zbliżających się lekcjach (ograniczenia technologiczne). 
+                            </Text>
+                            <Text>
+                                Niektóre elementy aplikacji zostaną rozwinięte w przyszłości, jeśli zajdzie taka potrzeba.
+                            </Text>
+                        </Dialog.Content>
+                        <Dialog.Actions>
+                            <Button onPress={()=>setDialogAboutVisiable(false)}>Zamknij</Button>
                         </Dialog.Actions>
                     </Dialog>
                 </Portal>
