@@ -1,6 +1,6 @@
 {
   "name": "StudentLog",
-  "version": "0.2.6.2",
+  "version": "1.0.0.0",
   "private": true,
   "scripts": {
     "android": "npx react-native run-android; npx react-native start",
@@ -8,7 +8,7 @@
     "lint": "eslint .",
     "start": "react-native start",
     "test": "jest",
-    "apkDebug": "npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res; cd android; ./gradlew assembleDebug; cd .."
+    "apkDebug": "npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res; cd android; ./gradlew clean; ./gradlew assembleDebug; cd .."
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^3.1.1",
