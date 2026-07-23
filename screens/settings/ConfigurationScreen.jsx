@@ -40,9 +40,31 @@ export default function ConfigurationScreen({ navigation }) {
     // export and import stuff
     const handleExport = async () => {
         const saveObject = { database: db, settings: settings.settings };
-        const res = await createFile(`studentlog_db_${dateUniqueString(new Date())}`, "stldb", JSON.stringify(saveObject), "text/stldb");
+        const res = await createFile(`studentlog_db_${dateUniqueString(new Date())}`, "json", JSON.stringify(saveObject), "application/json");
         setSnackbarMessage(res.message);
         setSnackbarVisiable(true);
+    }
+    const handleImport = async () => {
+        const selected = await selectFile();
+        if (!selected.success) {
+            setSnackbarMessage(selected.message);
+            setSnackbarVisiable(true);
+            return;
+        }
+
+        try {
+            const imported = JSON.parse(selected.content);
+            if (!(imported.database) || !(imported.settings)) {
+                throw new Error();
+            }
+        } catch (err) {
+            setSnackbarMessage("Niepoprawny format pliku. " + err.message);
+            setSnackbarVisiable(true);
+            return;
+        }
+
+        setLoadedDataFromFile(selected.content);
+        setDialogImportBackupVisiable(true);
     }
     const [loadedDataFromFile, setLoadedDataFromFile] = useState("");
 
@@ -128,17 +150,6 @@ export default function ConfigurationScreen({ navigation }) {
         <ScrollView>
             <DismissKeyboard style={{ flex: 1 }}>
 
-                {/* ------------------------- */}
-                {/* info delete it later */}
-                <ActionTile label="print settings" onPress={() => {
-                    async function show() {
-                        console.log(await settingsGetAll());
-                        console.log(settings);
-                    }
-                    show();
-                }} />
-                {/* ------------------------- */}
-
                 {/* interface */}
                 <SectionWithIcon icon={"land-plots"} label={"Interfejs"}>
                     {/* <ActionTile label={"Język"} type="select" selectData={POSSIBLE_LANGUAGES} value={language} onSelect={(value) => {
@@ -188,23 +199,7 @@ export default function ConfigurationScreen({ navigation }) {
                 {/* imprt i eksport */}
                 <SectionWithIcon icon={"database-import"} label={"Import/eksport"}>
                     <ActionTile label={"Zapisz do pliku"} onPress={handleExport} />
-                    <ActionTile label={"Wczytaj z pliku"} onPress={async () => {
-                        const selected = await selectFile()
-                        if (!selected.success) {
-                            setSnackbarMessage(selected.message);
-                            setSnackbarVisiable(true);
-                            return;
-                        }
-                        const verKey = selected.content.slice(0, 5);
-                        if (verKey != "stldb") {
-                            setSnackbarMessage("Niepoprawny format pliku. Plik musi być wygenerowany przez StudentLog.");
-                            setSnackbarVisiable(true);
-                            return;
-                        }
-
-                        setLoadedDataFromFile(selected.content.slice(5));
-                        setDialogImportBackupVisiable(true);
-                    }} />
+                    <ActionTile label={"Wczytaj z pliku"} onPress={handleImport} />
                 </SectionWithIcon>
 
                 {/* powiadomienia */}

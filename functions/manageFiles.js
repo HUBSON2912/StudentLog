@@ -3,12 +3,7 @@ import { pick, saveDocuments } from "@react-native-documents/picker";
 let RNFS = require('react-native-fs');
 
 export async function createFile(fileName, extension, textContent, mimeType = "text/plain") {
-    try {
-        textContent="stldb"+textContent;  // verification key
-        let periodPos = fileName.indexOf(".");
-        if (periodPos != -1)
-            fileName = fileName.slice(0, periodPos);
-        
+    try {        
         const tempFile = `${RNFS.CachesDirectoryPath}/temp_${fileName}.${extension}`;
         
         fileName = `${fileName}.${extension}`;
